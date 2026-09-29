@@ -11,10 +11,10 @@ Buckets: **NOW** · **NEXT** · **LATER** · **PARKED** · **OPEN**. States are 
 
 The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.md` → NEXT.
 
-- durable product baseline (this directory);
-- operating model / agents / skills foundation;
+- durable product baseline (this directory) — VALIDATED (Tasks 03 / 03A);
+- operating model / agents / skills foundation — VALIDATED (Task 04);
+- Design System compatibility — design direction VALIDATED (Task 05); the static visual prototype is next (see Design below);
 - Discourse capability discovery;
-- Design System compatibility;
 - V1 product specification and readiness.
 
 No product feature implementation.
@@ -127,18 +127,33 @@ Possible future formats: cultivation report; cultivar report; medicine experienc
 
 Normal forum usage should first demonstrate the need.
 
-## Design — NEXT (design discovery)
+## Design — NEXT
 
-Open questions from Design Director research. The Design Director owns the exploration; this file does not answer them.
+Task 05 decided the register, structural base, list-over-cards law, avatar exception and pt-BR direction (`DEC-018` to `DEC-020`).
 
-- Is Community primarily "Arquivo", "Estufa", or does it need a distinct visual register?
-- A Foundation-derived custom theme or a Horizon-derived approach?
-- The exact dark-mode contract vs the CannLabs "deep" surface?
-- Typography adaptation.
-- The avatar exception.
-- Emoji / reactions policy in product content vs UI chrome.
-- Theme repository location.
-- Category visual grammar.
+**Design-ready (pending official PM activation):** a static / non-persistent visual prototype of the shell and topic list — header, sidebar, mobile drawer, `/latest` and `/categories`, light and dark, desktop and mobile (`DEC-021`). No theme install, database colour schemes, active-theme change, site-setting change or persisted runtime state.
+
+**OPEN — Theme packaging architecture:** a separate Community theme repository, a Community-owned additive location in the fork, or bounded theme components where appropriate. Engineering / architecture review follows the prototype evidence.
+
+Design Director questions still to settle through the prototype and later design slices:
+
+- the exact Community dark-mode contract (`deep` is not dark mode);
+- typography adaptation details;
+- emoji / reactions policy in product content vs UI chrome;
+- category visual grammar.
+
+## CannLabs Design System fixes — PARKED (Design System backlog)
+
+Issues found in Task 05 that belong in the CannLabs Design System itself. They are not Community implementation work, and do not block Community prototyping. Changing the Design System repository needs separate authorization:
+
+- an explicit dark-mode contract separate from Estufa / `deep`;
+- accessible dark variants for the signal colours;
+- an accessible input-border token;
+- underlined links in running text;
+- reconsider or restrict the 9px `nano` size;
+- the circular avatar exception (`DEC-019`);
+- a category / identity palette rule;
+- a relative (rem) typography scale.
 
 ## Legal / Privacy / Trust & Safety — REQUIRED PRE-V1 GATE
 

@@ -44,6 +44,18 @@ Evidence was captured from the development machine when this baseline was writte
 - Old Windows Design Director chats are historical, read-only evidence.
 - The Windows reference clone remains non-authoritative.
 
+### Community design direction — VALIDATED (Task 05)
+
+Only the design direction is validated; no theme exists and nothing was implemented.
+
+- The permanent WSL Design Director completed read-only design discovery; the official PM reviewed the proposal and the Founder ratified the recommended decisions (`DEC-018` to `DEC-021`).
+- Visual register "Arquivo em casca de Estufa": Estufa shell, Arquivo content.
+- Structural base: a thin CannLabs adaptation on the Discourse core / Foundation structure; Horizon is reference only. Discussion is a list, not a card feed.
+- Circular avatars are a formal Design System exception (circle = person).
+- Intended language: pt-BR. `default_locale` is unchanged.
+- The first visual prototype will be static / non-persistent. Theme packaging remains OPEN.
+- The Design Director proposal is kept as evidence outside the repository; it is not canon.
+
 ### Source-of-truth reconciliation
 
 - **Current truth:** exactly one editable source copy exists, the WSL worktree. The development container bind-mounts it at `/src`. The Windows clone `C:\Users\Leo\source\repos\CannLabs-Community` is a bootstrap / reference clone only. The temporary Docker source volume used for the vanilla start (`cannlabs_community_src`) has been removed.
@@ -60,7 +72,7 @@ The durable findings are summarized in `04_DISCOVERY_BASELINE.md`.
 
 ## ACTIVE
 
-- No material implementation or design slice is active. Awaiting official PM authorization for the first Community Design System compatibility slice.
+- No material implementation slice is active. Next authorized step is the first static Community visual prototype, pending official PM activation.
 
 ## NOT AUTHORIZED
 
@@ -114,9 +126,11 @@ None of these is solved in this slice.
 
 ## NEXT
 
-1. First Community Design System compatibility / direction slice, led by the Design Director.
-2. Official PM validation of the resulting design contract.
-3. V1 capability and specification discovery.
-4. Only then, bounded product implementation.
+1. Static / non-persistent shell + topic-list visual prototype (`DEC-021`).
+2. Founder / official PM visual review.
+3. Architecture / reuse review for theme packaging.
+4. A bounded implementation slice, only after approval.
+
+V1 capability and specification discovery remains pending (`03_BACKLOG_AND_OPEN_QUESTIONS.md`).
 
 No implementation starts automatically; each step needs explicit official PM authorization.

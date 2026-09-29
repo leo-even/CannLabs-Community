@@ -4,6 +4,7 @@ Status: SNAPSHOT
 Date: 2026-09-29
 Upstream base: `d8d59f720e4d9a2687a94984ed1c927f1ebd4933`
 Corrected: 2026-09-29 (Task 03A) — §1.5 GitHub Actions observation.
+Superseded in part: 2026-09-29 (Task 05) — §2.6 design hypothesis, by `DEC-018`.
 
 This file preserves the most important verified findings from the initial read-only Coder and Design Director context loads. On the same date, the PM Companion re-checked the engineering facts marked "verified" against the running local vanilla instance.
 
@@ -147,6 +148,8 @@ Current research recommends preserving native behavior and structure for:
 - patching core for visual preference.
 
 ### 2.6 Design hypothesis
+
+> **SUPERSEDED (Task 05):** the structural base is now decided in `DEC-018`. The text below is the original snapshot.
 
 **HYPOTHESIS — NOT DECIDED:** Foundation currently appears structurally closer to the CannLabs visual philosophy than Horizon in some important areas, particularly topic-list density.
 

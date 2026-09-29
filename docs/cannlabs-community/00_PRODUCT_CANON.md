@@ -13,6 +13,8 @@ This canon records what CannLabs Community is and is not. Statements are marked 
 
 The fundamental product is a **community / forum**, not a generic social network. The mature forum and community mechanics already provided by Discourse are an advantage to reuse, not something to rebuild.
 
+**DECIDED** — The intended product language is pt-BR (`DEC-020`). Locale configuration is a separate, authorized configuration slice.
+
 ## 2. Public ecosystem vs private community
 
 **DECIDED — CannLabs Community** is:
@@ -202,6 +204,13 @@ Do not build a custom strikes / cooldown / ban system until the native Discourse
 - Reuse principles and tokens before porting components.
 - Do not blindly import the global Design System CSS, its React components or Traceability-specific components.
 - Preserve good native Discourse interaction patterns when possible.
+
+**DECIDED — Community design direction** (`DEC-018`, `DEC-019`)
+
+- **Register: "Arquivo em casca de Estufa".** The shell (navigation, presence) is Estufa; the content (discussion, reading, durable knowledge) is Arquivo. It is a composition inside the CannLabs Design System family, not a third brand system. Avoid gratuitous extra surface families.
+- **Structure:** start from the Discourse core / Foundation structure with a thin CannLabs adaptation through supported tokens, colour schemes and theme mechanisms. Preserve forum density and native interaction structure. Horizon is not the structural base.
+- **List over cards:** discussion is an archive / list structure with 1px rules, not a card feed. A bounded card needs a specific justified use case.
+- **Avatars:** circular avatars are a formal exception, circle = person. Circular geometry does not extend to other UI elements.
 
 The Design Director owns the compatibility and handoff work.
 

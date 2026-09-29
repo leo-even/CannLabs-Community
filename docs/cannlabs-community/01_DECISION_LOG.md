@@ -159,3 +159,51 @@ Append-only record of ratified decisions. To change a decision, add a new entry 
 - **Rationale:** Upstream Discourse guidance for Windows requires the source to live on a Linux filesystem, and a single editable worktree ensures that the running app executes exactly the files being edited.
 - **Consequences / open items:** The development container `cannlabs_community_dev` bind-mounts this worktree at `/src`. The Windows clone `C:\Users\Leo\source\repos\CannLabs-Community` is a bootstrap / reference clone only. No second editable copy may exist.
 - **Supersedes:** The temporary runtime source used during the vanilla start (Docker volume `cannlabs_community_src`, now removed). That arrangement was never a formal decision.
+
+## DEC-018 — Community design direction: "Arquivo em casca de Estufa" on a thin Foundation/core base
+
+- **Date:** 2026-09-29
+- **Status:** DECIDED — ratified by the Founder on the official PM's recommendation (Task 05)
+- **Decision:**
+  - **Visual register:** CannLabs Community uses "Arquivo em casca de Estufa". The navigation / shell / presence layer is Estufa; the discussion / reading / durable-knowledge layer is Arquivo. This is a composition inside the existing CannLabs Design System family, not a third brand system.
+  - **Structural base:** Community design starts from the Discourse core / Foundation structure with a thin CannLabs adaptation, using supported design tokens, colour schemes, theme APIs and bounded surface adjustments. Horizon is not the structural base; it remains reference evidence only.
+  - **List over cards:** forum discussion and content are primarily an archive / list structure, not a card feed. 1px structural rules and information density are preferred.
+- **Rationale:** The Design System already uses a deep shell around paper content, which is the sidebar/content contrast the Founder values. Foundation keeps forum density and native interaction structure with the least override pressure; Horizon's cards, pills and radii work against the Design System and add upstream-owned surface to track. Evidence: the Task 05 Design Director proposal.
+- **Consequences / open items:**
+  - Guardrail: the shell is Estufa, the content is Arquivo; avoid gratuitous extra surface families.
+  - Exact hex values and token implementation are not frozen. Dark mode needs an explicit contract; `deep` is not dark mode.
+  - A bounded card remains possible where a specific future use case justifies it.
+  - Upstream Foundation itself evolves; implementation must re-verify current Discourse behavior.
+  - Design System issues found in Task 05 are PARKED in the backlog and do not block Community prototyping.
+  - Resolves the Foundation vs Horizon HYPOTHESIS in `04_DISCOVERY_BASELINE.md` §2.6. Refines `DEC-013` without superseding it.
+  - Does not authorize theme implementation.
+- **Supersedes:** —
+
+## DEC-019 — Circular avatars are a formal Design System exception
+
+- **Date:** 2026-09-29
+- **Status:** DECIDED — ratified by the Founder on the official PM's recommendation (Task 05)
+- **Decision:** Circular avatars are a formal CannLabs Community Design System exception: circle = person.
+- **Rationale:** The circle is Discourse's native grammar for recognizing people, and recognition matters in a trust-sensitive community. Native behavior outweighs visual purity.
+- **Consequences / open items:** Circular geometry is not generalized to other UI elements. Recording the exception in the CannLabs Design System itself is PARKED in the Design System backlog.
+- **Supersedes:** —
+
+## DEC-020 — Intended Community language is pt-BR
+
+- **Date:** 2026-09-29
+- **Status:** DECIDED — ratified by the Founder on the official PM's recommendation (Task 05)
+- **Decision:** The intended Community product language is pt-BR.
+- **Rationale:** The product serves the Brazilian cannabis ecosystem (§1).
+- **Consequences / open items:** This does not change `default_locale` (currently `en`; `04_DISCOVERY_BASELINE.md` §1.4). Locale configuration is a future bounded configuration slice that needs explicit authorization.
+- **Supersedes:** —
+
+## DEC-021 — First visual prototype is static; theme packaging stays OPEN
+
+- **Date:** 2026-09-29
+- **Status:** DECIDED — ratified by the Founder on the official PM's recommendation (Task 05)
+- **Decision:** The first Community visual prototype is static / non-persistent. It does not install a theme, create colour schemes in the database, change the active theme, change site settings or persist runtime state.
+- **Rationale:** Validate the visual direction before theme architecture and runtime state are introduced.
+- **Consequences / open items:**
+  - **OPEN — Community theme packaging architecture.** Candidates: a separate Community theme repository; a Community-owned additive location in the fork; bounded theme components where appropriate. Engineering / architecture review follows the prototype evidence. No theme repository is created.
+  - The prototype itself still needs explicit official PM activation.
+- **Supersedes:** —
