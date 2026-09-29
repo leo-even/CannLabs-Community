@@ -3,6 +3,7 @@
 Status: SNAPSHOT
 Date: 2026-09-29
 Upstream base: `d8d59f720e4d9a2687a94984ed1c927f1ebd4933`
+Corrected: 2026-09-29 (Task 03A) — §1.5 GitHub Actions observation.
 
 This file preserves the most important verified findings from the initial read-only Coder and Design Director context loads. On the same date, the PM Companion re-checked the engineering facts marked "verified" against the running local vanilla instance.
 
@@ -74,7 +75,7 @@ These are findings, not authorization to change settings.
 
 - **Passkeys / WebAuthn in development:** upstream hardcodes the development origin to `http://localhost:3000` (`lib/discourse_webauthn.rb`), so passkeys do not work on the Community development port 3100. This is an upstream development limitation and must not trigger a core patch.
 - **lefthook:** the upstream `pnpm install` installs a lefthook `pre-commit` hook; the development image sets `LEFTHOOK=0`.
-- **GitHub Actions on the fork:** Actions are enabled. A push to `main` triggers the upstream `Tests`, `Linting` and `Licenses` workflows; repository-guarded or path-filtered workflows do not run jobs.
+- **GitHub Actions on the fork — OPEN:** the workflow definitions contain push triggers that appear applicable to changes on `main` (including `Tests`, `Linting` and `Licenses`); other workflows are repository-guarded or path-filtered. However, the baseline push `e02f6d4c` produced no GitHub Actions runs, no run IDs and no Actions status checks, although the GitHub API reported Actions as enabled for the repository and all 19 workflows as `active`. The cause is unresolved. CI enablement and policy must be reviewed before the project relies on GitHub Actions as validation evidence.
 
 ### 1.6 Extension principle
 
