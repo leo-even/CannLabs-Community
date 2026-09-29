@@ -233,3 +233,23 @@ Append-only record of ratified decisions. To change a decision, add a new entry 
 - **Rationale:** Keep the project moving after Founder approval without letting cosmetic parity create custom infrastructure or letting structural quality slip to the end.
 - **Consequences / open items:** Neither the letter-avatar colours nor polish blocks the first theme slice. Task 06 found a 200% text-scaling reflow gap in the static prototype; it is an acceptance criterion for implementation, not polish.
 - **Supersedes:** —
+
+## DEC-024 — Community theme architecture: one full theme in a dedicated theme repository
+
+- **Date:** 2026-09-29
+- **Status:** DECIDED — official PM, after the Task 07 architecture / upstream reuse review (Task 07A)
+- **Decision:**
+  - CannLabs Community uses **one full Discourse theme in a dedicated, Community-owned theme repository**, installed through the standard Discourse git-theme mechanism, on the core / Foundation styling.
+  - **Application repository** `leo-even/CannLabs-Community`: the Discourse fork, the Community product canon and docs, and Community application / runtime integration. It holds no custom theme source.
+  - **Theme repository** `leo-even/CannLabs-Community-Theme` (intended name; not yet created): the Community-only theme — two paired light / dark colour schemes, per-scheme variables, bounded SCSS, authorized theme assets and theme-local tests. No backend or product infrastructure.
+  - Options: A (separate theme repository) ADOPTED. B (theme source inside the fork) REJECTED: the standard git theme installer does not support it without non-standard runtime import or core modification. C (theme components only) REJECTED as the primary architecture; components remain possible later for optional, separable behavior. D (modify Foundation / core) REJECTED. E (core modifications) NOT REQUIRED.
+  - **Ownership boundary.** The theme owns the two paired colour schemes, per-scheme variables, bounded SCSS, fonts once provenance is approved, theme-local locales only if needed, and theme-local tests. Site configuration owns the default / active theme, native `logo` / `mobile_logo` uploads, the pt-BR site locale, category data and any explicitly authorized upcoming-change configuration. The fork owns no Community theme code.
+  - **Update and rollback.** Updates are manual, explicit and version-pinned; no automatic, unreviewed production updates. Rollback: first switch the default theme back to Foundation; second, restore a previously validated theme version. No data migrations in the first slice.
+  - **Logo.** The canonical CannLabs Design System SVG is used unchanged in the initial implementation, through native `logo` / `mobile_logo` configuration: no redraw, tracing, geometry change or optimized derivative unless separately authorized, and no CSS background replacement in the theme. If payload size later proves material, a separate task may evaluate a lossless derivative with visual equivalence and a recorded source hash.
+  - **OPEN / readiness requirement — font binary provenance.** Petrona, Public Sans and DM Mono have family-level SIL OFL 1.1 evidence (Task 07), but no CannLabs-owned binaries exist. Before any font is added to the theme repository: an authorized upstream source, the exact version / commit, the binary hash, and the retained OFL licence. Petrona topic titles remain HYPOTHESIS (`DEC-022`).
+- **Rationale:** The git theme mechanism is the only option with a supported install, update and rollback path, and it keeps fork divergence at zero. Evidence: the Task 07 review, kept outside the repository.
+- **Consequences / open items:**
+  - A second Community-owned repository does not merge products: product separation (`DEC-001`) means isolation from FeedCheck, CannLabs Traceability and every other CannLabs product, and no code, database, deploy or canon is shared with them. `README.md` → Product separation is updated accordingly.
+  - Resolves the OPEN theme-packaging item of `DEC-021`.
+  - Creating the theme repository, installing a theme, creating colour schemes in the database, setting the default theme and uploading logos each need explicit official PM authorization.
+- **Supersedes:** —

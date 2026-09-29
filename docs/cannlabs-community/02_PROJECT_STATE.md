@@ -53,7 +53,7 @@ Only the design direction is validated; no theme exists and nothing was implemen
 - Structural base: a thin CannLabs adaptation on the Discourse core / Foundation structure; Horizon is reference only. Discussion is a list, not a card feed.
 - Circular avatars are a formal Design System exception (circle = person).
 - Intended language: pt-BR. `default_locale` is unchanged.
-- The first visual prototype will be static / non-persistent. Theme packaging remains OPEN.
+- The first visual prototype will be static / non-persistent. Theme packaging was left OPEN; it is now decided in `DEC-024`.
 - The Design Director proposal is kept as evidence outside the repository; it is not canon.
 
 ### Community static visual prototype — VALIDATED (Task 06)
@@ -66,6 +66,13 @@ The visual direction is validated; no production theme exists, and fine polish i
 - Topic-list titles in Petrona remain a HYPOTHESIS until tested with the real font; Public Sans is the fallback.
 - Letter-avatar colours stay native for the first implementation (`DEC-023`).
 - The prototype, screenshots and measurements are kept as evidence outside the repository; they are not canon.
+
+### Architecture / upstream reuse review — VALIDATED (Task 07)
+
+- A fresh, read-only native-WSL reviewer compared the packaging options against the current fork and upstream. Nothing was implemented, installed or created.
+- The official PM adopted the architecture: one full Discourse theme in a dedicated Community-owned theme repository, `leo-even/CannLabs-Community-Theme`, installed through the standard git-theme mechanism; the fork holds no theme code (`DEC-024`). The theme repository does not exist yet.
+- Logo: the canonical Design System SVG, unchanged, through native `logo` / `mobile_logo` settings. Fonts: binary provenance is OPEN and required before bundling.
+- The review is kept as evidence outside the repository; it is not canon.
 
 ### Source-of-truth reconciliation
 
@@ -83,7 +90,7 @@ The durable findings are summarized in `04_DISCOVERY_BASELINE.md`.
 
 ## ACTIVE
 
-- No production implementation is active. Task 07 is a read-only architecture / reuse review; it has no writer.
+- No production implementation slice is active.
 
 ## NOT AUTHORIZED
 
@@ -122,6 +129,7 @@ Nothing below is authorized. Presence in the backlog does not authorize work.
   ```
 
 - Git state before this baseline commit: `main` = `origin/main` = `upstream/main` at `d8d59f72`; clean working tree.
+- **`modernize_foundation_theme` (technical evidence, Task 07).** The setting is `beta` with default `false` in source, but upstream's upcoming-change promotion (`promote_upcoming_changes_on_status`, default `beta`) may enable it effectively for logged-in users, while anonymous visitors do not get its body class. The earlier Task 05 description "off by default" is stale / incomplete. Do not change either setting. Implementation QA must cover logged-in and anonymous users, the effective current state, and modernize on / off where safely isolated.
 
 ## KNOWN ENVIRONMENT FOLLOW-UPS
 
@@ -137,12 +145,15 @@ None of these is solved in this slice.
 
 ## NEXT
 
-1. Architecture / reuse review for theme packaging and the supported Discourse implementation path (Task 07).
-2. Official PM architecture decision.
-3. Coder WSL rebind / readiness, if needed.
-4. First bounded implementation slice: shell + `/latest` + `/categories`.
-5. Real-app regression and visual QA.
-6. Later polish (`DEC-023`).
+1. Local Founder login and authenticated technical observation (including the effective `modernize_foundation_theme` state).
+2. Discourse-native design handoff.
+3. Official PM validation of the handoff and readiness.
+4. Coder native-WSL rebind / readiness.
+5. Create the dedicated Community theme repository (`DEC-024`).
+6. First bounded theme v0.1 implementation: shell + `/latest` + `/categories`.
+7. Real-app regression and visual QA.
+
+Fine polish stays LATER (`DEC-023`).
 
 V1 capability and specification discovery remains pending (`03_BACKLOG_AND_OPEN_QUESTIONS.md`).
 

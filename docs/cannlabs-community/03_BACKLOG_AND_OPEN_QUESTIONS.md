@@ -13,7 +13,7 @@ The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.
 
 - durable product baseline (this directory) — VALIDATED (Tasks 03 / 03A);
 - operating model / agents / skills foundation — VALIDATED (Task 04);
-- Design System compatibility — design direction VALIDATED (Task 05); static visual prototype VALIDATED (Task 06); the architecture / reuse review is next (see Design below);
+- Design System compatibility — design direction VALIDATED (Task 05); static visual prototype VALIDATED (Task 06); theme architecture DECIDED (Task 07 / `DEC-024`); the Discourse-native design handoff is next (see Design below);
 - Discourse capability discovery;
 - V1 product specification and readiness.
 
@@ -131,9 +131,15 @@ Normal forum usage should first demonstrate the need.
 
 Task 05 decided the register, structural base, list-over-cards law, avatar exception and pt-BR direction (`DEC-018` to `DEC-020`). Task 06 validated the static prototype and the deep L-frame shell (`DEC-022`).
 
-**OPEN — Theme packaging architecture:** a separate Community theme repository, a Community-owned additive location in the fork, or bounded theme components where appropriate. Task 07 (read-only architecture / reuse review) informs the official PM decision.
+**DECIDED — Theme architecture:** one full theme in the dedicated Community-owned repository `leo-even/CannLabs-Community-Theme` (not yet created), git-installed; the fork holds no theme code (`DEC-024`).
 
-**NEXT (after the architecture decision):** first bounded implementation slice — shell + `/latest` + `/categories`, light and dark, desktop and mobile. Not authorized until the official PM issues it.
+**NEXT:** Discourse-native design handoff, then the first bounded theme v0.1 slice — shell + `/latest` + `/categories`, light and dark, desktop and mobile. Neither is authorized until the official PM issues it.
+
+**OPEN / readiness requirement — font binary provenance:** authorized upstream source, exact version / commit, binary hash and retained OFL licence before any font enters the theme repository (`DEC-024`).
+
+**Logo:** the canonical Design System SVG, unchanged, through native `logo` / `mobile_logo`; any optimized derivative needs a separate task (`DEC-024`).
+
+**Implementation QA — `modernize_foundation_theme`:** cover logged-in and anonymous users, the effective current state, and modernize on / off where safely isolated (`02_PROJECT_STATE.md` → runtime notes).
 
 **HYPOTHESIS — Petrona for topic-list titles**, pending the real font; Public Sans is the fallback (`DEC-022`).
 

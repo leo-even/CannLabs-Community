@@ -10,12 +10,12 @@ This directory holds the durable, Community-specific product truth for CannLabs 
 
 | Dimension | Rule |
 | --- | --- |
-| Repository | Only `leo-even/CannLabs-Community`, a fork of `discourse/discourse`. |
+| Repository | Only Community-owned repositories, never shared with another CannLabs product. `leo-even/CannLabs-Community`, a fork of `discourse/discourse`, is the authoritative application repository. The dedicated theme repository `leo-even/CannLabs-Community-Theme` is allowed as an implementation artifact owned exclusively by Community (`DEC-024`). |
 | Code | Never copied from another CannLabs product. |
 | Database | Its own. Never shared with, copied from or restored from another product. |
 | Deploy | Its own. Nothing inherited from another product. |
 | Product canon | Only the files in this directory. |
-| Implementation history | Only this repository and its validated slices. |
+| Implementation history | Only Community-owned repositories and their validated slices. |
 
 The existing CannLabs Design System may be adapted for Community later (Product Canon §19). Adapting a visual foundation does not merge applications.
 
