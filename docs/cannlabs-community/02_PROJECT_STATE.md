@@ -25,6 +25,10 @@ Evidence was captured from the development machine when this baseline was writte
 - FeedCheck, a separate product: `http://localhost:3000`.
 - Upstream base when this baseline was written: `d8d59f720e4d9a2687a94984ed1c927f1ebd4933` ("FEATURE: Allow admins to test CAPTCHA keys (#44178)"). It was equal to `origin/main` and `upstream/main` before the commit that adds this directory.
 
+### Durable product baseline — VALIDATED (Task 03 and 03A)
+
+- `docs/cannlabs-community/` baseline (commit `e02f6d4c`) and its factual corrections (commit `0fcdc9bd`).
+
 ### Source-of-truth reconciliation
 
 - **Current truth:** exactly one editable source copy exists, the WSL worktree. The development container bind-mounts it at `/src`. The Windows clone `C:\Users\Leo\source\repos\CannLabs-Community` is a bootstrap / reference clone only. The temporary Docker source volume used for the vanilla start (`cannlabs_community_src`) has been removed.
@@ -41,7 +45,7 @@ The durable findings are summarized in `04_DISCOVERY_BASELINE.md`.
 
 ## ACTIVE
 
-- **Task 03** — durable product baseline documentation (this directory). The PM Companion is the only writer; Coder and Design Director are read-only.
+- **Task 04** — Community agent and skill operating layer in `.skills/community-*`. Session briefs invoke `community-repo-audit` first; its `references/operating-contract.md` holds the agent operating contract. Status: Testing — Awaiting PM Validation. The PM Companion is the only writer; Coder and Design Director are read-only.
 
 ## NOT AUTHORIZED
 
@@ -94,9 +98,8 @@ None of these is solved in this slice.
 
 ## NEXT
 
-1. Validate this documentation baseline (official PM).
-2. Establish the Community-specific agent / skills operating layer.
-3. Activate the next Design System compatibility slice.
-4. Perform V1 capability and specification discovery before any product implementation.
+1. Validate the Task 04 operating layer (official PM).
+2. Activate the next Design System compatibility slice.
+3. Perform V1 capability and specification discovery before any product implementation.
 
 No implementation starts automatically.
