@@ -29,6 +29,21 @@ Evidence was captured from the development machine when this baseline was writte
 
 - `docs/cannlabs-community/` baseline (commit `e02f6d4c`) and its factual corrections (commit `0fcdc9bd`).
 
+### Community agent/skill operating layer — VALIDATED (Task 04)
+
+- Four Community-specific additive skills exist beside the upstream ones: `community-repo-audit`, `community-feature-planning`, `community-design-handoff` and `community-review` (commit `77c55b5d`).
+- The upstream `discourse-*` skills remain intact.
+- The Community operating contract lives at `.skills/community-repo-audit/references/operating-contract.md`.
+- No upstream `AI-AGENTS.md`, `AGENTS.md`, `CLAUDE.md`, `.gitignore` or `discourse-*` skill was modified for this layer.
+- The layer passed fresh-session acceptance in native WSL Claude Code.
+
+### Design Director WSL rebind — VALIDATED (Task 04A / 04B)
+
+- The permanent Design Director continuation operates from `/home/leo/source/repos/CannLabs-Community`.
+- In that WSL-native session, the skill mechanism naturally discovered all 4 `community-*` skills and all 17 upstream `discourse-*` skills, and `community-repo-audit` loaded the Community operating contract.
+- Old Windows Design Director chats are historical, read-only evidence.
+- The Windows reference clone remains non-authoritative.
+
 ### Source-of-truth reconciliation
 
 - **Current truth:** exactly one editable source copy exists, the WSL worktree. The development container bind-mounts it at `/src`. The Windows clone `C:\Users\Leo\source\repos\CannLabs-Community` is a bootstrap / reference clone only. The temporary Docker source volume used for the vanilla start (`cannlabs_community_src`) has been removed.
@@ -45,7 +60,7 @@ The durable findings are summarized in `04_DISCOVERY_BASELINE.md`.
 
 ## ACTIVE
 
-- **Task 04** — Community agent and skill operating layer in `.skills/community-*`. Session briefs invoke `community-repo-audit` first; its `references/operating-contract.md` holds the agent operating contract. Status: Testing — Awaiting PM Validation. The PM Companion is the only writer; Coder and Design Director are read-only.
+- No material implementation or design slice is active. Awaiting official PM authorization for the first Community Design System compatibility slice.
 
 ## NOT AUTHORIZED
 
@@ -74,6 +89,7 @@ Nothing below is authorized. Presence in the backlog does not authorize work.
 - FeedCheck runs at `http://localhost:3000`. It is a separate product; do not touch it.
 - The WSL worktree is authoritative, and the container runs exactly its files.
 - The Windows clone is reference-only; do not develop there.
+- Native Claude Code is installed inside Ubuntu (WSL), under the user's home, for Community agent sessions started from the WSL worktree.
 - A local development admin exists for authenticated QA. It was created with the upstream `bin/rake admin:create` task, and its credential is stored outside the repository, under `~/.config/cannlabs-community/` in the WSL user's home. Never commit credentials.
 - The local preview configuration `.claude/launch.json` (ignored by the upstream `/.claude` rule) targets `http://localhost:3100`. Never start a second development server on port 3000.
 - After a Docker engine restart the container comes back on its own, but the app server must be relaunched:
@@ -98,8 +114,9 @@ None of these is solved in this slice.
 
 ## NEXT
 
-1. Validate the Task 04 operating layer (official PM).
-2. Activate the next Design System compatibility slice.
-3. Perform V1 capability and specification discovery before any product implementation.
+1. First Community Design System compatibility / direction slice, led by the Design Director.
+2. Official PM validation of the resulting design contract.
+3. V1 capability and specification discovery.
+4. Only then, bounded product implementation.
 
-No implementation starts automatically.
+No implementation starts automatically; each step needs explicit official PM authorization.
