@@ -207,3 +207,29 @@ Append-only record of ratified decisions. To change a decision, add a new entry 
   - **OPEN — Community theme packaging architecture.** Candidates: a separate Community theme repository; a Community-owned additive location in the fork; bounded theme components where appropriate. Engineering / architecture review follows the prototype evidence. No theme repository is created.
   - The prototype itself still needs explicit official PM activation.
 - **Supersedes:** —
+
+## DEC-022 — Visual prototype validated; the Community shell is the deep L-frame
+
+- **Date:** 2026-09-29
+- **Status:** DECIDED — Task 06 VALIDATED by the official PM after Founder visual review (Tasks 06 / 06A / 06B)
+- **Decision:**
+  - The static Task 06 prototype, corrected in Task 06A to use the real CannLabs wordmark, validates the visual direction: "Arquivo em casca de Estufa" works on a real forum-shaped interface, the thin Foundation/core direction and the dense list treatment remain supported, and desktop / mobile and light / dark converged sufficiently for engineering handoff.
+  - **Shell:** the Community uses the deep L-frame — deep Estufa header and sidebar around the Arquivo content surface, with the official paper CannLabs wordmark on the deep shell. The paper-header alternative is rejected as the primary direction.
+- **Rationale:** The paper header weakens the Estufa / Arquivo register and reads closer to the public CannLabs website; the real wordmark strengthened the deep-shell result. Evidence: the Task 06 / 06A Design Director results and screenshots, kept outside the repository.
+- **Consequences / open items:**
+  - This validates a visual prototype and design direction only. It is not pixel-perfect visual QA, theme implementation validation or production readiness. Exact dimensions and CSS values are not frozen.
+  - **HYPOTHESIS — topic-list titles in Petrona**, pending validation with the real Petrona font in implementation or prototype conditions; the prototype used a local stand-in. Public Sans is the fallback if real-font testing shows unacceptable density or readability. This does not block architecture work.
+  - Theme packaging remains OPEN pending the architecture / reuse review (`DEC-021`).
+- **Supersedes:** —
+
+## DEC-023 — Implementation defaults: native letter avatars, polish later, accessibility throughout
+
+- **Date:** 2026-09-29
+- **Status:** DECIDED — official PM (Task 06B)
+- **Decision:**
+  - **OPEN / LATER — letter-avatar colour treatment.** Initial implementation keeps native Discourse letter-avatar behavior. No plugin or server-side override is introduced merely to match prototype colours; reopen only if real implementation shows a material visual problem. Circular avatars remain decided (`DEC-019`).
+  - **LATER — fine visual polish:** microspacing, exact logo sizing, fine palette and category-colour tuning, minor dark-mode nuance, small typographic adjustments and decorative refinements.
+  - Mandatory throughout implementation, never deferred as polish: WCAG contrast, responsive behavior, mobile touch targets, text scaling and reflow, focus behavior, upstream compatibility and native Discourse interaction preservation.
+- **Rationale:** Keep the project moving after Founder approval without letting cosmetic parity create custom infrastructure or letting structural quality slip to the end.
+- **Consequences / open items:** Neither the letter-avatar colours nor polish blocks the first theme slice. Task 06 found a 200% text-scaling reflow gap in the static prototype; it is an acceptance criterion for implementation, not polish.
+- **Supersedes:** —

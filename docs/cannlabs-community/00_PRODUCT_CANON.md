@@ -205,12 +205,14 @@ Do not build a custom strikes / cooldown / ban system until the native Discourse
 - Do not blindly import the global Design System CSS, its React components or Traceability-specific components.
 - Preserve good native Discourse interaction patterns when possible.
 
-**DECIDED — Community design direction** (`DEC-018`, `DEC-019`)
+**DECIDED — Community design direction** (`DEC-018`, `DEC-019`, `DEC-022`)
 
 - **Register: "Arquivo em casca de Estufa".** The shell (navigation, presence) is Estufa; the content (discussion, reading, durable knowledge) is Arquivo. It is a composition inside the CannLabs Design System family, not a third brand system. Avoid gratuitous extra surface families.
+- **Shell:** a deep L-frame — deep header and sidebar around the paper content, with the official CannLabs wordmark on the deep shell (`DEC-022`).
 - **Structure:** start from the Discourse core / Foundation structure with a thin CannLabs adaptation through supported tokens, colour schemes and theme mechanisms. Preserve forum density and native interaction structure. Horizon is not the structural base.
 - **List over cards:** discussion is an archive / list structure with 1px rules, not a card feed. A bounded card needs a specific justified use case.
 - **Avatars:** circular avatars are a formal exception, circle = person. Circular geometry does not extend to other UI elements.
+- **Quality floor:** accessibility (WCAG contrast, focus, touch targets, text scaling and reflow) and responsive behavior are requirements throughout implementation, never deferred as polish (`DEC-023`).
 
 The Design Director owns the compatibility and handoff work.
 

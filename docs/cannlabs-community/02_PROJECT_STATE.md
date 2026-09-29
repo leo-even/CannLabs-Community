@@ -56,6 +56,17 @@ Only the design direction is validated; no theme exists and nothing was implemen
 - The first visual prototype will be static / non-persistent. Theme packaging remains OPEN.
 - The Design Director proposal is kept as evidence outside the repository; it is not canon.
 
+### Community static visual prototype — VALIDATED (Task 06)
+
+The visual direction is validated; no production theme exists, and fine polish is LATER (`DEC-023`).
+
+- The Design Director built a static, non-persistent prototype of the shell, `/latest`, `/categories` and the mobile drawer, in light and dark, desktop and mobile, with fictional pt-BR fixture content. Task 06A replaced the typed stand-in with the real CannLabs wordmark from the Design System. Nothing was installed in Discourse and the runtime was unchanged.
+- The Founder reviewed it visually and approved moving forward; the official PM set Task 06 VALIDATED (`DEC-022`).
+- Shell: deep L-frame, with the paper CannLabs wordmark on the deep shell.
+- Topic-list titles in Petrona remain a HYPOTHESIS until tested with the real font; Public Sans is the fallback.
+- Letter-avatar colours stay native for the first implementation (`DEC-023`).
+- The prototype, screenshots and measurements are kept as evidence outside the repository; they are not canon.
+
 ### Source-of-truth reconciliation
 
 - **Current truth:** exactly one editable source copy exists, the WSL worktree. The development container bind-mounts it at `/src`. The Windows clone `C:\Users\Leo\source\repos\CannLabs-Community` is a bootstrap / reference clone only. The temporary Docker source volume used for the vanilla start (`cannlabs_community_src`) has been removed.
@@ -72,7 +83,7 @@ The durable findings are summarized in `04_DISCOVERY_BASELINE.md`.
 
 ## ACTIVE
 
-- No material implementation slice is active. Next authorized step is the first static Community visual prototype, pending official PM activation.
+- No production implementation is active. Task 07 is a read-only architecture / reuse review; it has no writer.
 
 ## NOT AUTHORIZED
 
@@ -126,10 +137,12 @@ None of these is solved in this slice.
 
 ## NEXT
 
-1. Static / non-persistent shell + topic-list visual prototype (`DEC-021`).
-2. Founder / official PM visual review.
-3. Architecture / reuse review for theme packaging.
-4. A bounded implementation slice, only after approval.
+1. Architecture / reuse review for theme packaging and the supported Discourse implementation path (Task 07).
+2. Official PM architecture decision.
+3. Coder WSL rebind / readiness, if needed.
+4. First bounded implementation slice: shell + `/latest` + `/categories`.
+5. Real-app regression and visual QA.
+6. Later polish (`DEC-023`).
 
 V1 capability and specification discovery remains pending (`03_BACKLOG_AND_OPEN_QUESTIONS.md`).
 

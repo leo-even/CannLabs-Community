@@ -13,7 +13,7 @@ The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.
 
 - durable product baseline (this directory) — VALIDATED (Tasks 03 / 03A);
 - operating model / agents / skills foundation — VALIDATED (Task 04);
-- Design System compatibility — design direction VALIDATED (Task 05); the static visual prototype is next (see Design below);
+- Design System compatibility — design direction VALIDATED (Task 05); static visual prototype VALIDATED (Task 06); the architecture / reuse review is next (see Design below);
 - Discourse capability discovery;
 - V1 product specification and readiness.
 
@@ -129,18 +129,24 @@ Normal forum usage should first demonstrate the need.
 
 ## Design — NEXT
 
-Task 05 decided the register, structural base, list-over-cards law, avatar exception and pt-BR direction (`DEC-018` to `DEC-020`).
+Task 05 decided the register, structural base, list-over-cards law, avatar exception and pt-BR direction (`DEC-018` to `DEC-020`). Task 06 validated the static prototype and the deep L-frame shell (`DEC-022`).
 
-**Design-ready (pending official PM activation):** a static / non-persistent visual prototype of the shell and topic list — header, sidebar, mobile drawer, `/latest` and `/categories`, light and dark, desktop and mobile (`DEC-021`). No theme install, database colour schemes, active-theme change, site-setting change or persisted runtime state.
+**OPEN — Theme packaging architecture:** a separate Community theme repository, a Community-owned additive location in the fork, or bounded theme components where appropriate. Task 07 (read-only architecture / reuse review) informs the official PM decision.
 
-**OPEN — Theme packaging architecture:** a separate Community theme repository, a Community-owned additive location in the fork, or bounded theme components where appropriate. Engineering / architecture review follows the prototype evidence.
+**NEXT (after the architecture decision):** first bounded implementation slice — shell + `/latest` + `/categories`, light and dark, desktop and mobile. Not authorized until the official PM issues it.
 
-Design Director questions still to settle through the prototype and later design slices:
+**HYPOTHESIS — Petrona for topic-list titles**, pending the real font; Public Sans is the fallback (`DEC-022`).
 
-- the exact Community dark-mode contract (`deep` is not dark mode);
+**OPEN / LATER — letter-avatar colours:** native for the first implementation; no plugin or server-side override for prototype parity (`DEC-023`).
+
+**LATER — fine visual polish** (microspacing, logo sizing, palette and category-colour tuning, dark-mode nuance, small typographic adjustments). Accessibility, responsive behavior, touch targets, text scaling / reflow, focus, upstream compatibility and native interaction preservation are not polish (`DEC-023`).
+
+Design Director questions still to settle in implementation and later design slices:
+
+- the exact Community dark-mode values (the prototype holds measured candidates; `deep` is not dark mode);
 - typography adaptation details;
 - emoji / reactions policy in product content vs UI chrome;
-- category visual grammar.
+- final category palette values.
 
 ## CannLabs Design System fixes — PARKED (Design System backlog)
 
