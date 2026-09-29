@@ -13,7 +13,7 @@ The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.
 
 - durable product baseline (this directory) — VALIDATED (Tasks 03 / 03A);
 - operating model / agents / skills foundation — VALIDATED (Task 04);
-- Design System compatibility — design direction VALIDATED (Task 05); static visual prototype VALIDATED (Task 06); theme architecture DECIDED (Task 07 / `DEC-024`); the Discourse-native design handoff is next (see Design below);
+- Design System compatibility — design direction VALIDATED (Task 05); static visual prototype VALIDATED (Task 06); theme architecture DECIDED (Task 07 / `DEC-024`); Discourse-native design handoff VALIDATED (Task 08); theme v0.1 implementation is next (see Design below);
 - Discourse capability discovery;
 - V1 product specification and readiness.
 
@@ -133,13 +133,15 @@ Task 05 decided the register, structural base, list-over-cards law, avatar excep
 
 **DECIDED — Theme architecture:** one full theme in the dedicated Community-owned repository `leo-even/CannLabs-Community-Theme` (not yet created), git-installed; the fork holds no theme code (`DEC-024`).
 
-**NEXT:** Discourse-native design handoff, then the first bounded theme v0.1 slice — shell + `/latest` + `/categories`, light and dark, desktop and mobile. Neither is authorized until the official PM issues it.
+**NEXT:** the first bounded theme v0.1 slice — shell + `/latest` + `/categories`, light and dark, desktop and mobile — implemented against the validated Task 08 handoff and its acceptance baseline (`02_PROJECT_STATE.md`). Not authorized until the official PM issues it.
 
 **OPEN / readiness requirement — font binary provenance:** authorized upstream source, exact version / commit, binary hash and retained OFL licence before any font enters the theme repository (`DEC-024`).
 
 **Logo:** the canonical Design System SVG, unchanged, through native `logo` / `mobile_logo`; any optimized derivative needs a separate task (`DEC-024`).
 
-**Implementation QA — `modernize_foundation_theme`:** cover logged-in and anonymous users, the effective current state, and modernize on / off where safely isolated (`02_PROJECT_STATE.md` → runtime notes).
+**Implementation QA — `modernize_foundation_theme`:** currently effectively ON for everyone, anonymous included; QA covers that state plus one isolated modernize-OFF run with exact restoration (`02_PROJECT_STATE.md` → runtime notes).
+
+**PENDING — Founder local login (Task 07B):** awaiting a new Founder-chosen password that meets native policy; not a blocker for theme work.
 
 **HYPOTHESIS — Petrona for topic-list titles**, pending the real font; Public Sans is the fallback (`DEC-022`).
 

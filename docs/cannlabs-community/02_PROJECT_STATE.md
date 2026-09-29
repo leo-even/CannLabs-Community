@@ -74,6 +74,21 @@ The visual direction is validated; no production theme exists, and fine polish i
 - Logo: the canonical Design System SVG, unchanged, through native `logo` / `mobile_logo` settings. Fonts: binary provenance is OPEN and required before bundling.
 - The review is kept as evidence outside the repository; it is not canon.
 
+### Discourse-native design handoff — VALIDATED (Task 08)
+
+The implementation contract for Community Theme v0.1 is ready. Nothing was implemented; the theme and its repository do not exist yet.
+
+- The permanent Design Director produced the handoff through `community-design-handoff` and signed it off; the official PM validated it.
+- **v0.1 scope:** header, desktop sidebar, mobile drawer, `/latest` and `/categories`, light and dark schemes, desktop and mobile. No JavaScript, plugins, theme components or core changes; no topic page (beyond inherited tokens), composer, profile, auth, verification, organization or payment work.
+- **Typography:** Petrona topic titles remain HYPOTHESIS behind a single title-family variable. Fonts do not block v0.1, which runs on defined fallback stacks; font binaries still need recorded provenance before bundling (`DEC-024`).
+- **Acceptance baseline for the first implementation:** the handoff's accessibility criteria A1–A11; native responsive geometry; 200% browser text; 320 CSS px reflow; 44px mobile targets; light and dark; anonymous and logged-in where they differ; the current modernize state plus one isolated modernize-OFF run with exact restoration; a rollback drill to Foundation. Fine visual polish stays LATER (`DEC-023`).
+- The handoff (`community-theme-v0.1-handoff.md`) and its contrast measurements are kept as evidence outside the repository; they are not canon.
+
+### Founder local login — PENDING (Task 07B)
+
+- The requested local admin test account was not created: native Discourse password policy rejected the requested password (minimum length; admin accounts need at least 15 characters). The policy was not weakened and no password was substituted or stored.
+- Pending a new Founder-chosen password. It does not block theme implementation.
+
 ### Source-of-truth reconciliation
 
 - **Current truth:** exactly one editable source copy exists, the WSL worktree. The development container bind-mounts it at `/src`. The Windows clone `C:\Users\Leo\source\repos\CannLabs-Community` is a bootstrap / reference clone only. The temporary Docker source volume used for the vanilla start (`cannlabs_community_src`) has been removed.
@@ -129,7 +144,7 @@ Nothing below is authorized. Presence in the backlog does not authorize work.
   ```
 
 - Git state before this baseline commit: `main` = `origin/main` = `upstream/main` at `d8d59f72`; clean working tree.
-- **`modernize_foundation_theme` (technical evidence, Task 07).** The setting is `beta` with default `false` in source, but upstream's upcoming-change promotion (`promote_upcoming_changes_on_status`, default `beta`) may enable it effectively for logged-in users, while anonymous visitors do not get its body class. The earlier Task 05 description "off by default" is stale / incomplete. Do not change either setting. Implementation QA must cover logged-in and anonymous users, the effective current state, and modernize on / off where safely isolated.
+- **`modernize_foundation_theme` (technical evidence, Tasks 07 / 07B / 08).** Source YAML default `false`, status `beta`; `promote_upcoming_changes_on_status` is `beta`; no database override for either. The current effective state is **ON for everyone**: the change is enabled site-wide and for logged-in users, and live anonymous pages also carry `body.uc-modernize-foundation-theme` (Task 08), which corrects the earlier note that anonymous visitors do not get the body class. The Task 05 description "off by default" is stale. Do not change either setting outside an authorized slice. Implementation QA covers the current state plus one isolated modernize-OFF run with exact restoration afterwards.
 
 ## KNOWN ENVIRONMENT FOLLOW-UPS
 
@@ -145,15 +160,12 @@ None of these is solved in this slice.
 
 ## NEXT
 
-1. Local Founder login and authenticated technical observation (including the effective `modernize_foundation_theme` state).
-2. Discourse-native design handoff.
-3. Official PM validation of the handoff and readiness.
-4. Coder native-WSL rebind / readiness.
-5. Create the dedicated Community theme repository (`DEC-024`).
-6. First bounded theme v0.1 implementation: shell + `/latest` + `/categories`.
-7. Real-app regression and visual QA.
+1. Coder native-WSL rebind and read-only readiness acceptance (Task 09).
+2. Create the dedicated Community theme repository and implement theme v0.1 against the Task 08 handoff, with local installation and QA (Task 10).
+3. Design Director real-app visual QA.
+4. Official PM validation of theme v0.1.
 
-Fine polish stays LATER (`DEC-023`).
+The Founder local login stays pending a new Founder-chosen password (Task 07B). Fine polish stays LATER (`DEC-023`).
 
 V1 capability and specification discovery remains pending (`03_BACKLOG_AND_OPEN_QUESTIONS.md`).
 
