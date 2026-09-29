@@ -13,8 +13,8 @@ The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.
 
 - durable product baseline (this directory) — VALIDATED (Tasks 03 / 03A);
 - operating model / agents / skills foundation — VALIDATED (Task 04);
-- Design System compatibility — design direction VALIDATED (Task 05); static visual prototype VALIDATED (Task 06); theme architecture DECIDED (Task 07 / `DEC-024`); Discourse-native design handoff VALIDATED (Task 08); theme v0.1 implementation is next (see Design below);
-- Discourse capability discovery;
+- Design System compatibility — design direction VALIDATED (Task 05); static visual prototype VALIDATED (Task 06); theme architecture DECIDED (Task 07 / `DEC-024`); Discourse-native design handoff VALIDATED (Task 08); Community Theme v0.1 VALIDATED (Tasks 10 / 10B);
+- **V1 product capability / upstream reuse discovery** (Task 11, read-only) — the current NOW item; it covers the candidates under "NEXT — V1 discovery" below;
 - V1 product specification and readiness.
 
 No product feature implementation.
@@ -131,9 +131,13 @@ Normal forum usage should first demonstrate the need.
 
 Task 05 decided the register, structural base, list-over-cards law, avatar exception and pt-BR direction (`DEC-018` to `DEC-020`). Task 06 validated the static prototype and the deep L-frame shell (`DEC-022`).
 
-**DECIDED — Theme architecture:** one full theme in the dedicated Community-owned repository `leo-even/CannLabs-Community-Theme` (not yet created), git-installed; the fork holds no theme code (`DEC-024`).
+**DECIDED — Theme architecture:** one full theme in the dedicated Community-owned repository `leo-even/CannLabs-Community-Theme`, git-installed; the fork holds no theme code (`DEC-024`).
 
-**NEXT:** the first bounded theme v0.1 slice — shell + `/latest` + `/categories`, light and dark, desktop and mobile — implemented against the validated Task 08 handoff and its acceptance baseline (`02_PROJECT_STATE.md`). Not authorized until the official PM issues it.
+**VALIDATED — Community Theme v0.1** (Tasks 10 / 10B): shell + `/latest` + `/categories`, light and dark, desktop and mobile (`02_PROJECT_STATE.md`). Further theme work needs a new authorized slice.
+
+**LATER — theme follow-ups from v0.1 QA:** M1 site-wide derived-colour / footer / focus pass; M2 category-square colours once categories are designed; L1 `/categories` "Recentes" title weight; L2 skip-link visual; L3 mixed-language site title.
+
+**LATER — theme release hardening:** theme LICENSE attribution / copyright hygiene; `minimum_discourse_version`; production deployment strategy.
 
 **OPEN / readiness requirement — font binary provenance:** authorized upstream source, exact version / commit, binary hash and retained OFL licence before any font enters the theme repository (`DEC-024`).
 
@@ -141,7 +145,7 @@ Task 05 decided the register, structural base, list-over-cards law, avatar excep
 
 **Implementation QA — `modernize_foundation_theme`:** currently effectively ON for everyone, anonymous included; QA covers that state plus one isolated modernize-OFF run with exact restoration (`02_PROJECT_STATE.md` → runtime notes).
 
-**PENDING — Founder local login (Task 07B):** awaiting a new Founder-chosen password that meets native policy; not a blocker for theme work.
+**PENDING — Founder local login (Task 07B):** awaiting a new Founder-chosen password that meets native policy; not a blocker for V1 discovery.
 
 **HYPOTHESIS — Petrona for topic-list titles**, pending the real font; Public Sans is the fallback (`DEC-022`).
 

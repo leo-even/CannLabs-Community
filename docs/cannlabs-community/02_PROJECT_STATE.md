@@ -76,7 +76,7 @@ The visual direction is validated; no production theme exists, and fine polish i
 
 ### Discourse-native design handoff — VALIDATED (Task 08)
 
-The implementation contract for Community Theme v0.1 is ready. Nothing was implemented; the theme and its repository do not exist yet.
+The implementation contract for Community Theme v0.1. Nothing was implemented in Task 08; the theme was built in Task 10 (below).
 
 - The permanent Design Director produced the handoff through `community-design-handoff` and signed it off; the official PM validated it.
 - **v0.1 scope:** header, desktop sidebar, mobile drawer, `/latest` and `/categories`, light and dark schemes, desktop and mobile. No JavaScript, plugins, theme components or core changes; no topic page (beyond inherited tokens), composer, profile, auth, verification, organization or payment work.
@@ -84,10 +84,24 @@ The implementation contract for Community Theme v0.1 is ready. Nothing was imple
 - **Acceptance baseline for the first implementation:** the handoff's accessibility criteria A1–A11; native responsive geometry; 200% browser text; 320 CSS px reflow; 44px mobile targets; light and dark; anonymous and logged-in where they differ; the current modernize state plus one isolated modernize-OFF run with exact restoration; a rollback drill to Foundation. Fine visual polish stays LATER (`DEC-023`).
 - The handoff (`community-theme-v0.1-handoff.md`) and its contrast measurements are kept as evidence outside the repository; they are not canon.
 
+### Coder native-WSL rebind — VALIDATED (Task 09)
+
+- The permanent Coder continuation is a native-WSL Claude Code session working from the authoritative worktree.
+- It discovered the Community and upstream `discourse-*` skills naturally, ran `community-repo-audit`, and passed read-only readiness acceptance before it became a writer.
+- The old Windows-hosted Coder context is historical / read-only.
+
+### Community Theme v0.1 — VALIDATED (Task 10 / 10B)
+
+- **Implementation:** the dedicated repository `leo-even/CannLabs-Community-Theme`, validated at commit `aeb3a9d9154f532064dcc24ac9e78cf587588d77`. A full Discourse theme installed through the standard git-theme mechanism, with two paired Community colour schemes; no custom JavaScript, plugin or core modification; fallback fonts only. The application fork contains no theme implementation code (`DEC-024`).
+- **Validated surfaces:** header, desktop sidebar, mobile drawer, `/latest` and `/categories`, in light and dark, on desktop and mobile.
+- **Evidence:** Design Director real-app QA PASS; 5 theme system specs with 0 failures; the restricted-category lock (B1-R) at 5.38:1 in light and 5.84:1 in dark; findings B1, H1 and H2 resolved; the Task 10 200% text / reflow evidence remains accepted; rollback to Foundation proven; the application repository stayed clean and isolated.
+- **Task 10A — PARTIAL / SUPERSEDED by Task 10B.** Accepted evidence: the Community dev workers were restarted onto the current application HEAD, so the stale app-version cache workaround is no longer needed; the minimum Chromium runtime libraries were installed inside the Community dev container, and the theme system specs became executable and passed. Its B1-R code correction targeted the wrong variable; Task 10B supplied the validated correction.
+- Kept LATER / OPEN (not solved by v0.1): the site-wide derived-colour / footer / focus pass (M1); category-square colours once categories are designed (M2); the `/categories` "Recentes" title weight (L1); the skip-link visual (L2); the mixed-language site title (L3); fine polish (`DEC-023`); real font binaries and their provenance, and the Petrona hypothesis (`DEC-022`, `DEC-024`); theme LICENSE attribution / copyright hygiene; `minimum_discourse_version`; the production deployment strategy. None blocks V1 product discovery.
+
 ### Founder local login — PENDING (Task 07B)
 
 - The requested local admin test account was not created: native Discourse password policy rejected the requested password (minimum length; admin accounts need at least 15 characters). The policy was not weakened and no password was substituted or stored.
-- Pending a new Founder-chosen password. It does not block theme implementation.
+- Pending a new Founder-chosen password. It does not block V1 product discovery.
 
 ### Source-of-truth reconciliation
 
@@ -105,7 +119,8 @@ The durable findings are summarized in `04_DISCOVERY_BASELINE.md`.
 
 ## ACTIVE
 
-- No production implementation slice is active.
+- No implementation slice is active.
+- Task 11 is READ-ONLY V1 capability / upstream reuse discovery; it has no writer.
 
 ## NOT AUTHORIZED
 
@@ -122,7 +137,7 @@ Nothing below is authorized. Presence in the backlog does not authorize work.
 - company workflow implementation;
 - private messaging changes;
 - Design System import or integration;
-- theme implementation;
+- theme implementation beyond the validated v0.1;
 - plugin implementation;
 - a strain database;
 - structured-post mechanics;
@@ -145,6 +160,8 @@ Nothing below is authorized. Presence in the backlog does not authorize work.
 
 - Git state before this baseline commit: `main` = `origin/main` = `upstream/main` at `d8d59f72`; clean working tree.
 - **`modernize_foundation_theme` (technical evidence, Tasks 07 / 07B / 08).** Source YAML default `false`, status `beta`; `promote_upcoming_changes_on_status` is `beta`; no database override for either. The current effective state is **ON for everyone**: the change is enabled site-wide and for logged-in users, and live anonymous pages also carry `body.uc-modernize-foundation-theme` (Task 08), which corrects the earlier note that anonymous visitors do not get the body class. The Task 05 description "off by default" is stale. Do not change either setting outside an authorized slice. Implementation QA covers the current state plus one isolated modernize-OFF run with exact restoration afterwards.
+- **Local Community configuration (development only).** Community Theme v0.1 is installed and the default theme, pinned to a reviewed commit with manual updates only (no automatic updates). Local development uses the pt-BR locale, and the canonical CannLabs wordmark is configured through the native `logo` / `mobile_logo` settings. No production deployment exists.
+- **Local test stack.** The Community dev container has the `discourse_test` database and the Playwright Chromium binary with its minimum runtime libraries, so theme system specs run inside the container.
 
 ## KNOWN ENVIRONMENT FOLLOW-UPS
 
@@ -157,16 +174,17 @@ None of these is solved in this slice.
 - **Cloudflare GitHub integration — OPEN (Infrastructure / Security / Deployment).** The GitHub app `cloudflare-workers-and-pages` has access to this repository. The baseline push produced a Cloudflare-associated check suite, which was still queued when inspected; no deployment was observed. Review the integration's repository access and intended deployment role before production deployment. Its presence does not establish an active Community deployment.
 - **Windows host clock — low priority.** SUPERSEDED: the earlier WSL clock-drift attribution was incorrect. A later comparison with GitHub server time showed the Windows host clock about 304 seconds (roughly five minutes) ahead, while WSL / container time was aligned within ordinary measurement latency. Windows time synchronization is a low-priority local-environment follow-up.
 - **Passkeys on port 3100.** Upstream hardcodes the development WebAuthn origin to `http://localhost:3000` (`lib/discourse_webauthn.rb`), so passkeys do not work on the Community development port. Do not patch core for this.
+- **Correction-loop rule — future operating-layer improvement.** Lesson from Tasks 10–10B: bound a correction loop by finding and scope, not by a fixed number of commits. For the same validated finding, with an evidenced root cause and a tightly bounded correction that expands no product or scope, the official PM may authorize further bounded correction until the acceptance criterion converges. This is not an unlimited fix loop: a materially new finding returns to normal readiness / scope arbitration. The operating skills are not changed yet.
 
 ## NEXT
 
-1. Coder native-WSL rebind and read-only readiness acceptance (Task 09).
-2. Create the dedicated Community theme repository and implement theme v0.1 against the Task 08 handoff, with local installation and QA (Task 10).
-3. Design Director real-app visual QA.
-4. Official PM validation of theme v0.1.
+1. V1 capability / upstream reuse discovery (Task 11, read-only).
+2. V1 product-domain specification.
+3. Founder / official PM decisions on unresolved V1 scope.
+4. Legal / Trust & Safety review where required.
+5. Bounded implementation briefs.
+6. Implementation one slice at a time.
 
-The Founder local login stays pending a new Founder-chosen password (Task 07B). Fine polish stays LATER (`DEC-023`).
-
-V1 capability and specification discovery remains pending (`03_BACKLOG_AND_OPEN_QUESTIONS.md`).
+Visual polish is no longer the critical path. The Founder local login stays pending a new Founder-chosen password (Task 07B).
 
 No implementation starts automatically; each step needs explicit official PM authorization.
