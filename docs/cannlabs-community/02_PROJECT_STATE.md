@@ -245,3 +245,17 @@ This is documentation ratification only. Task 21 is a synthetic local lifecycle 
 ## TASK 21 — SYNTHETIC LIFECYCLE (AUTHORIZED LOCAL VALIDATION)
 
 The bounded local test may temporarily enable native User Notes, create one clearly synthetic result-only note for `bemstorm`, set a synthetic public professional name, apply native presentation, add and remove one professional source group, verify derived access and native browser presentation, delete the note, and restore every captured state. User Notes remains enabled locally after acceptance as explicitly authorized; all other temporary mutations must be restored exactly.
+
+## TASK 21 — VALIDATED SYNTHETIC PROFESSIONAL LIFECYCLE
+
+Task 21 is validated locally using native Discourse primitives only. One clearly synthetic result-only User Note was created without CRM/CRF/CREA/OAB/CPF/RG identifiers, documents or evidence; normal users could not read it; native public `User.name` and professional title presentation were proven while the username remained unchanged; adding `medicos_verif` automatically derived `acesso_profissionais` and removing it revoked access; the note and all synthetic identity/presentation state were deleted/restored; `bemstorm` returned to ordinary active-member state. No real professional verification occurred.
+
+`user_notes_enabled=true` remains enabled for local development only. Production use remains gated.
+
+### Production operating dependency
+
+Native `User.name` remains user-editable. There is no automatic name-change → professional re-review → source-group revocation lifecycle. Before real verified professionals, define the name-change review procedure, operational owner and re-verification/revocation SOP. No automation is authorized.
+
+## NOW — TASK 22 SYNTHETIC ASSOCIATION IDENTITY / LEADERSHIP LIFECYCLE
+
+Task 22 is the next bounded synthetic native-group acceptance. Real professional verification, real credential intake, real association onboarding/evidence, production launch and payment remain unauthorized.

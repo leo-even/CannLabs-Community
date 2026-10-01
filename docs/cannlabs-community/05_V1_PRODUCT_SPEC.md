@@ -93,3 +93,13 @@ Native User Notes are broadly staff-readable, including moderators, and are oper
 ## Task 21 — synthetic local lifecycle
 
 Task 21 is limited to one clearly synthetic, reversible local acceptance of the result-only lifecycle and native presentation. It may enable User Notes locally, create and delete the synthetic note, add and remove a professional source group, verify derived access and browser presentation, and restore every other captured setting, name, membership and presentation field. No real credential, identifier, document, association onboarding, payment or production enablement is authorized.
+
+## Task 21 — VALIDATED SYNTHETIC PROFESSIONAL LIFECYCLE
+
+Task 21 validated one reversible local lifecycle using native User Notes, native `User.name`/title presentation, the `medicos_verif` source group and Qualified Access derivation. The synthetic result-only note contained no CRM/CRF/CREA/OAB/CPF/RG identifier, document or evidence; normal users could not read it; `acesso_profissionais` appeared and disappeared automatically with the source group; the note and all identity/presentation state were deleted/restored; `bemstorm` returned to its ordinary active-member baseline. No real professional verification occurred.
+
+`user_notes_enabled=true` remains enabled for local development only. Native `User.name` remains user-editable without automatic professional re-review or source-group revocation. A production name-change review procedure, owner and re-verification/revocation SOP are required; no automation is authorized.
+
+## Task 22 — NOW: synthetic association identity / leadership lifecycle
+
+Task 22 is limited to one synthetic native association group and the independent `liderancas_aprov` → `acesso_liderancas` proof. Association identity does not grant membership or leadership access. Real association onboarding/evidence, professional verification, production launch and payment remain unauthorized.

@@ -273,3 +273,13 @@ Task 20B is closed as durable readiness: public professional identity uses nativ
 ## NOW — TASK 21 SYNTHETIC LIFECYCLE
 
 Run one reversible local synthetic acceptance only: enable native User Notes, create/delete one clearly synthetic result-only note, temporarily set a synthetic public name and native role presentation, add/remove a professional source group, verify derived access and browser presentation, and restore all captured state. Production Legal / Privacy / Trust & Safety, real verification, intake, association onboarding, payment and deployment remain gated.
+
+## TASK 21 — VALIDATED SYNTHETIC PROFESSIONAL LIFECYCLE
+
+Task 21 is durably validated: the native result-only User Note contained no professional identifiers or evidence; normal users could not read it; native public name and title presentation worked without changing the username; `medicos_verif` automatically granted and later revoked `acesso_profissionais`; all synthetic note, name, title and membership state was cleaned up; `bemstorm` returned to its ordinary active-member baseline. No real professional verification occurred.
+
+`user_notes_enabled=true` remains enabled for local development only. Native `User.name` remains user-editable and has no automatic linkage to professional re-review or source-group revocation. A production name-change procedure, owner and re-verification/revocation SOP remain required; no automation is authorized.
+
+## NOW — TASK 22 SYNTHETIC ASSOCIATION IDENTITY / LEADERSHIP LIFECYCLE
+
+Validate one reversible native synthetic association identity group and the independent `liderancas_aprov` → `acesso_liderancas` lifecycle. Real association onboarding/evidence, professional verification, production launch and payment remain unauthorized.
