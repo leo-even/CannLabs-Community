@@ -253,3 +253,48 @@ Append-only record of ratified decisions. To change a decision, add a new entry 
   - Resolves the OPEN theme-packaging item of `DEC-021`.
   - Creating the theme repository, installing a theme, creating colour schemes in the database, setting the default theme and uploading logos each need explicit official PM authorization.
 - **Supersedes:** —
+
+## DEC-025 — V1 product model is ratified as one bounded native Community
+
+- **Date:** 2026-10-01
+- **Status:** DECIDED — ratified by the Founder / official PM (Task 12A)
+- **Decision:** V1 is a private, paid, forum-first Community using one canonical active-member access group, native Discourse permissions and bounded restricted spaces. Unpaid accounts remain outside member content and member-to-member communications.
+- **Rationale:** Preserve a clear membership boundary while using the mature Discourse primitives already present in the application.
+- **Consequences / open items:** The durable V1 contract is in `00_PRODUCT_CANON.md` §22 and `05_V1_PRODUCT_SPEC.md`. Implementation remains separately authorized; payment provider, legal/T&S review and exact group/category names remain open.
+- **Supersedes:** —
+
+## DEC-026 — Membership is the canonical access signal
+
+- **Date:** 2026-10-01
+- **Status:** DECIDED — Task 12A
+- **Decision:** An active-member native Discourse Group is the single canonical signal for member content access. Registration, payment state and staff verification may feed that signal, but no parallel custom ACL truth is created.
+- **Rationale:** A reversible, auditable native primitive is safer than duplicating authorization in custom code.
+- **Consequences / open items:** The exact technical group name and payment-to-group adapter remain implementation decisions. Unpaid accounts have only account/onboarding/support surfaces.
+- **Supersedes:** —
+
+## DEC-027 — V1 communication boundary
+
+- **Date:** 2026-10-01
+- **Status:** DECIDED — Task 12A
+- **Decision:** Member-to-member personal messages and native Chat are off for V1. Staff support and moderation communication remain available through reviewable native paths; no custom messaging system is authorized.
+- **Rationale:** Reduce moderation, privacy, medical/legal-boundary and prohibited-commerce risk while preserving support.
+- **Consequences / open items:** Exact native settings and the staff support path are implementation-readiness questions. Legal / Trust & Safety review remains required.
+- **Supersedes:** The PARKED communication question in `DEC-007` / Canon §15.
+
+## DEC-028 — Cumulative roles with bounded verification
+
+- **Date:** 2026-10-01
+- **Status:** DECIDED — Task 12A
+- **Decision:** Professional and institutional roles are cumulative, represented with native groups where possible, and verified manually with data minimization. One primary visible role/flair may be shown without deleting other verified roles.
+- **Rationale:** Participants legitimately hold multiple roles; a single exclusive user type would misrepresent them.
+- **Consequences / open items:** Exact evidence, expiry, reverification and group names remain OPEN. Ordinary membership does not require medical documentation.
+- **Supersedes:** Refines `DEC-008` and `DEC-012`.
+
+## DEC-029 — V1 restricted spaces and payment boundary
+
+- **Date:** 2026-10-01
+- **Status:** DECIDED — Task 12A
+- **Decision:** V1 uses only two bounded restricted spaces (Verified Professional Forum and Association Leadership Forum) and no profession-pair matrix. Payment provider selection remains OPEN; the only ratified lifecycle contract is payment state → active-member group.
+- **Rationale:** Keep information architecture useful and auditable while avoiding premature provider or workflow lock-in.
+- **Consequences / open items:** Exact category/group names, provider, pricing, institutional seats and Brazilian payment requirements require later authorized decisions.
+- **Supersedes:** —

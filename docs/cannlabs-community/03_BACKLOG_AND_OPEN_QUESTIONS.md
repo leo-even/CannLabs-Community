@@ -14,12 +14,15 @@ The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.
 - durable product baseline (this directory) — VALIDATED (Tasks 03 / 03A);
 - operating model / agents / skills foundation — VALIDATED (Task 04);
 - Design System compatibility — design direction VALIDATED (Task 05); static visual prototype VALIDATED (Task 06); theme architecture DECIDED (Task 07 / `DEC-024`); Discourse-native design handoff VALIDATED (Task 08); Community Theme v0.1 VALIDATED (Tasks 10 / 10B);
-- **V1 product capability / upstream reuse discovery** (Task 11, read-only) — the current NOW item; it covers the candidates under "NEXT — V1 discovery" below;
-- V1 product specification and readiness.
+- **V1 product capability / upstream reuse discovery** (Task 11, read-only) — completed as discovery evidence;
+- V1 product specification and readiness — VALIDATED / RATIFIED (Task 12A); implementation remains unauthorized.
+- Access Skeleton readiness inspection (Task 13, read-only).
 
 No product feature implementation.
 
 ## NEXT — V1 discovery
+
+Task 12A resolved the product model. The remaining discovery items below are implementation-readiness questions, not permission to change runtime state.
 
 Candidates that require an upstream/reuse review before any decision:
 
@@ -37,6 +40,13 @@ Candidates that require an upstream/reuse review before any decision:
 - authentication;
 - payment architecture;
 - plugin and default-setting audit.
+
+## V1 Access Skeleton — OPEN / READINESS
+
+- Inspect native login/registration, active-member group gating, restricted categories, personal-message and Chat settings, and a staff support path.
+- Choose the smallest durable member-only category proof; do not create categories or groups during readiness inspection.
+- Define a reversible unpaid → active member → unpaid test plan using the existing local test account only as a read-only observation.
+- Record exact native setting names and current values before any future authorized mutation.
 
 ## Verified professional roles — OPEN
 
@@ -82,6 +92,8 @@ Investigate:
 
 Do not implement billing yet.
 
+Task 12A ratifies only the lifecycle boundary: payment state must eventually drive the canonical active-member group. Provider, pricing, PIX/BRL handling and institutional seats remain OPEN.
+
 ## Direct messages / chat — PARKED (Legal + Trust & Safety review)
 
 - Should member-to-member personal messages be disabled in V1?
@@ -89,6 +101,8 @@ Do not implement billing yet.
 - What support / moderation contact remains?
 - What are the moderation and privacy expectations?
 - How do we reduce prohibited-transaction risk?
+
+Task 12A ratifies the V1 default: member-to-member personal messages and native Chat remain off. Reopen only through Legal / Trust & Safety review and a new explicit decision.
 
 ## Public content / CannLabs Web — LATER
 

@@ -120,7 +120,8 @@ The durable findings are summarized in `04_DISCOVERY_BASELINE.md`.
 ## ACTIVE
 
 - No implementation slice is active.
-- Task 11 is READ-ONLY V1 capability / upstream reuse discovery; it has no writer.
+- Task 12A V1 product decisions are ratified and recorded in `00_PRODUCT_CANON.md` §22, `01_DECISION_LOG.md` DEC-025–DEC-029 and `05_V1_PRODUCT_SPEC.md`.
+- Task 13 is READ-ONLY implementation-readiness inspection for the Access Skeleton; it has no writer.
 
 ## NOT AUTHORIZED
 
@@ -178,11 +179,11 @@ None of these is solved in this slice.
 
 ## NEXT
 
-1. V1 capability / upstream reuse discovery (Task 11, read-only).
-2. V1 product-domain specification.
-3. Founder / official PM decisions on unresolved V1 scope.
-4. Legal / Trust & Safety review where required.
-5. Bounded implementation briefs.
+1. Access Skeleton readiness review (Task 13, read-only).
+2. Legal / Trust & Safety and privacy review where required.
+3. Resolve exact native group/category/settings names and support path.
+4. Payment provider, pricing and institutional-seat decisions.
+5. Bounded implementation brief and explicit implementation authorization.
 6. Implementation one slice at a time.
 
 Visual polish is no longer the critical path. The Founder local login stays pending a new Founder-chosen password (Task 07B).

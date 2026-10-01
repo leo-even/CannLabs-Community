@@ -253,3 +253,32 @@ By default, CannLabs Community is not:
 - a cannabis e-commerce platform;
 - a generic legal platform;
 - a generic CRM.
+
+## 22. V1 product model — ratified Task 12A
+
+**DECIDED — V1 membership and access law**
+
+- Membership is represented by one canonical active-member Discourse Group. The technical group name remains an implementation choice; duplicate membership truth is not allowed.
+- A registered, unpaid account is an account/onboarding/support participant only. It cannot read or write member content, use member-to-member private messaging or use member Chat.
+- Staff support and moderation communication remain available through native, reviewable staff paths. This does not authorize member DMs or Chat.
+- Membership activation and removal must be reversible and must not require custom ACL infrastructure.
+
+**DECIDED — V1 identity, roles and verification**
+
+- Username / @handle is the primary public identity. No CPF, patient registry or custom civil-identity system is created for V1.
+- Professional and institutional roles are cumulative. Native groups are the preferred primitive; one primary visible role/flair may be selected without erasing other verified roles.
+- V1 verification is manual, staff-controlled and data-minimized. Documentation is not required by default; if evidence is needed, retain only the minimum necessary and prefer authoritative-source verification.
+
+**DECIDED — V1 institutional and restricted-space model**
+
+- Associations are a core V1 participant type. Association leadership access is controlled by a separate CannLabs-owned leadership group, not inferred from a public association identity.
+- Companies and other organizations remain optional participants, not a marketplace or transaction surface.
+- V1 has two bounded restricted spaces: a Verified Professional Forum and an Association Leadership Forum. Do not create a profession-by-profession or pairwise category matrix.
+
+**DECIDED — V1 communications, authentication and payment boundary**
+
+- Member-to-member personal messages and native Chat are off for V1. No custom messaging system is authorized. Support uses a staff-controlled native path.
+- V1 authentication includes local login plus Google and Apple where supported by current Discourse primitives. Facebook is parked. Staff accounts require native 2FA.
+- Payment provider selection remains OPEN. The lifecycle contract is payment state → canonical active-member group; no provider-specific integration or custom billing engine is ratified.
+
+**PARKED / OUT OF V1** — marketplace, commerce, custom roles or ACL engines, custom DM/Chat, patient or medical records, CPF identity, bespoke payment infrastructure, profession-pair spaces, and association/company workflow engines.
