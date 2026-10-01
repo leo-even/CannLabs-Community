@@ -283,3 +283,13 @@ Task 21 is durably validated: the native result-only User Note contained no prof
 ## NOW — TASK 22 SYNTHETIC ASSOCIATION IDENTITY / LEADERSHIP LIFECYCLE
 
 Validate one reversible native synthetic association identity group and the independent `liderancas_aprov` → `acesso_liderancas` lifecycle. Real association onboarding/evidence, professional verification, production launch and payment remain unauthorized.
+
+## TASK 22A — VALIDATED ASSOCIATION IDENTITY ARCHITECTURE
+
+Task 22 is closed as a durable local validation. Native Groups proved sufficient for association identity and the independent leadership lifecycle: association affiliation did not grant leadership; `liderancas_aprov` plus `membros_ativos` derived `acesso_liderancas`; removal of either source revoked only the derived access; and the synthetic group, membership and result-only note were cleaned up. No custom Organization model is needed for V1.
+
+Parked without implementation: association dashboards, seats, delegated owners, org-owned private forums, CRM, storefront, marketplace, company organization model and association billing. Existing Canon and `DEC-031` are sufficient; no additional product decision was added.
+
+## NOW — TASK 23 MODERATION / TRUST & SAFETY / OPERATIONS READINESS
+
+Perform a read-only native capability and operating-readiness review. No moderation settings, flags, trust levels, watched words, groups, categories, users, content, plugins, code or documentation changes are authorized in this review. Real onboarding, verification, evidence, payment and production remain gated.

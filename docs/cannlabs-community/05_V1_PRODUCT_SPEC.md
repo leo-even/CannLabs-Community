@@ -103,3 +103,11 @@ Task 21 validated one reversible local lifecycle using native User Notes, native
 ## Task 22 — NOW: synthetic association identity / leadership lifecycle
 
 Task 22 is limited to one synthetic native association group and the independent `liderancas_aprov` → `acesso_liderancas` proof. Association identity does not grant membership or leadership access. Real association onboarding/evidence, professional verification, production launch and payment remain unauthorized.
+
+## Task 22A — VALIDATED synthetic association identity / leadership architecture
+
+Task 22 is validated locally with native Discourse Groups. Association membership alone did not authorize leadership; `liderancas_aprov` independently derived `acesso_liderancas` only for an active `membros_ativos` member; removing either source revoked only the derived access, and restoring the source state restored the derivation. The synthetic group and all synthetic state were removed after acceptance.
+
+Native Groups are the V1 association identity primitive. A custom Organization model is not required. Dashboards, seats, delegated owners, org-owned private forums, CRM, storefront, marketplace, company organization modeling and association billing are explicitly deferred. Existing Canon and `DEC-031` remain the decision authority.
+
+## Task 23 — moderation / trust & safety / operations readiness

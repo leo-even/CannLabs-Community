@@ -259,3 +259,11 @@ Native `User.name` remains user-editable. There is no automatic name-change → 
 ## NOW — TASK 22 SYNTHETIC ASSOCIATION IDENTITY / LEADERSHIP LIFECYCLE
 
 Task 22 is the next bounded synthetic native-group acceptance. Real professional verification, real credential intake, real association onboarding/evidence, production launch and payment remain unauthorized.
+
+## TASK 22A — VALIDATED SYNTHETIC ASSOCIATION IDENTITY / LEADERSHIP ARCHITECTURE
+
+Task 22 is durably validated against the authoritative WSL Community worktree. A synthetic native association group was created with logged-on-user visibility and no public admission or exit. Association membership alone did not grant leadership; `liderancas_aprov` derived `acesso_liderancas` only while `membros_ativos` was present. The synthetic group, membership and note were removed and the local baseline restored.
+
+Native Groups are sufficient for V1 association identity and leadership authorization. No custom Organization model, dashboard, seat management, delegated owners, org-owned private forum, CRM, storefront, marketplace, company organization model or association billing is authorized. Existing Canon and `DEC-031` remain authoritative.
+
+## NOW — TASK 23 MODERATION / TRUST & SAFETY / OPERATIONS READINESS
