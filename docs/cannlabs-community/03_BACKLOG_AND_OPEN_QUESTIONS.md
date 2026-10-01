@@ -160,7 +160,7 @@ Task 05 decided the register, structural base, list-over-cards law, avatar excep
 
 **Implementation QA — `modernize_foundation_theme`:** currently effectively ON for everyone, anonymous included; QA covers that state plus one isolated modernize-OFF run with exact restoration (`02_PROJECT_STATE.md` → runtime notes).
 
-**PENDING — Founder local login (Task 07B):** awaiting a new Founder-chosen password that meets native policy; not a blocker for V1 discovery.
+**VALIDATED — Founder local test login (Task 15A):** native local password repair and real-browser login/logout/reload acceptance passed for the normal synthetic `bemstorm` account. No credential is recorded here.
 
 **HYPOTHESIS — Petrona for topic-list titles**, pending the real font; Public Sans is the fallback (`DEC-022`).
 

@@ -98,10 +98,12 @@ The implementation contract for Community Theme v0.1. Nothing was implemented in
 - **Task 10A — PARTIAL / SUPERSEDED by Task 10B.** Accepted evidence: the Community dev workers were restarted onto the current application HEAD, so the stale app-version cache workaround is no longer needed; the minimum Chromium runtime libraries were installed inside the Community dev container, and the theme system specs became executable and passed. Its B1-R code correction targeted the wrong variable; Task 10B supplied the validated correction.
 - Kept LATER / OPEN (not solved by v0.1): the site-wide derived-colour / footer / focus pass (M1); category-square colours once categories are designed (M2); the `/categories` "Recentes" title weight (L1); the skip-link visual (L2); the mixed-language site title (L3); fine polish (`DEC-023`); real font binaries and their provenance, and the Petrona hypothesis (`DEC-022`, `DEC-024`); theme LICENSE attribution / copyright hygiene; `minimum_discourse_version`; the production deployment strategy. None blocks V1 product discovery.
 
-### Founder local login — PENDING (Task 07B)
+### Founder local test login — VALIDATED (Task 15A)
 
-- The requested local admin test account was not created: native Discourse password policy rejected the requested password (minimum length; admin accounts need at least 15 characters). The policy was not weakened and no password was substituted or stored.
-- Pending a new Founder-chosen password. It does not block V1 product discovery.
+- The local `bemstorm` test account exists as a normal active, non-admin, non-moderator user and remains in `membros_ativos`.
+- Its local password was repaired through the native Discourse `UserPassword` mechanism; the password is intentionally not recorded here.
+- Real-browser acceptance passed: login, authenticated transition, reload persistence, normal logout, anonymous gate restoration and a second successful login. `Comunidade` was visible with expected member permissions.
+- No source, theme, authentication architecture or runtime architecture change was required.
 
 ### Source-of-truth reconciliation
 
@@ -127,7 +129,7 @@ The durable findings are summarized in `04_DISCOVERY_BASELINE.md`.
 
 ## ACTIVE
 
-- No product implementation slice is active.
+- Task 16 is the active local-development implementation slice for native verified-professional identity, qualified access and restricted-space skeletons.
 - Task 12A V1 product decisions are ratified and recorded in `00_PRODUCT_CANON.md` §22, `01_DECISION_LOG.md` DEC-025–DEC-029 and `05_V1_PRODUCT_SPEC.md`.
 - Task 14 Access Skeleton is validated and closed in documentation.
 - Task 15 is a READ-ONLY readiness and product-risk review for verified roles, associations and the two restricted spaces; it has no writer.
@@ -195,6 +197,6 @@ None of these is solved in this slice.
 5. Authentication providers and payment readiness as separate slices.
 6. Implementation one slice at a time.
 
-Visual polish is no longer the critical path. The Founder local login stays pending a new Founder-chosen password (Task 07B).
+Visual polish is no longer the critical path. The Founder local test login is validated by Task 15A; no credential is stored in the repository.
 
 No implementation starts automatically; each step needs explicit official PM authorization.
