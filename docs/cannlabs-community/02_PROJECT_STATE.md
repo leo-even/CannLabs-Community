@@ -147,10 +147,12 @@ The durable findings are summarized in `04_DISCOVERY_BASELINE.md`.
 ## ACTIVE
 
 - Task 16A is closed as the durable documentation closure for the validated local verified-professional identity, qualified access and restricted-space skeleton.
-- Task 17 is the active read-only qualified-access lifecycle / upstream automation readiness investigation.
+- Task 17 is validated: the upstream/native gap was proven.
+- Task 18A is validated/decided: qualified-access synchronization architecture is ratified.
+- Task 19 is the active bounded Community plugin v0.1 implementation and local-validation slice.
 - Task 12A V1 product decisions are ratified and recorded in `00_PRODUCT_CANON.md` §22, `01_DECISION_LOG.md` DEC-025–DEC-029 and `05_V1_PRODUCT_SPEC.md`.
 - Task 14 Access Skeleton is validated and closed in documentation.
-- Task 15 is closed as the preceding readiness review; Task 17 supersedes its lifecycle question without authorizing production workflows.
+- Task 15 is closed as the preceding readiness review; Task 17 and Task 18A supersede its lifecycle question.
 
 ## NOT AUTHORIZED
 
@@ -208,7 +210,7 @@ None of these is solved in this slice.
 
 ## NEXT
 
-1. Official PM review of Task 17 lifecycle-readiness evidence and the bounded synchronization architecture decision.
+1. Task 19 bounded plugin v0.1 local validation and official PM / Founder review.
 2. Legal / Privacy / Trust & Safety review for verification and association workflows.
 3. Moderation baseline and policy work.
 4. Authentication providers and payment readiness as separate slices.

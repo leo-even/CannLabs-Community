@@ -282,3 +282,16 @@ By default, CannLabs Community is not:
 - Payment provider selection remains OPEN. The lifecycle contract is payment state → canonical active-member group; no provider-specific integration or custom billing engine is ratified.
 
 **PARKED / OUT OF V1** — marketplace, commerce, custom roles or ACL engines, custom DM/Chat, patient or medical records, CPF identity, bespoke payment infrastructure, profession-pair spaces, and association/company workflow engines.
+
+## 23. Qualified authorization lifecycle — ratified Task 18A
+
+**DECIDED — source state is distinct from derived access.**
+
+- Professional identity groups and `membros_ativos` are authoritative native source state.
+- `acesso_profissionais` is derived only from `membros_ativos` **AND** at least one of `medicos_verif`, `farmaceuticos_verif`, `agronomos_verif` or `advogados_verif`.
+- `liderancas_aprov` is the persistent, staff-controlled source of current CannLabs-approved association leadership status. It is independent of membership and has no category ACL.
+- `acesso_liderancas` is derived only from `membros_ativos` **AND** `liderancas_aprov`.
+- Direct edits to derived groups are drift, not product truth, and must be reconciled back to source-derived state.
+- A bounded Community-specific plugin is authorized solely to reconcile native source groups to native derived groups. It is not a custom ACL, billing, verification, identity, organization or messaging system.
+- Missing source groups fail closed for the affected predicate; missing derived groups never cause automatic creation or substitution.
+- The plugin remains stateless: no custom tables, migrations or authorization store. Native groups, category ACLs and native group history remain authoritative.

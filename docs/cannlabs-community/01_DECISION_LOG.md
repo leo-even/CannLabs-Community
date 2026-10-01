@@ -298,3 +298,12 @@ Append-only record of ratified decisions. To change a decision, add a new entry 
 - **Rationale:** Keep information architecture useful and auditable while avoiding premature provider or workflow lock-in.
 - **Consequences / open items:** Exact category/group names, provider, pricing, institutional seats and Brazilian payment requirements require later authorized decisions.
 - **Supersedes:** —
+
+## DEC-030 — Qualified access is derived and reconciled by a bounded Community plugin
+
+- **Date:** 2026-10-01
+- **Status:** DECIDED — Task 18A, ratified by the official PM
+- **Decision:** `acesso_profissionais` and `acesso_liderancas` are derived, system-managed native groups. Professional access requires `membros_ativos` plus at least one verified-profession identity. Leadership access requires `membros_ativos` plus the persistent staff-controlled source group `liderancas_aprov`.
+- **Rationale:** Native CategoryGroup ACLs are OR-based, and current Discourse core plus bundled automation cannot safely express or reconcile the required intersection. A bounded Community-specific plugin is therefore authorized as the smallest provider-independent extension.
+- **Consequences / open items:** The plugin owns only source-native-group to derived-native-group reconciliation, with fail-closed missing-source behavior, native group history, no custom tables/migrations/ACLs, source-event reconciliation and a 15-minute drift safety sweep. The plugin is packaged in the separate public repository `leo-even/CannLabs-Community-Qualified-Access`. Real verification, association onboarding, payment and production enablement remain separately unauthorized.
+- **Supersedes:** Extends `DEC-026`, `DEC-028` and `DEC-029` with the qualified-access lifecycle boundary.

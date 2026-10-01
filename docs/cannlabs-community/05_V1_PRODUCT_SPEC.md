@@ -67,3 +67,11 @@ This is a local architecture validation only. No real verification data, associa
 Professional access requires `membros_ativos` **AND** at least one verified-profession identity. Leadership access requires `membros_ativos` **AND** active CannLabs leadership authorization. Native CategoryGroup ACLs are OR-based, so these conditions cannot be represented safely by category ACLs alone.
 
 The current fork includes the bundled `automation` plugin, but it is disabled locally and has no configured automations. Its group-added/group-removed triggers and recurring scripts do not provide a native multi-group intersection or qualified-access reconciliation primitive. Core group lifecycle events and group history are available, but no synchronization was implemented. Production readiness therefore remains blocked pending an explicit PM architecture decision after upstream/native review.
+
+## Qualified-access synchronization — RATIFIED (Task 18A)
+
+`acesso_profissionais` and `acesso_liderancas` are derived system-managed groups, not authoritative identity, payment or verification state. Professional access requires `membros_ativos` plus at least one verified-profession identity. Leadership access requires `membros_ativos` plus the persistent staff-controlled source group `liderancas_aprov`.
+
+The official PM authorized one bounded Community-specific plugin because upstream/native configuration cannot safely express this intersection. The plugin reconciles only native source groups to native derived groups, uses native membership APIs and native history, fails closed when source state is missing, has no custom schema or ACL system, and runs a 15-minute drift safety sweep. The separate public repository is `leo-even/CannLabs-Community-Qualified-Access`.
+
+This does not authorize production launch, real verification, association onboarding, payment or deployment.

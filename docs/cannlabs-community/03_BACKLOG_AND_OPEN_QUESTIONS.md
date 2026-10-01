@@ -18,7 +18,9 @@ The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.
 - V1 product specification and readiness — VALIDATED / RATIFIED (Task 12A); implementation remains unauthorized.
 - Access Skeleton (Task 14) — VALIDATED and closed; no further runtime mutation is implied.
 - Task 16A — VALIDATED local architecture and closed in documentation.
-- Task 17 — NOW: read-only qualified-access lifecycle / upstream automation readiness.
+- Task 17 — VALIDATED: upstream gap proven.
+- Task 18A — VALIDATED / DECIDED: qualified-access synchronization architecture ratified.
+- Task 19 — NOW: bounded plugin v0.1 implementation and local validation.
 
 No product feature implementation.
 
@@ -26,9 +28,11 @@ No product feature implementation.
 
 Task 16A recorded the validated local architecture: cumulative native identity groups are separate from `acesso_profissionais` / `acesso_liderancas`, and each restricted native category trusts only its corresponding authorization group. Identity alone does not grant access. No production verification, association onboarding or lifecycle synchronization is authorized.
 
-## NOW — TASK 17 QUALIFIED-ACCESS LIFECYCLE / AUTOMATION READINESS
+## COMPLETED — TASK 17 / TASK 18A QUALIFIED-ACCESS ARCHITECTURE
 
-Native CategoryGroup ACLs are OR-based, so qualified authorization must be removed when active membership, identity qualification or leadership authorization ends. The bundled automation plugin and core lifecycle hooks are under read-only review. The current evidence must determine whether a safe upstream/native mechanism exists before any custom synchronization or real verification workflow is considered.
+Native CategoryGroup ACLs are OR-based, so qualified authorization must be removed when active membership, identity qualification or leadership authorization ends. Task 17 reviewed the bundled automation plugin and core lifecycle hooks and proved that no safe upstream/native configuration mechanism exists for this intersection.
+
+Task 17 proved the upstream gap. Task 18A ratified a bounded, stateless Community plugin as the only authorized custom exception. `acesso_profissionais` and `acesso_liderancas` are derived state; `liderancas_aprov` is the persistent leadership source. Task 19 is the implementation slice.
 
 ## NEXT — V1 discovery
 
