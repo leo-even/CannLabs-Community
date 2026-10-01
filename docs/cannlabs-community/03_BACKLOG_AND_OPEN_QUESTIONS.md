@@ -17,12 +17,18 @@ The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.
 - **V1 product capability / upstream reuse discovery** (Task 11, read-only) — completed as discovery evidence;
 - V1 product specification and readiness — VALIDATED / RATIFIED (Task 12A); implementation remains unauthorized.
 - Access Skeleton (Task 14) — VALIDATED and closed; no further runtime mutation is implied.
+- Task 16A — VALIDATED local architecture and closed in documentation.
+- Task 17 — NOW: read-only qualified-access lifecycle / upstream automation readiness.
 
 No product feature implementation.
 
-## NOW — VERIFIED ROLES / ASSOCIATIONS / RESTRICTED SPACES READINESS
+## COMPLETED — VERIFIED ROLES / RESTRICTED SPACES LOCAL ARCHITECTURE
 
-Task 15 is a read-only review of native group/category semantics, cumulative identities, verification privacy, association representation, restricted-space access and the Privacy / Trust & Safety gate. It does not authorize groups, categories, users, settings or workflows.
+Task 16A recorded the validated local architecture: cumulative native identity groups are separate from `acesso_profissionais` / `acesso_liderancas`, and each restricted native category trusts only its corresponding authorization group. Identity alone does not grant access. No production verification, association onboarding or lifecycle synchronization is authorized.
+
+## NOW — TASK 17 QUALIFIED-ACCESS LIFECYCLE / AUTOMATION READINESS
+
+Native CategoryGroup ACLs are OR-based, so qualified authorization must be removed when active membership, identity qualification or leadership authorization ends. The bundled automation plugin and core lifecycle hooks are under read-only review. The current evidence must determine whether a safe upstream/native mechanism exists before any custom synchronization or real verification workflow is considered.
 
 ## NEXT — V1 discovery
 
@@ -161,6 +167,10 @@ Task 05 decided the register, structural base, list-over-cards law, avatar excep
 **Implementation QA — `modernize_foundation_theme`:** currently effectively ON for everyone, anonymous included; QA covers that state plus one isolated modernize-OFF run with exact restoration (`02_PROJECT_STATE.md` → runtime notes).
 
 **VALIDATED — Founder local test login (Task 15A):** native local password repair and real-browser login/logout/reload acceptance passed for the normal synthetic `bemstorm` account. No credential is recorded here.
+
+**VALIDATED — Task 16A local architecture:** six native groups and two restricted native categories were accepted locally; `bemstorm` was restored to ordinary active-member state and no synthetic membership remains. The qualified-access lifecycle remains an explicit production dependency.
+
+**TASK 17 READ-ONLY FINDING:** the bundled `automation` plugin is present but disabled with zero configured automations. It has single-group add/remove triggers and recurring/custom-field or badge-based group scripts, but no native AND/intersection predicate or safe qualified-access reconciliation primitive. Core emits group membership events and records group history. Current outcome: `NOT READY — upstream gap proven; bounded custom synchronization requires architecture review`.
 
 **HYPOTHESIS — Petrona for topic-list titles**, pending the real font; Public Sans is the fallback (`DEC-022`).
 

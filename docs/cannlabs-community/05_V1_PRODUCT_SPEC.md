@@ -55,3 +55,15 @@ Marketplace or cannabis commerce; patient or medical records; CPF identity; prof
 Task 14 validated the smallest native member-access proof in local development. The canonical `membros_ativos` / “Membros da Community” group is authorization only: it does not represent payment, professional verification, association leadership, company participation or staff authority. The `Comunidade` category grants full category permission only to that group, so registered users outside it cannot read, create or reply. Login is required for the local Community (`login_required=true`); public discovery remains on CannLabs Web.
 
 Native member-to-member personal messages and Chat remain off. The native `equipe` staff path remains the support boundary. The unpaid → active → expired acceptance sequence passed with the synthetic local `bemstorm` account, including revocation of member-category access and preservation of account/support access. No custom code, plugin, theme or core change was required. This is a local validation closure, not production readiness or authorization for verified-role implementation.
+
+## Verified roles / restricted spaces — VALIDATED LOCAL ARCHITECTURE (Task 16A)
+
+The local architecture uses cumulative native identity groups for physicians, pharmacists, agronomists and lawyers, separate native authorization groups (`acesso_profissionais` and `acesso_liderancas`), and two native restricted categories. Identity alone never grants restricted access; multiple identities may coexist; each category trusts only its corresponding authorization group. The exact technical names are constrained by Discourse's 20-character native group-name limit.
+
+This is a local architecture validation only. No real verification data, association onboarding, billing, credential storage or production workflow was implemented.
+
+## Qualified-access lifecycle boundary — TASK 17
+
+Professional access requires `membros_ativos` **AND** at least one verified-profession identity. Leadership access requires `membros_ativos` **AND** active CannLabs leadership authorization. Native CategoryGroup ACLs are OR-based, so these conditions cannot be represented safely by category ACLs alone.
+
+The current fork includes the bundled `automation` plugin, but it is disabled locally and has no configured automations. Its group-added/group-removed triggers and recurring scripts do not provide a native multi-group intersection or qualified-access reconciliation primitive. Core group lifecycle events and group history are available, but no synchronization was implemented. Production readiness therefore remains blocked pending an explicit PM architecture decision after upstream/native review.

@@ -118,6 +118,23 @@ The implementation contract for Community Theme v0.1. Nothing was implemented in
 - The validated unpaid → active → expired acceptance sequence passed with the synthetic local `bemstorm` account; account and staff-support persistence were preserved. No custom code, plugin, theme or core change was needed.
 - The WSL application and theme repositories are clean and synchronized at the validated commits recorded above. No production deployment is implied.
 
+### Task 16 — VALIDATED LOCAL ARCHITECTURE
+
+- Native profession-specific identity groups exist for physicians, pharmacists, agronomists and lawyers. Their technical names are implementation details constrained by Discourse's native 20-character `Group.name` limit.
+- Qualified authorization is separate from identity through `acesso_profissionais` and `acesso_liderancas`.
+- Native restricted categories exist for `Profissionais Verificados` and `Lideranças de Associações`, each trusting only its corresponding authorization group.
+- Identity membership does not itself grant restricted access. Multiple professional identities coexist cumulatively.
+- Local acceptance proved ordinary active members could not see restricted spaces, identity alone did not grant access, qualified authorization did grant access, revoking authorization removed access while retaining identity, leadership authorization was independent, and the synthetic memberships were removed after QA.
+- Founder account `bemstorm` returned to the ordinary active-member state. No real verification data was processed, and no custom code, plugin, core or theme change was required.
+
+### Task 17 — QUALIFIED-ACCESS LIFECYCLE / AUTOMATION READINESS
+
+- The production invariant is `membros_ativos` **AND** at least one verified-profession identity for `acesso_profissionais`; leadership access additionally requires active CannLabs leadership authorization.
+- Native category group ACLs are OR-based. Removing `membros_ativos` alone is therefore insufficient if a qualified authorization group remains.
+- The bundled `automation` plugin is present in the current fork but `discourse_automation_enabled=false` and there are no configured automations. It exposes user-added/removed-from-group triggers and recurring triggers, plus scripts that can add groups through a custom field or synchronize a group through a badge; it does not provide a native multi-group intersection predicate or a qualified-access reconciliation action.
+- Core emits supported `user_added_to_group` and `user_removed_from_group` events and records group membership history, but no native configuration in this checkout safely enforces the required AND invariant. No listener, automation, plugin, source or runtime mutation was made.
+- **Recommendation:** `NOT READY — upstream gap proven; bounded custom synchronization requires architecture review`. Do not implement verification, billing, onboarding or synchronization until PM review.
+
 ## COMPLETED READ-ONLY DISCOVERY
 
 This is research and discovery evidence, not product implementation.
@@ -129,10 +146,11 @@ The durable findings are summarized in `04_DISCOVERY_BASELINE.md`.
 
 ## ACTIVE
 
-- Task 16 is the active local-development implementation slice for native verified-professional identity, qualified access and restricted-space skeletons.
+- Task 16A is closed as the durable documentation closure for the validated local verified-professional identity, qualified access and restricted-space skeleton.
+- Task 17 is the active read-only qualified-access lifecycle / upstream automation readiness investigation.
 - Task 12A V1 product decisions are ratified and recorded in `00_PRODUCT_CANON.md` §22, `01_DECISION_LOG.md` DEC-025–DEC-029 and `05_V1_PRODUCT_SPEC.md`.
 - Task 14 Access Skeleton is validated and closed in documentation.
-- Task 15 is a READ-ONLY readiness and product-risk review for verified roles, associations and the two restricted spaces; it has no writer.
+- Task 15 is closed as the preceding readiness review; Task 17 supersedes its lifecycle question without authorizing production workflows.
 
 ## NOT AUTHORIZED
 
@@ -190,12 +208,11 @@ None of these is solved in this slice.
 
 ## NEXT
 
-1. Task 15 verified-roles / associations / restricted-spaces readiness and the Privacy / Trust & Safety gate.
-2. Official PM review of the readiness output.
-3. A bounded native roles/association/restricted-spaces implementation slice, if authorized.
-4. Moderation baseline and policy work.
-5. Authentication providers and payment readiness as separate slices.
-6. Implementation one slice at a time.
+1. Official PM review of Task 17 lifecycle-readiness evidence and the bounded synchronization architecture decision.
+2. Legal / Privacy / Trust & Safety review for verification and association workflows.
+3. Moderation baseline and policy work.
+4. Authentication providers and payment readiness as separate slices.
+5. Implementation one slice at a time.
 
 Visual polish is no longer the critical path. The Founder local test login is validated by Task 15A; no credential is stored in the repository.
 
