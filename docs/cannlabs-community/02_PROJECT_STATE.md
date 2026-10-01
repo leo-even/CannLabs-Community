@@ -108,6 +108,14 @@ The implementation contract for Community Theme v0.1. Nothing was implemented in
 - **Current truth:** exactly one editable source copy exists, the WSL worktree. The development container bind-mounts it at `/src`. The Windows clone `C:\Users\Leo\source\repos\CannLabs-Community` is a bootstrap / reference clone only. The temporary Docker source volume used for the vanilla start (`cannlabs_community_src`) has been removed.
 - **SUPERSEDED:** the pre-Task-02 observation of three source copies (Windows clone, Docker source volume and a planned WSL worktree). Task 02 resolved it.
 
+### Access Skeleton — VALIDATED (Task 14)
+
+- The native `membros_ativos` / “Membros da Community” group is the single active-member authorization signal. It is not a payment, professional-verification, association, company or staff-role system.
+- The native `Comunidade` category is restricted by the active-member group only. Registered users outside that group cannot read, create or reply there; public discovery remains on CannLabs Web.
+- Local development is login-gated (`login_required=true`); registration remains enabled. Member-to-member personal messages and native Chat remain off, while the native `equipe` staff support path remains available.
+- The validated unpaid → active → expired acceptance sequence passed with the synthetic local `bemstorm` account; account and staff-support persistence were preserved. No custom code, plugin, theme or core change was needed.
+- The WSL application and theme repositories are clean and synchronized at the validated commits recorded above. No production deployment is implied.
+
 ## COMPLETED READ-ONLY DISCOVERY
 
 This is research and discovery evidence, not product implementation.
@@ -119,9 +127,10 @@ The durable findings are summarized in `04_DISCOVERY_BASELINE.md`.
 
 ## ACTIVE
 
-- No implementation slice is active.
+- No product implementation slice is active.
 - Task 12A V1 product decisions are ratified and recorded in `00_PRODUCT_CANON.md` §22, `01_DECISION_LOG.md` DEC-025–DEC-029 and `05_V1_PRODUCT_SPEC.md`.
-- Task 13 is READ-ONLY implementation-readiness inspection for the Access Skeleton; it has no writer.
+- Task 14 Access Skeleton is validated and closed in documentation.
+- Task 15 is a READ-ONLY readiness and product-risk review for verified roles, associations and the two restricted spaces; it has no writer.
 
 ## NOT AUTHORIZED
 
@@ -179,11 +188,11 @@ None of these is solved in this slice.
 
 ## NEXT
 
-1. Access Skeleton readiness review (Task 13, read-only).
-2. Legal / Trust & Safety and privacy review where required.
-3. Resolve exact native group/category/settings names and support path.
-4. Payment provider, pricing and institutional-seat decisions.
-5. Bounded implementation brief and explicit implementation authorization.
+1. Task 15 verified-roles / associations / restricted-spaces readiness and the Privacy / Trust & Safety gate.
+2. Official PM review of the readiness output.
+3. A bounded native roles/association/restricted-spaces implementation slice, if authorized.
+4. Moderation baseline and policy work.
+5. Authentication providers and payment readiness as separate slices.
 6. Implementation one slice at a time.
 
 Visual polish is no longer the critical path. The Founder local login stays pending a new Founder-chosen password (Task 07B).

@@ -49,3 +49,9 @@ Marketplace or cannabis commerce; patient or medical records; CPF identity; prof
 - Read-only upstream/native inspection of exact groups, permissions, categories and communication settings.
 - A bounded implementation brief with exact reversible mutations, evidence, tests and rollback.
 - Explicit official PM authorization for the Access Skeleton slice.
+
+## Access Skeleton — VALIDATED (Task 14)
+
+Task 14 validated the smallest native member-access proof in local development. The canonical `membros_ativos` / “Membros da Community” group is authorization only: it does not represent payment, professional verification, association leadership, company participation or staff authority. The `Comunidade` category grants full category permission only to that group, so registered users outside it cannot read, create or reply. Login is required for the local Community (`login_required=true`); public discovery remains on CannLabs Web.
+
+Native member-to-member personal messages and Chat remain off. The native `equipe` staff path remains the support boundary. The unpaid → active → expired acceptance sequence passed with the synthetic local `bemstorm` account, including revocation of member-category access and preservation of account/support access. No custom code, plugin, theme or core change was required. This is a local validation closure, not production readiness or authorization for verified-role implementation.

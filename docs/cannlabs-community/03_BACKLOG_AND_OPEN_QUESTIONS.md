@@ -16,9 +16,13 @@ The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.
 - Design System compatibility — design direction VALIDATED (Task 05); static visual prototype VALIDATED (Task 06); theme architecture DECIDED (Task 07 / `DEC-024`); Discourse-native design handoff VALIDATED (Task 08); Community Theme v0.1 VALIDATED (Tasks 10 / 10B);
 - **V1 product capability / upstream reuse discovery** (Task 11, read-only) — completed as discovery evidence;
 - V1 product specification and readiness — VALIDATED / RATIFIED (Task 12A); implementation remains unauthorized.
-- Access Skeleton readiness inspection (Task 13, read-only).
+- Access Skeleton (Task 14) — VALIDATED and closed; no further runtime mutation is implied.
 
 No product feature implementation.
+
+## NOW — VERIFIED ROLES / ASSOCIATIONS / RESTRICTED SPACES READINESS
+
+Task 15 is a read-only review of native group/category semantics, cumulative identities, verification privacy, association representation, restricted-space access and the Privacy / Trust & Safety gate. It does not authorize groups, categories, users, settings or workflows.
 
 ## NEXT — V1 discovery
 
@@ -41,14 +45,11 @@ Candidates that require an upstream/reuse review before any decision:
 - payment architecture;
 - plugin and default-setting audit.
 
-## V1 Access Skeleton — OPEN / READINESS
+## V1 Access Skeleton — VALIDATED (Task 14)
 
-- Inspect native login/registration, active-member group gating, restricted categories, personal-message and Chat settings, and a staff support path.
-- Choose the smallest durable member-only category proof; do not create categories or groups during readiness inspection.
-- Define a reversible unpaid → active member → unpaid test plan using the existing local test account only as a read-only observation.
-- Record exact native setting names and current values before any future authorized mutation.
+The native active-member group, member-only category ACL, login gate, communication defaults and staff support path were validated locally through a reversible synthetic unpaid → active → expired sequence. The exact evidence and rollback boundary are recorded in `02_PROJECT_STATE.md`. This closure does not authorize expansion into verified roles or associations.
 
-## Verified professional roles — OPEN
+## Verified professional roles — OPEN / TASK 15 READINESS
 
 Current product thesis: physician, pharmacist, agronomist, lawyer (`DEC-009`).
 
@@ -62,13 +63,13 @@ Open questions:
 - badge semantics;
 - privacy and retention.
 
-## Association model — HYPOTHESIS / OPEN
+## Association model — HYPOTHESIS / OPEN / TASK 15 READINESS
 
 Possible elements: verified association; representatives; institutional profile; multiple seats; restricted access.
 
 Open questions: verification; seats; pricing; representative management; permissions.
 
-## Company / organization model — HYPOTHESIS / OPEN
+## Company / organization model — HYPOTHESIS / OPEN / PARKED FROM TASK 15
 
 Explore: institutional verification; representatives; institutional profile; disclosure of commercial interest; promotion boundaries; permitted technical participation.
 
