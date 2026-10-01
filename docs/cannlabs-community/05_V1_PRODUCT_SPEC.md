@@ -75,3 +75,11 @@ The current fork includes the bundled `automation` plugin, but it is disabled lo
 The official PM authorized one bounded Community-specific plugin because upstream/native configuration cannot safely express this intersection. The plugin reconciles only native source groups to native derived groups, uses native membership APIs and native history, fails closed when source state is missing, has no custom schema or ACL system, and runs a 15-minute drift safety sweep. The separate public repository is `leo-even/CannLabs-Community-Qualified-Access`.
 
 This does not authorize production launch, real verification, association onboarding, payment or deployment.
+
+## Qualified-access plugin v0.1 — VALIDATED (Task 19)
+
+Task 19 validated the implementation at plugin revision `ca4f0070d7bf85e42dbfa7f8736469139bb20275` (`chore: keep qualified access flag server-side`). The flag is server-only and locally enabled; no application-core or theme customization, custom schema, migration, credential store or frontend asset was added.
+
+The local Founder launcher can reuse a running Community, start a stopped Community or recreate a missing Community container from durable local configuration. Recreation preserves `cannlabs_community_pg`, mounts `/home/leo/source/repos/CannLabs-Community` at `/src` and `/home/leo/source/repos/CannLabs-Community-Qualified-Access` at `/src/plugins/cannlabs-community-qualified-access`, bootstraps dependencies and restores `localhost:3100`. The complete recreation acceptance passed with the product state intact.
+
+Task 19 is a local validation closure only. Production enablement, real professional verification, credential collection, association onboarding, payment and deployment remain unauthorized.

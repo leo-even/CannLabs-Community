@@ -149,10 +149,26 @@ The durable findings are summarized in `04_DISCOVERY_BASELINE.md`.
 - Task 16A is closed as the durable documentation closure for the validated local verified-professional identity, qualified access and restricted-space skeleton.
 - Task 17 is validated: the upstream/native gap was proven.
 - Task 18A is validated/decided: qualified-access synchronization architecture is ratified.
-- Task 19 is the active bounded Community plugin v0.1 implementation and local-validation slice.
+- Task 19 is validated: the bounded Community Qualified Access plugin v0.1 is implemented and locally accepted.
+- Task 20 is the active read-only readiness research slice for professional verification and association onboarding.
 - Task 12A V1 product decisions are ratified and recorded in `00_PRODUCT_CANON.md` §22, `01_DECISION_LOG.md` DEC-025–DEC-029 and `05_V1_PRODUCT_SPEC.md`.
 - Task 14 Access Skeleton is validated and closed in documentation.
 - Task 15 is closed as the preceding readiness review; Task 17 and Task 18A supersede its lifecycle question.
+
+## Task 19 — VALIDATED LOCAL PLUGIN V0.1
+
+The official PM validated the bounded Qualified Access plugin v0.1 and its local recovery path.
+
+- Separate public repository: `leo-even/CannLabs-Community-Qualified-Access`.
+- Validated revision: `ca4f0070d7bf85e42dbfa7f8736469139bb20275` (`chore: keep qualified access flag server-side`).
+- No application-core or theme customization, custom database tables, migrations, ACL system or credential storage.
+- Native source groups reconcile to native derived groups through native group events, idempotent per-user reconciliation and a 15-minute drift sweep.
+- Missing-source state fails closed; native group history remains the audit trail.
+- The enable flag is server-only; local value is true and production enablement is not authorized.
+- `liderancas_aprov` is the persistent staff-controlled leadership source group; `acesso_liderancas` remains derived.
+- The Founder launcher can reuse, start or recreate the Community container, preserve `cannlabs_community_pg`, mount both authoritative WSL repositories and bootstrap bundle dependencies.
+- Acceptance passed: 22 examples / 0 failures; professional, leadership and drift lifecycles; complete launcher recreation; persistent product state; clean application, theme and plugin repositories; Founder restored to ordinary active-member state.
+- FeedCheck was untouched.
 
 ## NOT AUTHORIZED
 
@@ -210,7 +226,7 @@ None of these is solved in this slice.
 
 ## NEXT
 
-1. Task 19 bounded plugin v0.1 local validation and official PM / Founder review.
+1. Task 20 — Professional Verification / Association Onboarding Readiness (read-only research).
 2. Legal / Privacy / Trust & Safety review for verification and association workflows.
 3. Moderation baseline and policy work.
 4. Authentication providers and payment readiness as separate slices.

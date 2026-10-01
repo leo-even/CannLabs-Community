@@ -20,7 +20,8 @@ The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.
 - Task 16A — VALIDATED local architecture and closed in documentation.
 - Task 17 — VALIDATED: upstream gap proven.
 - Task 18A — VALIDATED / DECIDED: qualified-access synchronization architecture ratified.
-- Task 19 — NOW: bounded plugin v0.1 implementation and local validation.
+- Task 19 — VALIDATED: bounded plugin v0.1 implementation, local validation and launcher recreation.
+- Task 20 — NOW: professional verification / association onboarding readiness research.
 
 No product feature implementation.
 
@@ -33,6 +34,18 @@ Task 16A recorded the validated local architecture: cumulative native identity g
 Native CategoryGroup ACLs are OR-based, so qualified authorization must be removed when active membership, identity qualification or leadership authorization ends. Task 17 reviewed the bundled automation plugin and core lifecycle hooks and proved that no safe upstream/native configuration mechanism exists for this intersection.
 
 Task 17 proved the upstream gap. Task 18A ratified a bounded, stateless Community plugin as the only authorized custom exception. `acesso_profissionais` and `acesso_liderancas` are derived state; `liderancas_aprov` is the persistent leadership source. Task 19 is the implementation slice.
+
+## COMPLETED — TASK 19 QUALIFIED ACCESS PLUGIN V0.1
+
+Task 19 is validated locally at plugin revision `ca4f0070d7bf85e42dbfa7f8736469139bb20275` in the separate public repository `leo-even/CannLabs-Community-Qualified-Access`.
+
+The plugin is stateless, uses native group membership and history, reconciles source groups to derived access groups on supported group events, runs a 15-minute drift sweep, fails closed when source state is unavailable, and exposes no client-side feature flag. The local flag is true; production enablement remains unauthorized.
+
+The Founder launcher now has durable Community-only create semantics: it preserves `cannlabs_community_pg`, mounts the authoritative application and plugin WSL repositories, bootstraps dependencies and restores `localhost:3100`. Full removal/recreation acceptance passed without resetting Community data. No application, theme or FeedCheck changes were made.
+
+## NOW — TASK 20 READ-ONLY READINESS
+
+Task 20 is a bounded, read-only upstream/native and official-source review for professional verification, public professional identity, association existence and representation, leadership approval, privacy/LGPD, retention and Trust & Safety. It does not authorize groups, users, settings, forms, uploads, workflows, plugin code or theme changes.
 
 ## NEXT — V1 discovery
 
