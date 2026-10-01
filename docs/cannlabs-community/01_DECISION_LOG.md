@@ -307,3 +307,12 @@ Append-only record of ratified decisions. To change a decision, add a new entry 
 - **Rationale:** Native CategoryGroup ACLs are OR-based, and current Discourse core plus bundled automation cannot safely express or reconcile the required intersection. A bounded Community-specific plugin is therefore authorized as the smallest provider-independent extension.
 - **Consequences / open items:** The plugin owns only source-native-group to derived-native-group reconciliation, with fail-closed missing-source behavior, native group history, no custom tables/migrations/ACLs, source-event reconciliation and a 15-minute drift safety sweep. The plugin is packaged in the separate public repository `leo-even/CannLabs-Community-Qualified-Access`. Real verification, association onboarding, payment and production enablement remain separately unauthorized.
 - **Supersedes:** Extends `DEC-026`, `DEC-028` and `DEC-029` with the qualified-access lifecycle boundary.
+
+## DEC-031 — Verified professional identity is public-name plus result-only metadata
+
+- **Date:** 2026-10-01
+- **Status:** DECIDED — Task 20B, ratified by the official PM / Founder
+- **Decision:** While verified, a professional has a non-empty public native `User.name`; username remains the handle; native professional role presentation may be shown. Community V1 retains only result-only metadata (name, profession, result, source class/URL, date, reviewer and optional short revocation reason). CRM, CRF, CREA, OAB and comparable identifiers, credential copies, CPF/RG, addresses and health data are not public or retained. Native User Notes are staff-readable operational notes, never credential evidence; admins control initial approval and revocation. Name changes require re-review, with no automation; self-service intake is deferred.
+- **Rationale:** A bounded, reversible result-only record preserves the useful public identity and access decision while minimizing sensitive data and avoiding a credential repository.
+- **Consequences / open items:** Task 21 may validate only a synthetic local create/present/revoke/delete lifecycle using native primitives. Production Legal / Privacy / Trust & Safety review, real verification, intake, association onboarding and deployment remain unauthorized.
+- **Supersedes:** Refines the identity and verification boundary in `DEC-028` and Canon §22–24.

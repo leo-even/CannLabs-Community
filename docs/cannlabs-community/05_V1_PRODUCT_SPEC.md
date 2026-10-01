@@ -83,3 +83,13 @@ Task 19 validated the implementation at plugin revision `ca4f0070d7bf85e42dbfa7f
 The local Founder launcher can reuse a running Community, start a stopped Community or recreate a missing Community container from durable local configuration. Recreation preserves `cannlabs_community_pg`, mounts `/home/leo/source/repos/CannLabs-Community` at `/src` and `/home/leo/source/repos/CannLabs-Community-Qualified-Access` at `/src/plugins/cannlabs-community-qualified-access`, bootstraps dependencies and restores `localhost:3100`. The complete recreation acceptance passed with the product state intact.
 
 Task 19 is a local validation closure only. Production enablement, real professional verification, credential collection, association onboarding, payment and deployment remain unauthorized.
+
+## Verified professional identity — RATIFIED (Task 20B)
+
+While verified, a professional has a non-empty public native `User.name`; username remains the public handle. Native professional role presentation is allowed. Community V1 retains only result-only metadata: name, profession, result, source class/URL, date, reviewer and optional short revocation reason. CRM, CRF, CREA, OAB and comparable identifiers, credential copies, CPF/RG, addresses and health data are neither public nor retained.
+
+Native User Notes are broadly staff-readable, including moderators, and are operational notes only — never credential evidence or a public profile surface. Initial approval and revocation are admin-only. A public-name change requires re-review; no automation or self-service intake is authorized. Legal / Privacy / Trust & Safety remains a production gate.
+
+## Task 21 — synthetic local lifecycle
+
+Task 21 is limited to one clearly synthetic, reversible local acceptance of the result-only lifecycle and native presentation. It may enable User Notes locally, create and delete the synthetic note, add and remove a professional source group, verify derived access and browser presentation, and restore every other captured setting, name, membership and presentation field. No real credential, identifier, document, association onboarding, payment or production enablement is authorized.

@@ -235,3 +235,13 @@ None of these is solved in this slice.
 Visual polish is no longer the critical path. The Founder local test login is validated by Task 15A; no credential is stored in the repository.
 
 No implementation starts automatically; each step needs explicit official PM authorization.
+
+## TASK 20B — VERIFIED IDENTITY / RESULT-ONLY BOUNDARY (RATIFIED)
+
+Task 20B ratified the local V1 operating boundary in `DEC-031` and Canon §24: a verified professional uses a non-empty native public name while username remains the handle; native role presentation is allowed; only result-only verification metadata is retained; native User Notes are staff-readable operational notes and never credential evidence; approval/revocation is admin-only; name changes require re-review and there is no automation or self-service intake.
+
+This is documentation ratification only. Task 21 is a synthetic local lifecycle acceptance using reversible native primitives. No real credential, identifier, document, CPF/RG, address, health data, association onboarding, payment, production verification or deployment is authorized. Production Legal / Privacy / Trust & Safety remains a required gate.
+
+## TASK 21 — SYNTHETIC LIFECYCLE (AUTHORIZED LOCAL VALIDATION)
+
+The bounded local test may temporarily enable native User Notes, create one clearly synthetic result-only note for `bemstorm`, set a synthetic public professional name, apply native presentation, add and remove one professional source group, verify derived access and native browser presentation, delete the note, and restore every captured state. User Notes remains enabled locally after acceptance as explicitly authorized; all other temporary mutations must be restored exactly.

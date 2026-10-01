@@ -265,3 +265,11 @@ A future review includes:
 **OPEN — Infrastructure / Security / Deployment:** review the Cloudflare Workers & Pages GitHub integration's repository access and intended deployment role before production deployment. Its presence does not establish an active Community deployment (`02_PROJECT_STATE.md`).
 
 Until that review, development still avoids real secrets in Git, production credentials, unnecessary public exposure and disabling security controls without need (`DEC-016`).
+
+## TASK 20B — RATIFIED VERIFIED-IDENTITY BOUNDARY
+
+Task 20B is closed as durable readiness: public professional identity uses native `User.name` while username remains the handle; presentation is native; verification is result-only and staff-readable through native User Notes; admins control approval/revocation; public-name changes require re-review; self-service intake and automation are deferred. CRM/CRF/CREA/OAB identifiers and credential evidence are not retained or exposed.
+
+## NOW — TASK 21 SYNTHETIC LIFECYCLE
+
+Run one reversible local synthetic acceptance only: enable native User Notes, create/delete one clearly synthetic result-only note, temporarily set a synthetic public name and native role presentation, add/remove a professional source group, verify derived access and browser presentation, and restore all captured state. Production Legal / Privacy / Trust & Safety, real verification, intake, association onboarding, payment and deployment remain gated.

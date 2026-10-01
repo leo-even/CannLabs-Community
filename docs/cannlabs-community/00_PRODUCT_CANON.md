@@ -295,3 +295,14 @@ By default, CannLabs Community is not:
 - A bounded Community-specific plugin is authorized solely to reconcile native source groups to native derived groups. It is not a custom ACL, billing, verification, identity, organization or messaging system.
 - Missing source groups fail closed for the affected predicate; missing derived groups never cause automatic creation or substitution.
 - The plugin remains stateless: no custom tables, migrations or authorization store. Native groups, category ACLs and native group history remain authoritative.
+
+## 24. Verified professional identity and result-only boundary — ratified Task 20B
+
+**DECIDED — local V1 operating boundary; production remains gated.**
+
+- A verified professional must have a non-empty public professional name in native `User.name` while verified. Username remains the public handle.
+- Native professional role presentation is permitted. CRM, CRF, CREA, OAB and similar registration identifiers are not public and are not retained in Community V1.
+- Verification retains result-only metadata: public name, profession, result, source class and/or URL, date, reviewer, and an optional short revocation reason. Credential images, document copies, CPF/RG, addresses and health data are out of scope.
+- Native User Notes are an operational, staff-readable record (including moderators) and never credential evidence or a public profile surface. Initial approval and revocation are admin-only.
+- A public-name change requires re-review; no automatic verification or revocation automation is authorized. Self-service intake is deferred.
+- Legal, Privacy and Trust & Safety review remains a required production gate. This ratification authorizes only a synthetic local lifecycle acceptance.
