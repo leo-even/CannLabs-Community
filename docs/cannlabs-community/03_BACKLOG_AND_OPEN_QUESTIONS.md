@@ -9,7 +9,7 @@ Buckets: **NOW** · **NEXT** · **LATER** · **PARKED** · **OPEN**. States are 
 
 ## NOW
 
-**Current NOW (2026-10-02): Task 28 — Product Bootstrap Contract v0.1.** See the last section of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
+**Current NOW (2026-10-02, Task 30A): no slice is in progress.** Tasks 28, 29 and 30 are validated and closed. The recommended next bounded slice is Local Email Recovery Acceptance, which is not authorized yet. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
 
 The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.md` → NEXT.
 
@@ -98,11 +98,15 @@ Open questions: verification; seats; pricing; representative management; permiss
 
 Explore: institutional verification; representatives; institutional profile; disclosure of commercial interest; promotion boundaries; permitted technical participation.
 
-## Authentication — HYPOTHESIS / REUSE CANDIDATE
+## Authentication — READINESS REVIEWED (Task 30) / PROVIDERS NOT CONFIGURED
 
-Desired exploration: Google, Facebook, Apple and the current native Discourse flows.
+The original exploration question (Google, Facebook, Apple and the native Discourse flows; initial dated inventory in `04_DISCOVERY_BASELINE.md` §1.3) is answered by the Task 30 readiness review: native and bundled Discourse are sufficient, and no custom authentication infrastructure is needed.
 
-First question: what already exists in our exact upstream version? An initial, dated inventory is in `04_DISCOVERY_BASELINE.md` §1.3.
+- **DECIDED:** local login, Google and Apple are the V1 direction (Canon §22). Google and Apple are disabled and need credentials later.
+- **OPEN / HYPOTHESIS:** Facebook login, reopened by the Founder (`DEC-034`). Not DECIDED, not V1.
+- **REQUIRED BEFORE PRODUCTION:** staff 2FA.
+
+Open items are listed in "AUTHENTICATION READINESS — OPEN ITEMS" at the end of this file. None of them is authorized.
 
 ## Paid access — OPEN / REUSE CANDIDATE
 
@@ -337,7 +341,7 @@ Read-only architecture, reproducibility, security, operations, and launch-gate r
 
 A small audit / apply mechanism for the security-critical native product state, with local idempotence and drift proof. It is not a production installer.
 
-Implemented on 2026-10-02 and awaiting official PM validation; see `08_PRODUCT_BOOTSTRAP.md`.
+Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 — VALIDATED PRODUCT BOOTSTRAP v0.1" below); operator guide: `08_PRODUCT_BOOTSTRAP.md`.
 
 ## NEXT / OPEN — PRODUCTION FOUNDATION (after Task 28; none authorized)
 
@@ -351,3 +355,29 @@ Implemented on 2026-10-02 and awaiting official PM validation; see `08_PRODUCT_B
 - **LATER — theme and logo bootstrap on a clean database** (Git theme installation, logo uploads).
 - **LATER — Founder launcher:** starting Docker Desktop when it is not running, and recreating an existing container whose mounts are wrong.
 - **LATER — local browser test stack:** the Playwright Chromium binary is gone since the container was recreated.
+
+## TASK 28 — VALIDATED PRODUCT BOOTSTRAP v0.1
+
+- **Status:** VALIDATED by the official PM at application commit `d4bd6ce55e7f737846d8c753494d1406cd7d859d`.
+- **Boundary:** product configuration bootstrap only. Production remains NOT READY; the production-foundation items above are unchanged.
+
+## TASK 29 — VALIDATED LOCAL AUTH BASELINE
+
+- **Status:** VALIDATED. Result: `LOCAL AUTH HEALTHY — bemstorm credential/account-specific issue`.
+- **Closure:** the Founder rotated the `bemstorm` password with native tooling; no secret is recorded. An accidental Admin grant during that rotation was reversed natively, and `bemstorm` is an ordinary active member again. Details: `02_PROJECT_STATE.md`.
+- **Also closed:** the local clock / Sidekiq incident is RESOLVED / VALIDATED and is not an open item.
+
+## TASK 30 — VALIDATED READINESS REVIEW: AUTHENTICATION AND IDENTITY PROVIDERS
+
+- **Status:** VALIDATED readiness review, read-only. Result: `YES — NATIVE/BUNDLED SUFFICIENT`.
+- **Durable findings:** `02_PROJECT_STATE.md` → TASK 30.
+
+## AUTHENTICATION READINESS — OPEN ITEMS (none authorized)
+
+- **NEXT — Local Email Recovery Acceptance.** The recommended next bounded slice: with Mailpit started temporarily inside the development container and one synthetic user, prove forgot-password and email login end to end, verify that the generated links use `http://localhost:3100`, then delete the synthetic user and its session state with every repository left clean. It excludes launcher or Docker changes, publishing port 8025, production SMTP, OAuth, provider credentials, Facebook and 2FA.
+- **OPEN — local mail catcher (dev-readiness gap).** Mailpit is available in the development container but not running, nothing listens on port 1025 and the mail UI port 8025 is not published. Email-dependent local flows cannot be acceptance-tested until this is addressed. This is not the production SMTP decision.
+- **CONDITIONAL RISK — CLI link port.** The canonical local address for authentication is `http://localhost:3100`. A CLI or Rails-runner context without `UNICORN_PORT=3100` can emit `http://localhost:3000` links; future link-generating CLI commands must account for the port.
+- **REQUIRED BEFORE ENABLING ANY PROVIDER — external-provider acceptance tests,** covering automatic account linking by verified email (Google), provider emails treated as verified (Apple, Facebook), Apple private-relay addresses creating a second account, and external signups that are not automatically in `membros_ativos`. No mitigation is designed or authorized.
+- **NEEDS SECURITY REVIEW — Apple private key.** The bundled plugin does not flag `apple_pem` as `secret`. Review before real Apple credentials are entered; do not change plugin code.
+- **OPEN / HYPOTHESIS — Facebook login** (`DEC-034`).
+- **REQUIRED BEFORE PRODUCTION — staff 2FA** (unchanged; see the production-foundation list above).

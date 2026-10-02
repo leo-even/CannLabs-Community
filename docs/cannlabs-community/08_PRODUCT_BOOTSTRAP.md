@@ -1,6 +1,6 @@
 # CannLabs Community — Product Bootstrap v0.1 (operator guide)
 
-Status: CURRENT · Task 28 · implemented 2026-10-02, awaiting official PM validation
+Status: CURRENT · Task 28 · implemented 2026-10-02 · VALIDATED by the official PM at application commit `d4bd6ce55e7f737846d8c753494d1406cd7d859d`
 
 The product bootstrap audits, and on request applies, the security-critical native Discourse state that defines CannLabs Community. It exists because that state lived only in one local database (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`).
 

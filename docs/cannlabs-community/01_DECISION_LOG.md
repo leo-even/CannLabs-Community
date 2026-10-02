@@ -333,3 +333,12 @@ Append-only record of ratified decisions. To change a decision, add a new entry 
 - **Decision:** The upstream seeded Site Feedback category and definition topic are scaffold only and are not a V1 product surface. Retire them only through a supported native Discourse lifecycle after the meta_category_id dependency and seed/reseed behavior are proven safe. Keep the native staff/moderator-notification support path for unpaid help and appeals. Any future feedback or governance surface requires a separate deliberate member-only product decision; no custom replacement or custom deletion code is authorized.
 - **Rationale:** Remove seeded surface ambiguity without weakening the paid/private membership boundary or bypassing native lifecycle and seed behavior.
 - **Consequences / open items:** Site Feedback remains pending safe native retirement; Task 26 is not validated until the paid/private boundary is closed. This decision refines only the Site Feedback portion of DEC-032 and does not reopen General, Uncategorized, Comunidade, reporting, moderation, PM, Chat, payment, onboarding, 2FA, production, or provider decisions.
+
+## DEC-034 — Facebook login is reopened for consideration
+
+- **Date:** 2026-10-02
+- **Status:** OPEN / HYPOTHESIS — explicit Founder decision, relayed by the official PM and recorded in Task 30A
+- **Decision:** Facebook login is no longer PARKED. It is reopened for consideration as an OPEN / HYPOTHESIS authentication option. It is not DECIDED and not part of V1. Local login, Google and Apple remain the DECIDED V1 authentication direction, and staff accounts still require native 2FA.
+- **Rationale:** The Founder explicitly reopened the option. Facebook login is a core Discourse capability, so considering it needs no custom authentication infrastructure.
+- **Consequences / open items:** Nothing is configured or enabled by this entry. Facebook stays disabled. Enabling any external provider first requires the external-provider acceptance tests recorded by the Task 30 readiness review (`02_PROJECT_STATE.md`). Making Facebook part of the product requires a new Decision Log entry.
+- **Supersedes:** Only the "Facebook is parked" wording of the Task 12A V1 contract (`DEC-025`, Canon §22, `05_V1_PRODUCT_SPEC.md`). It reopens no other Task 12A decision.

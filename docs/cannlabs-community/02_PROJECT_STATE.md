@@ -7,11 +7,12 @@ Evidence was captured from the development machine when this baseline was writte
 
 ## CURRENT STATE — 2026-10-02
 
-- **NOW:** Task 28 — Product Bootstrap Contract v0.1 (audit / apply mechanism for the security-critical native product state, with local idempotence proof). The Coder is the one authorized writer. Implemented and awaiting official PM validation (last section of this file).
-- **Production:** NOT READY. Task 27 is a validated readiness review; its principal gap is reproducible native product bootstrap (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`). No production or staging environment exists.
-- **Validated so far:** repository bootstrap, isolation and operating layer (through Task 04B); design direction, prototype, theme architecture and handoff (Tasks 05–08); Community Theme v0.1 (Tasks 10 / 10B); V1 product model (Task 12A); Access Skeleton (Task 14); Founder local login (Task 15A); verified roles and restricted spaces (Tasks 16 / 16A); qualified-access gap, architecture and plugin v0.1 (Tasks 17, 18A, 19); verified-identity boundary and synthetic professional lifecycle (Tasks 20B, 21); synthetic association / leadership lifecycle (Tasks 22 / 22A); moderation readiness and native moderation lifecycle (Tasks 23A, 24); Active Membership Safety Boundary including the native Site Feedback retirement (Task 26, `DEC-032`, `DEC-033`); production / security foundation readiness review (Task 27).
-- **Repositories:** application `leo-even/CannLabs-Community` (this fork; docs and operating layer only so far); theme `leo-even/CannLabs-Community-Theme` at `aeb3a9d9154f532064dcc24ac9e78cf587588d77`; plugin `leo-even/CannLabs-Community-Qualified-Access` at `ca4f0070d7bf85e42dbfa7f8736469139bb20275`.
-- **Latest decision:** `DEC-033`.
+- **NOW:** no slice is in progress. Task 30A (this documentation closure) brought the durable state up to date through Task 30. The recommended next bounded slice is Local Email Recovery Acceptance; it is not authorized until the official PM says so (last section of this file).
+- **Production:** NOT READY. Task 27 is a validated readiness review (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`). Task 28 closed the product-configuration bootstrap part of its principal gap; a clean production-like deployment, staff 2FA, SMTP, secrets, authentication providers, payment and the Legal / Privacy / Trust & Safety gates remain open. No production or staging environment exists.
+- **Validated so far:** repository bootstrap, isolation and operating layer (through Task 04B); design direction, prototype, theme architecture and handoff (Tasks 05–08); Community Theme v0.1 (Tasks 10 / 10B); V1 product model (Task 12A); Access Skeleton (Task 14); Founder local login (Task 15A); verified roles and restricted spaces (Tasks 16 / 16A); qualified-access gap, architecture and plugin v0.1 (Tasks 17, 18A, 19); verified-identity boundary and synthetic professional lifecycle (Tasks 20B, 21); synthetic association / leadership lifecycle (Tasks 22 / 22A); moderation readiness and native moderation lifecycle (Tasks 23A, 24); Active Membership Safety Boundary including the native Site Feedback retirement (Task 26, `DEC-032`, `DEC-033`); production / security foundation readiness review (Task 27); Product Bootstrap v0.1 (Task 28); local-auth baseline (Task 29); authentication and identity-provider readiness review (Task 30).
+- **Authentication:** native and bundled Discourse are sufficient for V1 (`YES — NATIVE/BUNDLED SUFFICIENT`). Local login, Google and Apple are the DECIDED direction; Facebook is OPEN / HYPOTHESIS (`DEC-034`); staff 2FA is required before production. No external provider is configured.
+- **Repositories:** application `leo-even/CannLabs-Community` (this fork; docs, the operating layer and the Task 28 bootstrap mechanism); theme `leo-even/CannLabs-Community-Theme` at `aeb3a9d9154f532064dcc24ac9e78cf587588d77`; plugin `leo-even/CannLabs-Community-Qualified-Access` at `ca4f0070d7bf85e42dbfa7f8736469139bb20275`.
+- **Latest decision:** `DEC-034`.
 
 The sections below are kept as validated history in the order they were written.
 
@@ -236,21 +237,21 @@ None of these is solved in this slice.
 - **Push credentials from WSL.** No Git credential helper is configured in WSL. Decide a durable, least-privilege setup before routine pushes.
 - **GitHub Actions on the fork — OPEN.** The workflow definitions contain push triggers that appear applicable to changes on `main` (including `Tests`, `Linting` and `Licenses`), but the baseline push `e02f6d4c` produced no GitHub Actions runs, no run IDs and no Actions status checks. The cause is unresolved. CI enablement and policy must be reviewed before the project relies on GitHub Actions as validation evidence (`04_DISCOVERY_BASELINE.md` §1.5 and §3).
 - **Cloudflare GitHub integration — OPEN (Infrastructure / Security / Deployment).** The GitHub app `cloudflare-workers-and-pages` has access to this repository. The baseline push produced a Cloudflare-associated check suite, which was still queued when inspected; no deployment was observed. Review the integration's repository access and intended deployment role before production deployment. Its presence does not establish an active Community deployment.
-- **Windows host clock — low priority.** SUPERSEDED: the earlier WSL clock-drift attribution was incorrect. A later comparison with GitHub server time showed the Windows host clock about 304 seconds (roughly five minutes) ahead, while WSL / container time was aligned within ordinary measurement latency. Windows time synchronization is a low-priority local-environment follow-up.
+- **Windows host clock — RESOLVED / VALIDATED (2026-10-02).** The Founder corrected Windows time synchronization and the official PM validated the result; see "LOCAL CLOCK / SIDEKIQ INCIDENT" below. History: the earlier WSL clock-drift attribution was incorrect, and a later comparison with GitHub server time showed the Windows host clock about 304 seconds (roughly five minutes) ahead. This is no longer an open follow-up.
 - **Passkeys on port 3100.** Upstream hardcodes the development WebAuthn origin to `http://localhost:3000` (`lib/discourse_webauthn.rb`), so passkeys do not work on the Community development port. Do not patch core for this.
 - **Correction-loop rule — future operating-layer improvement.** Lesson from Tasks 10–10B: bound a correction loop by finding and scope, not by a fixed number of commits. For the same validated finding, with an evidenced root cause and a tightly bounded correction that expands no product or scope, the official PM may authorize further bounded correction until the acceptance criterion converges. This is not an unlimited fix loop: a materially new finding returns to normal readiness / scope arbitration. The operating skills are not changed yet.
 
 ## NEXT
 
-Reconciled on 2026-10-02; the earlier list started at Task 20, which is closed.
+Reconciled on 2026-10-02 (Task 30A); Tasks 28, 29 and 30 are validated and closed.
 
-1. Task 28 — Product Bootstrap Contract v0.1 (NOW).
+1. Local Email Recovery Acceptance — the recommended next bounded slice (last section of this file). Not authorized yet.
 2. A later slice proving a clean production-like environment end to end: supported production deployment, theme and plugin installation, bootstrap application, secrets, external services and smoke tests (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`).
 3. Staff 2FA acceptance, with recovery codes and a break-glass procedure.
 4. Legal / Privacy / Trust & Safety review.
-5. Authentication providers and payment readiness as separate slices.
+5. Authentication providers (external-provider acceptance tests first) and payment readiness as separate slices.
 
-The order after Task 28 is a candidate sequence, not an authorization. Visual polish is no longer the critical path. The Founder local test login is validated by Task 15A; no credential is stored in the repository.
+The order is a candidate sequence, not an authorization. Visual polish is no longer the critical path. The Founder local test login is validated by Task 15A and its credential was rotated after Task 29; no credential is stored in the repository.
 
 No implementation starts automatically; each step needs explicit official PM authorization.
 
@@ -364,7 +365,9 @@ Task 28 proves product configuration bootstrap. It does not authorize or prove p
 
 ## TASK 28 — IMPLEMENTED, AWAITING OFFICIAL PM VALIDATION
 
-Product Bootstrap v0.1 is implemented in this repository. It is not validated until the official PM says so. Operator guide: `08_PRODUCT_BOOTSTRAP.md`.
+Status superseded: the official PM has since validated Task 28 (see "TASK 28 — VALIDATED PRODUCT BOOTSTRAP v0.1" below). This section is kept as the implementation record.
+
+Product Bootstrap v0.1 is implemented in this repository. Operator guide: `08_PRODUCT_BOOTSTRAP.md`.
 
 - **Shape:** a declarative manifest (`config/cannlabs_community/bootstrap.yml`), one Rails-backed runner (`lib/cannlabs_community/bootstrap.rb`) and two rake tasks, `cannlabs_community:bootstrap:audit` (default-safe, no writes) and `cannlabs_community:bootstrap:apply`. No core file was modified; the fork gains four new files and their documentation.
 - **Reuse:** native site-setting setter, group creation service, category permissions, Guardian-checked category deletion, and the native staff-action and group-history logs. No direct SQL, no schema, no request-time code.
@@ -374,3 +377,76 @@ Product Bootstrap v0.1 is implemented in this repository. It is not validated un
 - **Local runtime evidence (2026-10-02):** audit PASS on all 37 invariants; two consecutive applies reported NO CHANGE with an unchanged database fingerprint; one bounded live drift (removing `membros_ativos` from reporting eligibility) was detected by audit, repaired by apply and left no further change.
 - **Finding kept for later:** once a group has an automatic trust level, core accepts only 0 ("none") to clear it, and treats 0 and unset as the same. The bootstrap follows that.
 - **Not proven:** a clean production-like database, theme and plugin installation, the logo upload, secrets and external services. Those remain a later slice.
+
+## TASK 28 — VALIDATED PRODUCT BOOTSTRAP v0.1
+
+The official PM validated Task 28. Product Bootstrap v0.1 is validated at application commit `d4bd6ce55e7f737846d8c753494d1406cd7d859d`; the section above is kept as the implementation record. Production remains NOT READY: the bootstrap proves product configuration only, and the "Not proven" list above is unchanged.
+
+## LOCAL CLOCK / SIDEKIQ INCIDENT — RESOLVED / VALIDATED
+
+- **Observed:** the Windows host clock ran about 293 seconds ahead; WSL / container time repeatedly jumped forward and back; Sidekiq restarted about once per minute.
+- **Repair:** the Founder corrected Windows Time / NTP synchronization. Nothing in any Community repository or in the container was changed for it.
+- **Evidence after the repair:** Windows, WSL and container clocks aligned within milliseconds; no further WSL time jumps; the same Sidekiq process survived more than 10 minutes; the heartbeat-failure count stopped increasing; `/srv/status` stayed `ok`.
+- **Official PM classification:** `VALIDATED — clock stabilization removed the observed Sidekiq restart condition`.
+
+This closes the "Windows host clock" follow-up above. The clock is not an open issue.
+
+## TASK 29 — VALIDATED LOCAL AUTH BASELINE
+
+Result: `LOCAL AUTH HEALTHY — bemstorm credential/account-specific issue`.
+
+- **Why:** the Founder's local `bemstorm` login was rejected as invalid credentials. Task 29 isolated whether local authentication itself was broken.
+- **Evidence:** one clearly synthetic ordinary user was created through the native model lifecycle and exercised over the real HTTP CSRF / session flow against the running application: a wrong password was rejected, the correct password was accepted, the authenticated identity was confirmed, logout was confirmed and the old auth cookie was rejected afterwards. The synthetic user was then fully deleted through the native lifecycle. The product bootstrap audit passed before and after, and all three repositories stayed clean.
+- **Conclusion:** local authentication is healthy; the failure was specific to the stored `bemstorm` credential. No code or configuration change was needed.
+- **Password rotation:** the Founder then rotated the `bemstorm` password with native Discourse tooling (`bin/rake admin:create`, which offers a password reset for an existing account). No password, hash or other secret material is recorded in any repository. A password that was previously exposed in a chat is compromised and must never be reused.
+- **Accidental Admin promotion — reversed.** The native `admin:create` task ends with an Admin prompt that defaults to yes, so `bemstorm` was granted Admin by accident during the rotation. The Founder reversed it immediately with native Discourse methods.
+- **Final verified state of `bemstorm`:** `admin = false`, `moderator = false`, `trust_level = 0`, groups `membros_ativos` and the automatic TL0 group only. It is the ordinary active-member test account again.
+- **Operating note:** when `bin/rake admin:create` is used on a non-staff account, answer `n` to the Admin prompt explicitly.
+
+## TASK 30 — VALIDATED READINESS REVIEW: AUTHENTICATION AND IDENTITY PROVIDERS
+
+Task 30 was a read-only review; no product or runtime write occurred, and nothing below was implemented. Result: `YES — NATIVE/BUNDLED SUFFICIENT`. V1 authentication does not require custom authentication infrastructure (Canon §16, §20, §22).
+
+| Mechanism | Source | Product state | Local runtime |
+| --- | --- | --- | --- |
+| Local password | core | V1 (DECIDED) | enabled |
+| Email login link | core | native default | enabled by default; undeliverable locally because no mail catcher is running |
+| Google | core | target DECIDED | disabled; credentials required later |
+| Apple | bundled plugin `plugins/discourse-apple-auth` | target DECIDED | disabled; Apple credentials and domain prerequisites required later |
+| Facebook | core | OPEN / HYPOTHESIS (`DEC-034`); not DECIDED, not V1 | disabled |
+| Staff 2FA | core | required before production | not enabled |
+
+### Local mail path — current dev-readiness gap
+
+The development container has the Mailpit binary, but no Mailpit process is running, nothing listens on SMTP port 1025, and the mail UI port 8025 is not published by the current Community launcher. Local flows that depend on email (password reset, email login) therefore cannot be acceptance-tested yet. This is a local development finding only; it is not a production SMTP decision, and the production SMTP provider remains OPEN.
+
+### Canonical local URL
+
+- For authentication and canonical-link purposes the local application address is `http://localhost:3100`, not `http://127.0.0.1:3100`. The server runs with `UNICORN_PORT=3100`, browser and request contexts generate correct `localhost:3100` URLs, and OAuth callbacks derive from the Discourse base URL.
+- **CONDITIONAL RISK — CLI contexts.** A CLI or Rails-runner process that does not receive `UNICORN_PORT=3100` can emit `http://localhost:3000` links. The served runtime is not broken. Any future CLI command that generates links (for example a reset or login link) must account for the port.
+
+### Account-linking safety — readiness / security concern
+
+Observed native behaviour, recorded as a concern and not as new product logic. No mitigation was implemented.
+
+- Google can auto-link to an existing account by a verified matching email.
+- Apple treats the provider email as verified.
+- The Facebook implementation treats the returned email as verified.
+- An Apple private-relay address may create a second Community account instead of matching an existing local account.
+- An external signup creates a valid Discourse account that is not automatically in `membros_ativos`.
+
+External-provider acceptance tests are therefore required before any provider is enabled.
+
+### Apple private key — NEEDS SECURITY REVIEW
+
+The bundled plugin's setting definition does not flag `apple_pem` as `secret`. The plugin is not changed. A security review of how that key is handled is required before real Apple credentials are entered.
+
+## NEXT — LOCAL EMAIL RECOVERY ACCEPTANCE (RECOMMENDED, NOT AUTHORIZED)
+
+The recommended next bounded slice. It starts only on explicit official PM authorization.
+
+- **Objective:** make password reset and email login provable in the current local Community runtime, using the Mailpit capability that already exists in the development container.
+- **Expected scope:** start Mailpit temporarily inside the development container; create one synthetic user; test forgot-password end to end; test email login end to end; verify that the generated links use `http://localhost:3100`; delete the synthetic user and its session state; leave every repository clean.
+- **Not part of it:** changing the launcher, publishing port 8025, changing the Docker configuration, production SMTP, OAuth, Google or Apple credentials, Facebook, and 2FA.
+
+Task 30A itself was documentation only: Mailpit was not started and nothing in the runtime, the database or the authentication settings was changed.

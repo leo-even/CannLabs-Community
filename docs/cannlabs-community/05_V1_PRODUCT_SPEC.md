@@ -37,7 +37,7 @@ Do not create profession-by-profession or pairwise persona categories. Member-to
 
 ## Authentication and payment boundary
 
-Local login plus Google and Apple are the V1 authentication direction where current Discourse primitives support them; Facebook is parked. Staff accounts require native 2FA. Payment provider, pricing, institutional seats and Brazilian payment method remain OPEN. The only ratified payment contract is payment state → canonical active-member group.
+Local login plus Google and Apple are the V1 authentication direction where current Discourse primitives support them. Facebook is OPEN / HYPOTHESIS: Task 12A parked it and the Founder has since reopened it for consideration (`DEC-034`); it is not decided and not part of V1. Staff accounts require native 2FA. Payment provider, pricing, institutional seats and Brazilian payment method remain OPEN. The only ratified payment contract is payment state → canonical active-member group.
 
 ## Explicit V1 exclusions
 
@@ -141,3 +141,11 @@ Production architecture and security readiness are reviewed read-only before imp
 ## Task 27 — VALIDATED readiness review: production not ready
 
 The V1 product and access model above is decided and validated, but it exists only as native state in one local database. A fresh Discourse database would not reproduce it. Production is therefore not ready; the principal gap is reproducible native product bootstrap, an operations problem rather than a product change. Details and open gates: `07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`. Task 28 addresses the product-configuration part only.
+
+## Task 28 — VALIDATED product bootstrap v0.1
+
+The official PM validated Product Bootstrap v0.1 at application commit `d4bd6ce55e7f737846d8c753494d1406cd7d859d`. It makes the product-configuration part of this contract auditable and reapplicable (`08_PRODUCT_BOOTSTRAP.md`). It is not a production installer; production remains not ready.
+
+## Task 30 — VALIDATED authentication readiness review
+
+The read-only Task 30 review concluded `YES — NATIVE/BUNDLED SUFFICIENT`: V1 authentication needs no custom authentication infrastructure. Local password and the email login link are core; Google is core; Apple is the bundled `discourse-apple-auth` plugin; Facebook is core and remains OPEN / HYPOTHESIS (`DEC-034`). Staff 2FA is core, required before production and not enabled. No provider was configured. External-provider acceptance tests are required before any provider is enabled; the findings are in `02_PROJECT_STATE.md`.

@@ -175,6 +175,8 @@ No custom DM or messaging system is authorized. Before any V1 decision, inspect 
 
 Upstream-first: treat this as configuration and reuse until proven otherwise. Before implementation, inspect exact support in the current Discourse version and in official / bundled plugins. Do not build custom OAuth or social-login infrastructure if upstream already solves it.
 
+**Current state** — §22 and `DEC-034` supersede the exploration above: local login, Google and Apple are the DECIDED V1 direction; Facebook is OPEN / HYPOTHESIS. The Task 30 readiness review found native and bundled Discourse sufficient, so V1 authentication needs no custom authentication infrastructure (`02_PROJECT_STATE.md`).
+
 ## 17. Paid membership
 
 **DECIDED** — Community membership is paid.
@@ -278,7 +280,8 @@ By default, CannLabs Community is not:
 **DECIDED — V1 communications, authentication and payment boundary**
 
 - Member-to-member personal messages and native Chat are off for V1. No custom messaging system is authorized. Support uses a staff-controlled native path.
-- V1 authentication includes local login plus Google and Apple where supported by current Discourse primitives. Facebook is parked. Staff accounts require native 2FA.
+- V1 authentication includes local login plus Google and Apple where supported by current Discourse primitives. Staff accounts require native 2FA.
+- **OPEN / HYPOTHESIS — Facebook login.** Task 12A parked it; the Founder has since reopened it for consideration (`DEC-034`). It is not DECIDED and not part of V1.
 - Payment provider selection remains OPEN. The lifecycle contract is payment state → canonical active-member group; no provider-specific integration or custom billing engine is ratified.
 
 **PARKED / OUT OF V1** — marketplace, commerce, custom roles or ACL engines, custom DM/Chat, patient or medical records, CPF identity, bespoke payment infrastructure, profession-pair spaces, and association/company workflow engines.
