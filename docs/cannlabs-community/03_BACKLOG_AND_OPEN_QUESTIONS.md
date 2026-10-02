@@ -1,13 +1,15 @@
 # CannLabs Community — Backlog and Open Questions
 
 Status: CURRENT
-Date: 2026-09-29
+Date: 2026-10-02 (baseline written 2026-09-29)
 
 > **Backlog ≠ authorization.** Listing an item here does not authorize it. Work starts only through an explicitly authorized slice from the official PM.
 
 Buckets: **NOW** · **NEXT** · **LATER** · **PARKED** · **OPEN**. States are defined in `README.md`; canon references (`§N`) point to `00_PRODUCT_CANON.md`.
 
 ## NOW
+
+**Current NOW (2026-10-02): Task 28 — Product Bootstrap Contract v0.1.** See the last section of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
 
 The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.md` → NEXT.
 
@@ -21,7 +23,7 @@ The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.
 - Task 17 — VALIDATED: upstream gap proven.
 - Task 18A — VALIDATED / DECIDED: qualified-access synchronization architecture ratified.
 - Task 19 — VALIDATED: bounded plugin v0.1 implementation, local validation and launcher recreation.
-- Task 20 — NOW: professional verification / association onboarding readiness research.
+- Task 20 — closed as Task 20B (verified-identity boundary ratified, `DEC-031`).
 
 No product feature implementation.
 
@@ -324,3 +326,26 @@ General is member-only and active TL0 reporting works through membros_ativos. Se
 ## TASK 27 — PRODUCTION / SECURITY FOUNDATION READINESS
 
 Read-only architecture, reproducibility, security, operations, and launch-gate review. No production deployment or implementation is authorized by this review.
+
+## TASK 27 — VALIDATED READINESS REVIEW: PRODUCTION NOT READY
+
+- **Status:** VALIDATED readiness review, accepted by the official PM on 2026-10-02. Production is NOT READY.
+- **Principal gap:** reproducible native product bootstrap. Durable conclusions: `07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`.
+- **Site Feedback:** the retirement that Task 26B listed as pending was completed natively in Task 26C; Task 26 is validated.
+
+## NOW — TASK 28 PRODUCT BOOTSTRAP CONTRACT v0.1
+
+A small audit / apply mechanism for the security-critical native product state, with local idempotence and drift proof. It is not a production installer.
+
+## NEXT / OPEN — PRODUCTION FOUNDATION (after Task 28; none authorized)
+
+- **NEXT — clean production-like proof:** supported production deployment, theme and plugin installation, bootstrap application, secrets, external services, a clean database and smoke tests. Staging with synthetic data only is the recommended direction (HYPOTHESIS).
+- **REQUIRED BEFORE PRODUCTION — staff 2FA:** native `enforce_second_factor`, through a bounded acceptance slice with recovery codes and a break-glass procedure.
+- **OPEN — production hostname / domain, HTTPS and the Cloudflare role.**
+- **OPEN — SMTP provider** (SPF, DKIM, DMARC, bounce / complaint visibility).
+- **OPEN — backup policy:** off-site storage, retention, RPO / RTO and a restore drill.
+- **OPEN — secrets mechanism,** which depends on the hosting model.
+- **OPEN — monitoring destination and on-call owner.**
+- **LATER — theme and logo bootstrap on a clean database** (Git theme installation, logo uploads).
+- **LATER — Founder launcher:** starting Docker Desktop when it is not running, and recreating an existing container whose mounts are wrong.
+- **LATER — local browser test stack:** the Playwright Chromium binary is gone since the container was recreated.

@@ -1,9 +1,19 @@
 # CannLabs Community — Project State
 
 Status: CURRENT
-Date: 2026-09-29
+Date: 2026-10-02 (baseline written 2026-09-29)
 
-Evidence was captured from the development machine when this baseline was written (2026-09-29).
+Evidence was captured from the development machine when this baseline was written (2026-09-29). Later sections are appended as slices close; where an older section and a later one differ, the later one is current.
+
+## CURRENT STATE — 2026-10-02
+
+- **NOW:** Task 28 — Product Bootstrap Contract v0.1 (audit / apply mechanism for the security-critical native product state, with local idempotence proof). The Coder is the one authorized writer.
+- **Production:** NOT READY. Task 27 is a validated readiness review; its principal gap is reproducible native product bootstrap (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`). No production or staging environment exists.
+- **Validated so far:** repository bootstrap, isolation and operating layer (through Task 04B); design direction, prototype, theme architecture and handoff (Tasks 05–08); Community Theme v0.1 (Tasks 10 / 10B); V1 product model (Task 12A); Access Skeleton (Task 14); Founder local login (Task 15A); verified roles and restricted spaces (Tasks 16 / 16A); qualified-access gap, architecture and plugin v0.1 (Tasks 17, 18A, 19); verified-identity boundary and synthetic professional lifecycle (Tasks 20B, 21); synthetic association / leadership lifecycle (Tasks 22 / 22A); moderation readiness and native moderation lifecycle (Tasks 23A, 24); Active Membership Safety Boundary including the native Site Feedback retirement (Task 26, `DEC-032`, `DEC-033`); production / security foundation readiness review (Task 27).
+- **Repositories:** application `leo-even/CannLabs-Community` (this fork; docs and operating layer only so far); theme `leo-even/CannLabs-Community-Theme` at `aeb3a9d9154f532064dcc24ac9e78cf587588d77`; plugin `leo-even/CannLabs-Community-Qualified-Access` at `ca4f0070d7bf85e42dbfa7f8736469139bb20275`.
+- **Latest decision:** `DEC-033`.
+
+The sections below are kept as validated history in the order they were written.
 
 ## VALIDATED
 
@@ -144,13 +154,15 @@ This is research and discovery evidence, not product implementation.
 
 The durable findings are summarized in `04_DISCOVERY_BASELINE.md`.
 
-## ACTIVE
+## ACTIVE — AS OF TASK 20 (HISTORICAL)
+
+Superseded as the current pointer by "CURRENT STATE" above; Task 20 closed as Task 20B.
 
 - Task 16A is closed as the durable documentation closure for the validated local verified-professional identity, qualified access and restricted-space skeleton.
 - Task 17 is validated: the upstream/native gap was proven.
 - Task 18A is validated/decided: qualified-access synchronization architecture is ratified.
 - Task 19 is validated: the bounded Community Qualified Access plugin v0.1 is implemented and locally accepted.
-- Task 20 is the active read-only readiness research slice for professional verification and association onboarding.
+- Task 20 was, when this list was written, the active read-only readiness research slice for professional verification and association onboarding.
 - Task 12A V1 product decisions are ratified and recorded in `00_PRODUCT_CANON.md` §22, `01_DECISION_LOG.md` DEC-025–DEC-029 and `05_V1_PRODUCT_SPEC.md`.
 - Task 14 Access Skeleton is validated and closed in documentation.
 - Task 15 is closed as the preceding readiness review; Task 17 and Task 18A supersede its lifecycle question.
@@ -186,10 +198,14 @@ Nothing below is authorized. Presence in the backlog does not authorize work.
 - private messaging changes;
 - Design System import or integration;
 - theme implementation beyond the validated v0.1;
-- plugin implementation;
+- plugin implementation beyond the validated Qualified Access plugin v0.1 (Task 19, `DEC-030`), and production enablement of that plugin;
 - a strain database;
 - structured-post mechanics;
-- production deployment.
+- production or staging deployment, domain, DNS, Cloudflare, HTTPS, SMTP and secrets;
+- staff 2FA enablement;
+- real memberships, real professional verification and real association onboarding.
+
+Authorized exceptions are only those a validated slice records: the native local configuration of Tasks 14, 16, 21, 22, 24 and 26, and the Task 28 bootstrap mechanism.
 
 ## CURRENT RUNTIME NOTES
 
@@ -200,7 +216,7 @@ Nothing below is authorized. Presence in the backlog does not authorize work.
 - Native Claude Code is installed inside Ubuntu (WSL), under the user's home, for Community agent sessions started from the WSL worktree.
 - A local development admin exists for authenticated QA. It was created with the upstream `bin/rake admin:create` task, and its credential is stored outside the repository, under `~/.config/cannlabs-community/` in the WSL user's home. Never commit credentials.
 - The local preview configuration `.claude/launch.json` (ignored by the upstream `/.claude` rule) targets `http://localhost:3100`. Never start a second development server on port 3000.
-- After a Docker engine restart the container comes back on its own, but the app server must be relaunched:
+- After a Docker engine restart the container comes back on its own, but the app server must be relaunched. Since Task 19 the Founder launcher does this (see "Runtime notes — 2026-10-02" below). The original manual command, kept as history:
 
   ```bash
   docker exec -d -u discourse:discourse -w /src -e RUBY_GLOBAL_METHOD_CACHE_SIZE=131072 -e LD_PRELOAD=/usr/lib/libjemalloc.so cannlabs_community_dev bash -c "exec bin/dev >> /src/log/bin-dev.log 2>&1"
@@ -226,13 +242,15 @@ None of these is solved in this slice.
 
 ## NEXT
 
-1. Task 20 — Professional Verification / Association Onboarding Readiness (read-only research).
-2. Legal / Privacy / Trust & Safety review for verification and association workflows.
-3. Moderation baseline and policy work.
-4. Authentication providers and payment readiness as separate slices.
-5. Implementation one slice at a time.
+Reconciled on 2026-10-02; the earlier list started at Task 20, which is closed.
 
-Visual polish is no longer the critical path. The Founder local test login is validated by Task 15A; no credential is stored in the repository.
+1. Task 28 — Product Bootstrap Contract v0.1 (NOW).
+2. A later slice proving a clean production-like environment end to end: supported production deployment, theme and plugin installation, bootstrap application, secrets, external services and smoke tests (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`).
+3. Staff 2FA acceptance, with recovery codes and a break-glass procedure.
+4. Legal / Privacy / Trust & Safety review.
+5. Authentication providers and payment readiness as separate slices.
+
+The order after Task 28 is a candidate sequence, not an authorization. Visual polish is no longer the critical path. The Founder local test login is validated by Task 15A; no credential is stored in the repository.
 
 No implementation starts automatically; each step needs explicit official PM authorization.
 
@@ -304,3 +322,42 @@ Task 26 is validated by the official PM following Task 26C runtime evidence. Nor
 ## NOW — TASK 27 PRODUCTION / SECURITY FOUNDATION READINESS
 
 Task 27 is a strictly read-only architecture and operations review. Production deployment, credentials, payment, real onboarding, and implementation remain unauthorized.
+
+## TASK 27 — VALIDATED READINESS REVIEW: PRODUCTION NOT READY
+
+The official PM accepted the Task 27 read-only review on 2026-10-02 (Task 27A). Result: **NOT READY FOR PRODUCTION — principal gap: reproducible native product bootstrap.** The durable conclusions are in `07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`.
+
+- The product and access architecture is already decided and validated.
+- Significant product-critical state lives only in the native database and runtime; a fresh Discourse database would not reproduce CannLabs Community correctly.
+- This is primarily an operations / bootstrap problem, not a new product-feature problem.
+- The production direction favours supported Discourse production Docker mechanisms and pinned inputs. This is a recommended direction (HYPOTHESIS), not a decision.
+- No production deployment was performed. Domain, SMTP, secrets, Cloudflare, payment and external monitoring remain unresolved and separate.
+- Staff 2FA is required before production and is not enabled.
+
+No new Decision ID was created.
+
+**Site Feedback (`DEC-033`) — later resolution.** `DEC-033` recorded the retirement as pending, which was correct when written. The seeded Site Feedback category was retired through the native lifecycle in Task 26C, and Task 26 is validated. The Decision Log entry is unchanged.
+
+## TASK 27A — LOCAL OPERATIONS RECONCILIATION
+
+- **Founder launcher helper path — repaired.** The Desktop entry `Launch CannLabs Community.cmd` runs `%LOCALAPPDATA%\CannLabsCommunity\launch-community.ps1`. The validated helper had been written by a packaged Windows application, whose `%LOCALAPPDATA%` is redirected, so it never existed at the real path and a normal double-click would have failed. The same helper content was restored unchanged to the real `C:\Users\Leo\AppData\Local\CannLabsCommunity\`, where its `launcher.log` now lives. The Desktop entry was then run as a normal Windows session runs it and reused the healthy Community without recreating anything. The launcher is local operator tooling and lives in no repository.
+- **Known launcher limits (unchanged, not redesigned):** it checks that Docker is available and stops with a message if it is not, rather than starting Docker Desktop; it recreates only a missing container, and stops with a repair message if an existing container has wrong mounts.
+- **Stale documentation reconciled:** the current-state header, ACTIVE, NOT AUTHORIZED, NEXT and the runtime notes of this file, the `README.md` inventory, and the backlog's NOW bucket.
+- **Generic Project Source Pack.** It is Project-level operating material and is intentionally not tracked in this repository. Its absence is not a repository defect.
+
+## RUNTIME NOTES — 2026-10-02
+
+These supersede the matching lines of "CURRENT RUNTIME NOTES" above.
+
+- **Container.** `cannlabs_community_dev` was recreated by the Founder launcher on 2026-10-01 with the same image, the same `cannlabs_community_pg` volume and `127.0.0.1:3100` only. It bind-mounts the application worktree at `/src` and the Qualified Access worktree at `/src/plugins/cannlabs-community-qualified-access`.
+- **App server.** The container's own command starts only PostgreSQL, Redis and system services. The Founder launcher starts the development server (`bin/dev`) inside the container and writes its output to `/home/discourse/.cache/cannlabs-community/local-launcher/bin-dev-launcher.log`.
+- **Running workers keep the application revision they booted with.** A commit made after the development server started leaves the workers on the older revision. Cache invalidations published by a separate Rails process are then ignored by those workers until the development server is restarted; site-setting changes still propagate. Restart the Community development server before collecting runtime evidence that depends on theme or cache invalidation.
+- **Local test stack.** The `discourse_test` database lives in the persisted volume and survived the recreation. The Playwright Chromium binary installed in Task 10A lived in the old container and is gone, so the theme system specs are not runnable until it is installed again in an authorized slice. Non-browser specs run.
+- **Root-owned Git object directories — OPEN local follow-up.** Two directories under `.git/objects` of the application worktree (`13` and `c0`) are owned by root, left by a commit made as root inside the container on 2026-10-02. A commit whose new objects hash into either directory fails with "insufficient permission". Fixing the ownership needs root and was not done; commits are made as the unprivileged `discourse` user.
+- **FeedCheck** remains a separate product. It is neither touched nor inspected from Community sessions.
+
+## NOW — TASK 28 PRODUCT BOOTSTRAP CONTRACT v0.1
+
+A small audit / apply mechanism for the security-critical, non-secret native product state: managed global settings, the custom group definitions, the category definitions and ACLs, the retired seeded surfaces, and theme / plugin prerequisites as audited expectations. Group memberships are operational data and are never bootstrapped. Local-only settings stay profile-gated.
+
+Task 28 proves product configuration bootstrap. It does not authorize or prove production deployment, staging, domain, DNS, Cloudflare, HTTPS, SMTP, secrets, staff 2FA enablement, authentication providers, payment, real memberships, real professionals or real associations.

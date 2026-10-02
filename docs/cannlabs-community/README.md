@@ -1,6 +1,6 @@
 # CannLabs Community — Product Documentation
 
-Status: CURRENT · Baseline date: 2026-09-29
+Status: CURRENT · Baseline date: 2026-09-29 · Inventory reconciled: 2026-10-02
 
 This directory holds the durable, Community-specific product truth for CannLabs Community. It exists so that PM, Coder and Design Director sessions start from written, ratified state instead of reconstructing the product from chat history.
 
@@ -10,7 +10,7 @@ This directory holds the durable, Community-specific product truth for CannLabs 
 
 | Dimension | Rule |
 | --- | --- |
-| Repository | Only Community-owned repositories, never shared with another CannLabs product. `leo-even/CannLabs-Community`, a fork of `discourse/discourse`, is the authoritative application repository. The dedicated theme repository `leo-even/CannLabs-Community-Theme` is allowed as an implementation artifact owned exclusively by Community (`DEC-024`). |
+| Repository | Only Community-owned repositories, never shared with another CannLabs product. `leo-even/CannLabs-Community`, a fork of `discourse/discourse`, is the authoritative application repository. The dedicated theme repository `leo-even/CannLabs-Community-Theme` is allowed as an implementation artifact owned exclusively by Community (`DEC-024`). The dedicated plugin repository `leo-even/CannLabs-Community-Qualified-Access` is the one authorized bounded custom plugin, also owned exclusively by Community (`DEC-030`). |
 | Code | Never copied from another CannLabs product. |
 | Database | Its own. Never shared with, copied from or restored from another product. |
 | Deploy | Its own. Nothing inherited from another product. |
@@ -47,6 +47,9 @@ Also:
 | `02_PROJECT_STATE.md` | Where the project is now: validated milestones, completed discovery, active work, what is not authorized, runtime notes, environment follow-ups and next steps. |
 | `03_BACKLOG_AND_OPEN_QUESTIONS.md` | Candidate work and unresolved questions, grouped as NOW / NEXT / LATER / PARKED / OPEN. Backlog is not authorization. |
 | `04_DISCOVERY_BASELINE.md` | Dated snapshot of verified engineering and design discoveries. Re-verify against current upstream before implementation. |
+| `05_V1_PRODUCT_SPEC.md` | The concise V1 product contract and the validated closure of each access, identity and moderation slice. Canon and Decision Log win when wording differs. |
+| `06_MODERATION_TRUST_SAFETY_DRAFT.md` | HYPOTHESIS / internal draft of the native moderation operating model. Not canon and not production-approved. |
+| `07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md` | Validated readiness review (Task 27): production is not ready; the bootstrap gap, open gates and recommended direction. |
 
 Each file header carries a document status: `CURRENT` files are maintained as the project moves; `SNAPSHOT` files are dated evidence that is not updated in place and must be re-verified before use.
 

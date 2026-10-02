@@ -137,3 +137,7 @@ The deleted Site Feedback category leaves `meta_category_id=2` as tolerated upst
 ## Task 27 — Production / Security Foundation Readiness
 
 Production architecture and security readiness are reviewed read-only before implementation. Deployment, secrets, payment, real onboarding, and provider configuration remain deferred.
+
+## Task 27 — VALIDATED readiness review: production not ready
+
+The V1 product and access model above is decided and validated, but it exists only as native state in one local database. A fresh Discourse database would not reproduce it. Production is therefore not ready; the principal gap is reproducible native product bootstrap, an operations problem rather than a product change. Details and open gates: `07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`. Task 28 addresses the product-configuration part only.
