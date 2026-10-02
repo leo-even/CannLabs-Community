@@ -9,7 +9,7 @@ Buckets: **NOW** · **NEXT** · **LATER** · **PARKED** · **OPEN**. States are 
 
 ## NOW
 
-**Current NOW (2026-10-02, Task 30A): no slice is in progress.** Tasks 28, 29 and 30 are validated and closed. The recommended next bounded slice is Local Email Recovery Acceptance, which is not authorized yet. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
+**Current NOW (2026-10-02, Task 31A): no slice is in progress.** Tasks 28, 29, 30 and 31 are validated and closed. The official PM will choose the next slice among the remaining authentication-readiness work; Staff 2FA Acceptance is the likely candidate, not an authorization. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
 
 The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.md` → NEXT.
 
@@ -372,11 +372,21 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 - **Status:** VALIDATED readiness review, read-only. Result: `YES — NATIVE/BUNDLED SUFFICIENT`.
 - **Durable findings:** `02_PROJECT_STATE.md` → TASK 30.
 
+## TASK 31 — VALIDATED LOCAL EMAIL RECOVERY ACCEPTANCE
+
+- **Status:** `VALIDATED — LOCAL EMAIL RECOVERY ACCEPTANCE` by official PM adjudication. Native forgot-password (code-based) and email login were proven end to end locally with a temporarily started Mailpit and one synthetic user, since deleted.
+- **Durable findings:** `02_PROJECT_STATE.md` → TASK 31.
+
 ## AUTHENTICATION READINESS — OPEN ITEMS (none authorized)
 
-- **NEXT — Local Email Recovery Acceptance.** The recommended next bounded slice: with Mailpit started temporarily inside the development container and one synthetic user, prove forgot-password and email login end to end, verify that the generated links use `http://localhost:3100`, then delete the synthetic user and its session state with every repository left clean. It excludes launcher or Docker changes, publishing port 8025, production SMTP, OAuth, provider credentials, Facebook and 2FA.
-- **OPEN — local mail catcher (dev-readiness gap).** Mailpit is available in the development container but not running, nothing listens on port 1025 and the mail UI port 8025 is not published. Email-dependent local flows cannot be acceptance-tested until this is addressed. This is not the production SMTP decision.
-- **CONDITIONAL RISK — CLI link port.** The canonical local address for authentication is `http://localhost:3100`. A CLI or Rails-runner context without `UNICORN_PORT=3100` can emit `http://localhost:3000` links; future link-generating CLI commands must account for the port.
+- **CANDIDATE NEXT — Staff 2FA Acceptance.** The official PM chooses the next slice; this is the likely candidate, not an authorization. Staff 2FA is already required before production, native TOTP is testable locally and it needs no external-provider credentials.
+- **OPEN — local mail catcher (dev-readiness gap).** Task 31 proved the mechanism with a temporary Mailpit, which was stopped afterwards. No mail catcher runs by default, nothing listens on port 1025 and the mail UI port 8025 is not published. Persistent developer-mail ergonomics is a possible future slice, not automatically next. This is not the production SMTP decision.
+- **CONDITIONAL RISK — CLI link port (narrowed by Task 31).** The canonical local address for authentication is `http://localhost:3100`. Background-job mail uses it. Only a standalone CLI or Rails-runner context without `UNICORN_PORT=3100` can emit `http://localhost:3000` links; future link-generating CLI commands must account for the port.
+- **MEDIUM — Security / Privacy Readiness: transient authentication material in request logs.** The password-reset code input is not filtered from the request log, and reset and login tokens appear in request paths. Review before production; no logging change is authorized.
+- **LOW — development hygiene:** the development log can record newly generated password hash and salt values.
+- **LOW / LATER — localization:** the forgot-password code email arrives in English while the email-login mail is in pt-BR.
+- **TESTING CONSTRAINT — `.invalid` recipients receive no mail** (`Email::Sender` skips them). Mail acceptance tests use another reserved domain such as `.test`.
+- **OBSERVATION — sender identity:** local mail uses the default sender domain `unconfigured.discourse.org`; part of production SMTP / domain readiness (see the production-foundation list above).
 - **REQUIRED BEFORE ENABLING ANY PROVIDER — external-provider acceptance tests,** covering automatic account linking by verified email (Google), provider emails treated as verified (Apple, Facebook), Apple private-relay addresses creating a second account, and external signups that are not automatically in `membros_ativos`. No mitigation is designed or authorized.
 - **NEEDS SECURITY REVIEW — Apple private key.** The bundled plugin does not flag `apple_pem` as `secret`. Review before real Apple credentials are entered; do not change plugin code.
 - **OPEN / HYPOTHESIS — Facebook login** (`DEC-034`).
