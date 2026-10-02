@@ -7,7 +7,7 @@ Evidence was captured from the development machine when this baseline was writte
 
 ## CURRENT STATE — 2026-10-02
 
-- **NOW:** Task 28 — Product Bootstrap Contract v0.1 (audit / apply mechanism for the security-critical native product state, with local idempotence proof). The Coder is the one authorized writer.
+- **NOW:** Task 28 — Product Bootstrap Contract v0.1 (audit / apply mechanism for the security-critical native product state, with local idempotence proof). The Coder is the one authorized writer. Implemented and awaiting official PM validation (last section of this file).
 - **Production:** NOT READY. Task 27 is a validated readiness review; its principal gap is reproducible native product bootstrap (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`). No production or staging environment exists.
 - **Validated so far:** repository bootstrap, isolation and operating layer (through Task 04B); design direction, prototype, theme architecture and handoff (Tasks 05–08); Community Theme v0.1 (Tasks 10 / 10B); V1 product model (Task 12A); Access Skeleton (Task 14); Founder local login (Task 15A); verified roles and restricted spaces (Tasks 16 / 16A); qualified-access gap, architecture and plugin v0.1 (Tasks 17, 18A, 19); verified-identity boundary and synthetic professional lifecycle (Tasks 20B, 21); synthetic association / leadership lifecycle (Tasks 22 / 22A); moderation readiness and native moderation lifecycle (Tasks 23A, 24); Active Membership Safety Boundary including the native Site Feedback retirement (Task 26, `DEC-032`, `DEC-033`); production / security foundation readiness review (Task 27).
 - **Repositories:** application `leo-even/CannLabs-Community` (this fork; docs and operating layer only so far); theme `leo-even/CannLabs-Community-Theme` at `aeb3a9d9154f532064dcc24ac9e78cf587588d77`; plugin `leo-even/CannLabs-Community-Qualified-Access` at `ca4f0070d7bf85e42dbfa7f8736469139bb20275`.
@@ -361,3 +361,16 @@ These supersede the matching lines of "CURRENT RUNTIME NOTES" above.
 A small audit / apply mechanism for the security-critical, non-secret native product state: managed global settings, the custom group definitions, the category definitions and ACLs, the retired seeded surfaces, and theme / plugin prerequisites as audited expectations. Group memberships are operational data and are never bootstrapped. Local-only settings stay profile-gated.
 
 Task 28 proves product configuration bootstrap. It does not authorize or prove production deployment, staging, domain, DNS, Cloudflare, HTTPS, SMTP, secrets, staff 2FA enablement, authentication providers, payment, real memberships, real professionals or real associations.
+
+## TASK 28 — IMPLEMENTED, AWAITING OFFICIAL PM VALIDATION
+
+Product Bootstrap v0.1 is implemented in this repository. It is not validated until the official PM says so. Operator guide: `08_PRODUCT_BOOTSTRAP.md`.
+
+- **Shape:** a declarative manifest (`config/cannlabs_community/bootstrap.yml`), one Rails-backed runner (`lib/cannlabs_community/bootstrap.rb`) and two rake tasks, `cannlabs_community:bootstrap:audit` (default-safe, no writes) and `cannlabs_community:bootstrap:apply`. No core file was modified; the fork gains four new files and their documentation.
+- **Reuse:** native site-setting setter, group creation service, category permissions, Guardian-checked category deletion, and the native staff-action and group-history logs. No direct SQL, no schema, no request-time code.
+- **Identity:** groups by technical name, native automatic groups by their stable key, categories by native site setting or slug. No database ids and no secrets in the manifest.
+- **Profiles:** `local` also manages `user_notes_enabled` and `cannlabs_qualified_access_enabled`; in `production` both are gated and never applied.
+- **Automated evidence:** 24 examples, 0 failures (`spec/lib/cannlabs_community/bootstrap_spec.rb`, plugins loaded).
+- **Local runtime evidence (2026-10-02):** audit PASS on all 37 invariants; two consecutive applies reported NO CHANGE with an unchanged database fingerprint; one bounded live drift (removing `membros_ativos` from reporting eligibility) was detected by audit, repaired by apply and left no further change.
+- **Finding kept for later:** once a group has an automatic trust level, core accepts only 0 ("none") to clear it, and treats 0 and unset as the same. The bootstrap follows that.
+- **Not proven:** a clean production-like database, theme and plugin installation, the logo upload, secrets and external services. Those remain a later slice.

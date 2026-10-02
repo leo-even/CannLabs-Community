@@ -1,0 +1,148 @@
+# CannLabs Community — product bootstrap manifest v0.1
+#
+# The security-critical, non-secret native Discourse state that defines the product.
+# Read by CannlabsCommunity::Bootstrap (bin/rake cannlabs_community:bootstrap:audit).
+# Operator documentation: docs/cannlabs-community/08_PRODUCT_BOOTSTRAP.md
+#
+# Rules for this file:
+# - Semantic names only, never numeric database ids. Native automatic groups are
+#   named by their Group::AUTO_GROUPS key (admins, moderators, staff, trust_level_1).
+# - No secrets of any kind.
+# - Group memberships are operational data and never appear here.
+
+version: 1
+
+profiles:
+  - local
+  - production
+
+# Managed in every profile.
+settings:
+  login_required: true
+  allow_uncategorized_topics: false
+  chat_enabled: false
+  default_locale: pt_BR
+  personal_message_enabled_groups:
+    - admins
+    - moderators
+  flag_post_allowed_groups:
+    - admins
+    - moderators
+    - trust_level_1
+    - membros_ativos
+
+# Managed only in the profiles that list a value. In any other profile the
+# setting is gated: reported, never applied.
+profile_settings:
+  user_notes_enabled:
+    local: true
+  cannlabs_qualified_access_enabled:
+    local: true
+
+# Native automatic groups the manifest refers to. Verified, never created.
+builtin_groups:
+  - admins
+  - moderators
+  - staff
+  - trust_level_1
+
+# Applied to every custom group below: membership is staff-controlled.
+group_controls:
+  public_admission: false
+  public_exit: false
+  allow_membership_requests: false
+  grant_trust_level: 0 # the native "none"; an unset value is equivalent
+  automatic_membership_email_domains: null
+
+# Custom group definitions. acesso_* are derived by the Qualified Access plugin.
+groups:
+  membros_ativos:
+    full_name: "Membros da Community"
+    visibility_level: staff
+    members_visibility_level: staff
+  medicos_verif:
+    full_name: "Médicos Verificados"
+    visibility_level: logged_on_users
+    members_visibility_level: staff
+  farmaceuticos_verif:
+    full_name: "Farmacêuticos Verificados"
+    visibility_level: logged_on_users
+    members_visibility_level: staff
+  agronomos_verif:
+    full_name: "Agrônomos Verificados"
+    visibility_level: logged_on_users
+    members_visibility_level: staff
+  advogados_verif:
+    full_name: "Advogados Verificados"
+    visibility_level: logged_on_users
+    members_visibility_level: staff
+  liderancas_aprov:
+    full_name: "Lideranças Aprovadas"
+    visibility_level: staff
+    members_visibility_level: staff
+  acesso_profissionais:
+    full_name: "Acesso — Profissionais Verificados"
+    visibility_level: staff
+    members_visibility_level: staff
+  acesso_liderancas:
+    full_name: "Acesso — Lideranças de Associações"
+    visibility_level: staff
+    members_visibility_level: staff
+
+# Each category is found by a native site setting or by its top-level slug.
+# `permissions` is the complete ACL: any other row is drift.
+categories:
+  general:
+    site_setting: general_category_id
+    permissions:
+      membros_ativos: full
+  comunidade:
+    slug: comunidade
+    create:
+      name: "Comunidade"
+      description: "Espaço geral para membros da CannLabs Community."
+    permissions:
+      membros_ativos: full
+  profissionais_verificados:
+    slug: profissionais-verificados
+    create:
+      name: "Profissionais Verificados"
+      description: "Espaço reservado para membros com identidade profissional verificada pela CannLabs."
+    permissions:
+      acesso_profissionais: full
+  liderancas_de_associacoes:
+    slug: liderancas-de-associacoes
+    create:
+      name: "Lideranças de Associações"
+      description: "Espaço reservado para lideranças de associações aprovadas pela CannLabs."
+    permissions:
+      acesso_liderancas: full
+  staff:
+    site_setting: staff_category_id
+    verify_only: true
+    permissions:
+      staff: full
+
+# The special Uncategorized category is retired by the native upcoming change.
+# What remains of it must not be an unpaid surface.
+uncategorized:
+  residual_permissions:
+    membros_ativos: full
+
+# Seeded surfaces that must be absent (DEC-033).
+retired_categories:
+  site_feedback:
+    site_setting: meta_category_id
+
+# Deployment prerequisites: audited here, installed by the deployment layer.
+theme:
+  repository: https://github.com/leo-even/CannLabs-Community-Theme
+  revision: aeb3a9d9154f532064dcc24ac9e78cf587588d77
+
+plugin:
+  name: cannlabs-community-qualified-access
+  repository: https://github.com/leo-even/CannLabs-Community-Qualified-Access
+  revision: ca4f0070d7bf85e42dbfa7f8736469139bb20275
+  scheduled_job: Jobs::CannlabsQualifiedAccessDriftReconciliation
+  every_minutes: 15
+  groups_constant: CannLabsQualifiedAccess::ALL_GROUPS

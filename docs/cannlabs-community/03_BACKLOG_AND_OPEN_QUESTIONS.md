@@ -337,6 +337,8 @@ Read-only architecture, reproducibility, security, operations, and launch-gate r
 
 A small audit / apply mechanism for the security-critical native product state, with local idempotence and drift proof. It is not a production installer.
 
+Implemented on 2026-10-02 and awaiting official PM validation; see `08_PRODUCT_BOOTSTRAP.md`.
+
 ## NEXT / OPEN — PRODUCTION FOUNDATION (after Task 28; none authorized)
 
 - **NEXT — clean production-like proof:** supported production deployment, theme and plugin installation, bootstrap application, secrets, external services, a clean database and smoke tests. Staging with synthetic data only is the recommended direction (HYPOTHESIS).

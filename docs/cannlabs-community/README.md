@@ -50,6 +50,7 @@ Also:
 | `05_V1_PRODUCT_SPEC.md` | The concise V1 product contract and the validated closure of each access, identity and moderation slice. Canon and Decision Log win when wording differs. |
 | `06_MODERATION_TRUST_SAFETY_DRAFT.md` | HYPOTHESIS / internal draft of the native moderation operating model. Not canon and not production-approved. |
 | `07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md` | Validated readiness review (Task 27): production is not ready; the bootstrap gap, open gates and recommended direction. |
+| `08_PRODUCT_BOOTSTRAP.md` | Operator guide for the product bootstrap (Task 28): what it owns and does not own, audit, apply, profiles and safe failures. |
 
 Each file header carries a document status: `CURRENT` files are maintained as the project moves; `SNAPSHOT` files are dated evidence that is not updated in place and must be re-verified before use.
 
