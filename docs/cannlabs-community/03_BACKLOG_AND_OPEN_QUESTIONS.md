@@ -9,7 +9,7 @@ Buckets: **NOW** · **NEXT** · **LATER** · **PARKED** · **OPEN**. States are 
 
 ## NOW
 
-**Current NOW (2026-10-02, Task 32A): no slice is in progress.** Tasks 28, 29, 30, 31 and 32 are validated and closed. The official PM will choose the next bounded authentication slice; Google Authentication Provider Readiness / Acceptance is the likely direction, not an authorization. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
+**Current NOW (2026-10-02, Task 33A): no slice is in progress.** Tasks 28 to 33 are validated and closed. The official PM will choose the next bounded authentication slice; Google Authentication Provider Readiness is the likely direction, not an authorization, and nothing of it is started. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
 
 The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.md` → NEXT.
 
@@ -382,9 +382,16 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 - **Status:** `VALIDATED — STAFF 2FA ACCEPTANCE` by official PM adjudication. Native TOTP enrollment and login, wrong-TOTP rejection, single-use backup codes and `users:disable_2fa` recovery were proven with one synthetic moderator, since deleted. `enforce_second_factor` is back at `no`; no real staff account is enrolled or under persistent enforcement.
 - **Durable findings:** `02_PROJECT_STATE.md` → TASK 32.
 
+## TASK 33 — VALIDATED GIT OWNERSHIP HYGIENE
+
+- **Status:** `VALIDATED — GIT OWNERSHIP HYGIENE` by official PM adjudication. The root-owned paths under the application repository's `.git/objects` are RESOLVED: the Founder corrected ownership on seven proven paths, normal unprivileged Git object creation works, and `git fsck` found no corruption. The theme and plugin repositories had no such defect.
+- **Operating rules (ratified):** Git commands inside `cannlabs_community_dev` run as the `discourse` user, never as the container's default root; and `STOP — do not change content to evade Git object ownership failures`.
+- **OPEN / LATER — local filesystem hygiene (separate, not authorized):** root-owned paths under `tmp/` and the root-owned `plugins/cannlabs-community-qualified-access` mount-point directory. Neither is Git metadata, and neither was repaired.
+- **Durable findings:** `02_PROJECT_STATE.md` → TASK 33.
+
 ## AUTHENTICATION READINESS — OPEN ITEMS (none authorized)
 
-- **LIKELY NEXT DIRECTION — Google Authentication Provider Readiness / Acceptance.** The official PM chooses the next bounded authentication slice and first decides between (A) credential / domain readiness only and (B) a local Google OAuth acceptance with Founder-created provider credentials. Google is a DECIDED target and core Discourse. A direction, not an authorization.
+- **LIKELY NEXT DIRECTION — Google Authentication Provider Readiness.** The official PM chooses the next bounded authentication slice and first decides between (A) credential / domain readiness only and (B) a local Google OAuth acceptance with Founder-created provider credentials. Google is a DECIDED target and core Discourse. A direction, not an authorization.
 - **REQUIRED BEFORE PRODUCTION — staff 2FA rollout.** Enroll every real staff account, verify login with its second factor, establish the recovery / backup-code procedure, confirm no staff account remains unenrolled, and only then leave `enforce_second_factor = staff` enabled.
 - **MEDIUM — Security / Operational Readiness: staff enforcement boundary.** For an unenrolled staff account, native enforcement redirects HTML navigation to the enrollment page; JSON and API requests are exempt from that redirect. The setting alone does not make an unenrolled staff account safe. Recorded as native behaviour, not as a vulnerability.
 - **OPEN — local WebAuthn acceptance / environment issue.** The development WebAuthn origin is tied to `http://localhost:3000` while Community runs on `http://localhost:3100`; security-key and passkey acceptance are untested. No core patch is authorized.

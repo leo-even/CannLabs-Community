@@ -7,9 +7,9 @@ Evidence was captured from the development machine when this baseline was writte
 
 ## CURRENT STATE — 2026-10-02
 
-- **NOW:** no slice is in progress. Task 32A (documentation closure) brought the durable state up to date through Task 32. The official PM will choose the next bounded authentication slice; Google Authentication Provider Readiness / Acceptance is the likely direction, not an authorization (last section of this file).
+- **NOW:** no slice is in progress. Task 33A (documentation closure) brought the durable state up to date through Task 33. The official PM intends to move toward the first external authentication provider; Google Authentication Provider Readiness is the likely next direction, not an authorization, and nothing of it is started (last section of this file).
 - **Production:** NOT READY. Task 27 is a validated readiness review (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`). Task 28 closed the product-configuration bootstrap part of its principal gap; a clean production-like deployment, staff 2FA, SMTP, secrets, authentication providers, payment and the Legal / Privacy / Trust & Safety gates remain open. No production or staging environment exists.
-- **Validated so far:** repository bootstrap, isolation and operating layer (through Task 04B); design direction, prototype, theme architecture and handoff (Tasks 05–08); Community Theme v0.1 (Tasks 10 / 10B); V1 product model (Task 12A); Access Skeleton (Task 14); Founder local login (Task 15A); verified roles and restricted spaces (Tasks 16 / 16A); qualified-access gap, architecture and plugin v0.1 (Tasks 17, 18A, 19); verified-identity boundary and synthetic professional lifecycle (Tasks 20B, 21); synthetic association / leadership lifecycle (Tasks 22 / 22A); moderation readiness and native moderation lifecycle (Tasks 23A, 24); Active Membership Safety Boundary including the native Site Feedback retirement (Task 26, `DEC-032`, `DEC-033`); production / security foundation readiness review (Task 27); Product Bootstrap v0.1 (Task 28); local-auth baseline (Task 29); authentication and identity-provider readiness review (Task 30); local email recovery acceptance (Task 31); staff 2FA acceptance (Task 32).
+- **Validated so far:** repository bootstrap, isolation and operating layer (through Task 04B); design direction, prototype, theme architecture and handoff (Tasks 05–08); Community Theme v0.1 (Tasks 10 / 10B); V1 product model (Task 12A); Access Skeleton (Task 14); Founder local login (Task 15A); verified roles and restricted spaces (Tasks 16 / 16A); qualified-access gap, architecture and plugin v0.1 (Tasks 17, 18A, 19); verified-identity boundary and synthetic professional lifecycle (Tasks 20B, 21); synthetic association / leadership lifecycle (Tasks 22 / 22A); moderation readiness and native moderation lifecycle (Tasks 23A, 24); Active Membership Safety Boundary including the native Site Feedback retirement (Task 26, `DEC-032`, `DEC-033`); production / security foundation readiness review (Task 27); Product Bootstrap v0.1 (Task 28); local-auth baseline (Task 29); authentication and identity-provider readiness review (Task 30); local email recovery acceptance (Task 31); staff 2FA acceptance (Task 32); Git ownership hygiene of the application repository (Task 33).
 - **Authentication:** native and bundled Discourse are sufficient for V1 (`YES — NATIVE/BUNDLED SUFFICIENT`). Local login, Google and Apple are the DECIDED direction; Facebook is OPEN / HYPOTHESIS (`DEC-034`); staff 2FA is required before production. Its native mechanics are validated (Task 32), but it is not enabled (`enforce_second_factor = no`) and no real staff account is enrolled. No external provider is enabled or configured. Local password reset and email login are proven end to end with a temporarily started mail catcher (Task 31); no production SMTP provider is selected.
 - **Repositories:** application `leo-even/CannLabs-Community` (this fork; docs, the operating layer and the Task 28 bootstrap mechanism); theme `leo-even/CannLabs-Community-Theme` at `aeb3a9d9154f532064dcc24ac9e78cf587588d77`; plugin `leo-even/CannLabs-Community-Qualified-Access` at `ca4f0070d7bf85e42dbfa7f8736469139bb20275`.
 - **Latest decision:** `DEC-034`.
@@ -243,9 +243,9 @@ None of these is solved in this slice.
 
 ## NEXT
 
-Reconciled on 2026-10-02 (Task 32A); Tasks 28, 29, 30, 31 and 32 are validated and closed.
+Reconciled on 2026-10-02 (Task 33A); Tasks 28 to 33 are validated and closed.
 
-1. The next bounded authentication slice — the official PM's choice. The likely direction is Google Authentication Provider Readiness / Acceptance (last section of this file). Nothing is authorized yet.
+1. The next bounded authentication slice — the official PM's choice. The likely direction is Google Authentication Provider Readiness (last section of this file). Nothing is authorized or started.
 2. Staff 2FA production rollout: enroll and verify every real staff account first, then rely on persistent `staff` enforcement (operational rule in "TASK 32" below). Required before production; not authorized.
 3. A later slice proving a clean production-like environment end to end: supported production deployment, theme and plugin installation, bootstrap application, secrets, external services and smoke tests (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`).
 4. Legal / Privacy / Trust & Safety review.
@@ -354,7 +354,7 @@ These supersede the matching lines of "CURRENT RUNTIME NOTES" above.
 - **App server.** The container's own command starts only PostgreSQL, Redis and system services. The Founder launcher starts the development server (`bin/dev`) inside the container and writes its output to `/home/discourse/.cache/cannlabs-community/local-launcher/bin-dev-launcher.log`.
 - **Running workers keep the application revision they booted with.** A commit made after the development server started leaves the workers on the older revision. Cache invalidations published by a separate Rails process are then ignored by those workers until the development server is restarted; site-setting changes still propagate. Restart the Community development server before collecting runtime evidence that depends on theme or cache invalidation.
 - **Local test stack.** The `discourse_test` database lives in the persisted volume and survived the recreation. The Playwright Chromium binary installed in Task 10A lived in the old container and is gone, so the theme system specs are not runnable until it is installed again in an authorized slice. Non-browser specs run.
-- **Root-owned Git object directories — OPEN local follow-up.** Two directories under `.git/objects` of the application worktree (`13` and `c0`) are owned by root, left by a commit made as root inside the container on 2026-10-02. A commit whose new objects hash into either directory fails with "insufficient permission". Fixing the ownership needs root and was not done; commits are made as the unprivileged `discourse` user.
+- **Root-owned Git object directories — RESOLVED / VALIDATED (Task 33).** The Founder corrected the ownership and the official PM validated the result; see "TASK 33" below. History: directories and objects under `.git/objects` of the application worktree were owned by root, left by commits made as root inside the container on 2026-10-02, so a commit whose new objects hashed into a root-owned directory failed with "insufficient permission". Git commands in the container run as the unprivileged `discourse` user. This is no longer an open follow-up.
 - **FeedCheck** remains a separate product. It is neither touched nor inspected from Community sessions.
 
 ## NOW — TASK 28 PRODUCT BOOTSTRAP CONTRACT v0.1
@@ -543,8 +543,31 @@ During the test a long-lived `rails runner` process returned stale ActiveRecord 
 
 Production remains NOT READY.
 
+## TASK 33 — VALIDATED GIT OWNERSHIP HYGIENE
+
+Status: `VALIDATED — GIT OWNERSHIP HYGIENE` (official PM adjudication). Task 33 made no tracked-file change, commit or push. The Git-metadata ownership defect of the application repository is RESOLVED.
+
+- **Defect.** Seven paths under `.git/objects` of the application repository were `root:root`: two loose-object directories and five loose object files. No ownership anomaly existed elsewhere under `.git`. The theme and Qualified Access repositories had no analogous defect.
+- **Root cause — `ROOT CAUSE CONFIRMED`.** Two earlier Git commits were executed as uid 0 inside the development container, whose default exec identity is root.
+- **Repair.** The Founder manually corrected ownership on those seven proven paths only. No recursive change, no chmod, no change to object content or history, no deleted object and no other repository.
+- **After the repair.** Every path under the application `.git` is `leo:leo`; loose-object files are still mode 444 and object directories mode 755; every object directory is writable by the normal workflow identity.
+- **Unprivileged write proof.** As `leo` (uid / gid 1000), `git hash-object -w --stdin` on harmless constant text created a loose blob owned by `leo:leo` with mode 444. HEAD, index, refs and worktree were unchanged; no commit and no push. The proof blob is intentionally unreachable and was not deleted; normal Git GC may remove it later.
+- **Integrity.** `git fsck` exited 0: no missing objects, no corrupt objects, no broken links, and two harmless dangling blobs. One is the proof object; the other predates Task 33 and appears to come from an earlier reset (its content was not inspected). A dangling blob is not corruption, and no cleanup is authorized.
+
+### Operating rules — ratified
+
+- **Container Git identity.** Git commands executed inside `cannlabs_community_dev` must run as the `discourse` user (`docker exec -u discourse ...`), not as the container's default root user. `discourse` is uid / gid 1000, which is `leo:leo` on the WSL ext4 bind mount. The rule is specific to Git and other repository-writing operations.
+- **`STOP — do not change content to evade Git object ownership failures`.** If correct source or documentation content produces a Git object whose destination is unwritable because of filesystem ownership: stop; report the ownership defect; repair the repository or environment deliberately; do not rewrite otherwise-correct content merely to obtain a different Git hash. Task 32A met exactly this situation. Its wording change was legitimate on its merits, but a content change used as a permissions workaround must not recur.
+- The agent operating contract (`.skills/community-repo-audit/references/operating-contract.md`) is unchanged by this closure. Moving these rules into it is a later official PM decision.
+
+### Scope distinction — separate local filesystem hygiene debt
+
+Task 33 closes Git-metadata ownership under the application `.git` only. It does not claim that every root-owned path in the development worktree is fixed. Still root-owned at this closure, by read-only inspection: the paths under `tmp/` (cache) and the `plugins/cannlabs-community-qualified-access` mount-point directory. Both are git-ignored, neither is Git metadata, and Task 33 did not prove either to be a Git blocker. They are local runtime / filesystem hygiene debt, not repaired and not authorized.
+
+Production remains NOT READY.
+
 ## NEXT — OFFICIAL PM TO CHOOSE (NOTHING AUTHORIZED)
 
-After this closure the official PM chooses the next bounded authentication slice. The likely direction is **Google Authentication Provider Readiness / Acceptance**: local password authentication, local account recovery and the native staff TOTP / recovery mechanics are validated; Google is already a DECIDED product target and is core Discourse; custom authentication remains unjustified. Before anything starts, the official PM determines whether the next step is (A) credential / domain readiness only, or (B) an actual local Google OAuth acceptance with Founder-created provider credentials. This is a direction, not an authorization.
+After this closure the official PM chooses the next bounded authentication slice. The likely direction is **Google Authentication Provider Readiness**: local password authentication, local account recovery and the native staff TOTP / recovery mechanics are validated; Google is already a DECIDED product target and is core Discourse; custom authentication remains unjustified. Before anything starts, the official PM determines whether the next step is (A) credential / domain readiness only, or (B) an actual local Google OAuth acceptance with Founder-created provider credentials. This is a direction, not an authorization. Google is not configured: no provider credentials exist, `enable_google_oauth2_logins` is not enabled, no secret was added and no OAuth acceptance has started.
 
-Task 32A itself was documentation only: staff 2FA was not enabled, no real staff account was enrolled, and nothing in the runtime, the database, logging or the authentication settings was changed.
+Task 32A itself was documentation only: staff 2FA was not enabled, no real staff account was enrolled, and nothing in the runtime, the database, logging or the authentication settings was changed. Task 33A was documentation only as well: no ownership, runtime, database or authentication change.
