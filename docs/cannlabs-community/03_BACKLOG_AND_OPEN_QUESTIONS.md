@@ -299,3 +299,11 @@ Perform a read-only native capability and operating-readiness review. No moderat
 Implement and validate the native paid/private boundary for General, Uncategorized and Site Feedback, add membros_ativos to native flag eligibility, then complete the synthetic moderation lifecycle. No real users, payment, production or custom moderation code.
 
 Task 23A is validated readiness; Task 24 resumes under this boundary; Task 25 remains read-only evidence.
+
+## TASK 24 — VALIDATED NATIVE MODERATION LIFECYCLE
+
+Task 24 is validated with native flags, Review Queue, staff content action, warning, silence, moderator-notification support, short suspension/unsuspension and cleanup. No custom moderation code or routine User Note was required.
+
+## TASK 26 — PARTIAL ACTIVE MEMBERSHIP SAFETY BOUNDARY
+
+General is member-only and active TL0 reporting works through membros_ativos. Seeded Uncategorized and Site Feedback remain open to authenticated unpaid users because upstream protects their security settings. Task 26 is not validated.

@@ -115,3 +115,11 @@ Native Groups are the V1 association identity primitive. A custom Organization m
 ## Task 26 — active membership safety boundary
 
 V1 normal Community content is member-only through membros_ativos. General, Uncategorized and Site Feedback are normal member spaces, not onboarding. Every active member may use native reporting regardless of Trust Level; unpaid accounts do not receive ordinary reporting access. Task 24 synthetic moderation acceptance resumes after this native configuration correction. Staff 2FA remains a Security / Product / Operations requirement and is not implemented here.
+
+## Task 24 — VALIDATED native moderation lifecycle
+
+The synthetic native moderation lifecycle is validated: active TL0 report, Review Queue, staff hide, warning, silence, moderator-notification support, short suspension/unsuspension and cleanup. Ordinary PM and Chat remain off.
+
+## Task 26 — PARTIAL active membership safety boundary
+
+General is member-only and active TL0 reporting is native. Seeded Uncategorized and Site Feedback remain an open paid/private-boundary blocker because ordinary ACL edits are rejected by upstream special-category protections.

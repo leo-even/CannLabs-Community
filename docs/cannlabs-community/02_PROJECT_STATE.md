@@ -282,3 +282,11 @@ Validate one reversible synthetic report → Review Queue → staff action → w
 The official PM ratified DEC-032: normal Community content requires membros_ativos; General, Uncategorized and Site Feedback are member-only, not onboarding spaces; all active members may report regardless of Trust Level; unpaid accounts retain only account/onboarding/legal/support surfaces and no ordinary reporting rights. Task 23A remains validated readiness. Task 24 is authorized to resume after the native flag eligibility correction. Task 25 evidence remains read-only readiness evidence.
 
 Staff 2FA is a Security / Product / Operations requirement, not a counsel gate; it is not implemented by Task 26.
+
+## TASK 24 — VALIDATED NATIVE MODERATION LIFECYCLE
+
+Task 24 is durably validated with native Discourse primitives: an active TL0 member reported through native group-based eligibility after membros_ativos was included; an unpaid TL0 account could not report; the inappropriate flag created a ReviewableFlaggedPost; Review Queue and staff agree_and_hide worked; ReviewHistory/UserHistory were sufficient; native warning, silence, moderator-notification support, short suspension and unsuspension worked; ordinary member PM and Chat remained disabled; no routine User Note was required; and all synthetic users/content/state were cleaned up. Appeal support was proven through the native moderator-notification/support path, not ordinary direct PM to equipe.
+
+## TASK 26 — PARTIAL ACTIVE MEMBERSHIP SAFETY BOUNDARY
+
+Validated components: General is member-only and active TL0 reporting works through membros_ativos while unpaid TL0 reporting remains denied. Open blocker: seeded Uncategorized and seeded Site Feedback remain readable by authenticated unpaid users because current Discourse prevents ordinary security edits to those special categories.
