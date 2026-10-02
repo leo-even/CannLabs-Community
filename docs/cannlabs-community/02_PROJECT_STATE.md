@@ -267,3 +267,12 @@ Task 22 is durably validated against the authoritative WSL Community worktree. A
 Native Groups are sufficient for V1 association identity and leadership authorization. No custom Organization model, dashboard, seat management, delegated owners, org-owned private forum, CRM, storefront, marketplace, company organization model or association billing is authorized. Existing Canon and `DEC-031` remain authoritative.
 
 ## NOW — TASK 23 MODERATION / TRUST & SAFETY / OPERATIONS READINESS
+
+## TASK 23A — VALIDATED READINESS: NATIVE MODERATION SUFFICIENT FOR V1
+
+Task 23 is closed as readiness evidence. Native flags, Review Queue, warning, silence, suspension, content actions, moderation/review history, post revisions, trust levels and new-user limits are sufficient for V1. Category moderators, custom moderation plugins, AI moderation, custom reputation and bespoke flagging are not justified. Member-to-member PM and Chat remain off; support remains through `equipe`; User Notes remain concise operational notes only. The cannabis boundary remains no sale, negotiation or intermediation of cannabis through Community. Public rules and exact medical/legal disclaimers remain draft and counsel-gated. No new Decision ID was required.
+
+## NOW — TASK 24 SYNTHETIC NATIVE MODERATION LIFECYCLE
+
+Validate one reversible synthetic report → Review Queue → staff action → warning/silence → support/appeal path using native primitives only. No real moderation, real users, custom code or global policy changes are authorized.
+
