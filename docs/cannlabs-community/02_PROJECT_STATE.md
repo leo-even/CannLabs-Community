@@ -7,10 +7,10 @@ Evidence was captured from the development machine when this baseline was writte
 
 ## CURRENT STATE — 2026-10-02
 
-- **NOW:** no slice is in progress. Task 31A (documentation closure) brought the durable state up to date through Task 31. The official PM will choose the next slice among the remaining authentication-readiness work; Staff 2FA Acceptance is the likely candidate, not an authorization (last section of this file).
+- **NOW:** no slice is in progress. Task 32A (documentation closure) brought the durable state up to date through Task 32. The official PM will choose the next bounded authentication slice; Google Authentication Provider Readiness / Acceptance is the likely direction, not an authorization (last section of this file).
 - **Production:** NOT READY. Task 27 is a validated readiness review (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`). Task 28 closed the product-configuration bootstrap part of its principal gap; a clean production-like deployment, staff 2FA, SMTP, secrets, authentication providers, payment and the Legal / Privacy / Trust & Safety gates remain open. No production or staging environment exists.
-- **Validated so far:** repository bootstrap, isolation and operating layer (through Task 04B); design direction, prototype, theme architecture and handoff (Tasks 05–08); Community Theme v0.1 (Tasks 10 / 10B); V1 product model (Task 12A); Access Skeleton (Task 14); Founder local login (Task 15A); verified roles and restricted spaces (Tasks 16 / 16A); qualified-access gap, architecture and plugin v0.1 (Tasks 17, 18A, 19); verified-identity boundary and synthetic professional lifecycle (Tasks 20B, 21); synthetic association / leadership lifecycle (Tasks 22 / 22A); moderation readiness and native moderation lifecycle (Tasks 23A, 24); Active Membership Safety Boundary including the native Site Feedback retirement (Task 26, `DEC-032`, `DEC-033`); production / security foundation readiness review (Task 27); Product Bootstrap v0.1 (Task 28); local-auth baseline (Task 29); authentication and identity-provider readiness review (Task 30); local email recovery acceptance (Task 31).
-- **Authentication:** native and bundled Discourse are sufficient for V1 (`YES — NATIVE/BUNDLED SUFFICIENT`). Local login, Google and Apple are the DECIDED direction; Facebook is OPEN / HYPOTHESIS (`DEC-034`); staff 2FA is required before production. No external provider is enabled or configured. Local password reset and email login are proven end to end with a temporarily started mail catcher (Task 31); no production SMTP provider is selected.
+- **Validated so far:** repository bootstrap, isolation and operating layer (through Task 04B); design direction, prototype, theme architecture and handoff (Tasks 05–08); Community Theme v0.1 (Tasks 10 / 10B); V1 product model (Task 12A); Access Skeleton (Task 14); Founder local login (Task 15A); verified roles and restricted spaces (Tasks 16 / 16A); qualified-access gap, architecture and plugin v0.1 (Tasks 17, 18A, 19); verified-identity boundary and synthetic professional lifecycle (Tasks 20B, 21); synthetic association / leadership lifecycle (Tasks 22 / 22A); moderation readiness and native moderation lifecycle (Tasks 23A, 24); Active Membership Safety Boundary including the native Site Feedback retirement (Task 26, `DEC-032`, `DEC-033`); production / security foundation readiness review (Task 27); Product Bootstrap v0.1 (Task 28); local-auth baseline (Task 29); authentication and identity-provider readiness review (Task 30); local email recovery acceptance (Task 31); staff 2FA acceptance (Task 32).
+- **Authentication:** native and bundled Discourse are sufficient for V1 (`YES — NATIVE/BUNDLED SUFFICIENT`). Local login, Google and Apple are the DECIDED direction; Facebook is OPEN / HYPOTHESIS (`DEC-034`); staff 2FA is required before production. Its native mechanics are validated (Task 32), but it is not enabled (`enforce_second_factor = no`) and no real staff account is enrolled. No external provider is enabled or configured. Local password reset and email login are proven end to end with a temporarily started mail catcher (Task 31); no production SMTP provider is selected.
 - **Repositories:** application `leo-even/CannLabs-Community` (this fork; docs, the operating layer and the Task 28 bootstrap mechanism); theme `leo-even/CannLabs-Community-Theme` at `aeb3a9d9154f532064dcc24ac9e78cf587588d77`; plugin `leo-even/CannLabs-Community-Qualified-Access` at `ca4f0070d7bf85e42dbfa7f8736469139bb20275`.
 - **Latest decision:** `DEC-034`.
 
@@ -238,17 +238,18 @@ None of these is solved in this slice.
 - **GitHub Actions on the fork — OPEN.** The workflow definitions contain push triggers that appear applicable to changes on `main` (including `Tests`, `Linting` and `Licenses`), but the baseline push `e02f6d4c` produced no GitHub Actions runs, no run IDs and no Actions status checks. The cause is unresolved. CI enablement and policy must be reviewed before the project relies on GitHub Actions as validation evidence (`04_DISCOVERY_BASELINE.md` §1.5 and §3).
 - **Cloudflare GitHub integration — OPEN (Infrastructure / Security / Deployment).** The GitHub app `cloudflare-workers-and-pages` has access to this repository. The baseline push produced a Cloudflare-associated check suite, which was still queued when inspected; no deployment was observed. Review the integration's repository access and intended deployment role before production deployment. Its presence does not establish an active Community deployment.
 - **Windows host clock — RESOLVED / VALIDATED (2026-10-02).** The Founder corrected Windows time synchronization and the official PM validated the result; see "LOCAL CLOCK / SIDEKIQ INCIDENT" below. History: the earlier WSL clock-drift attribution was incorrect, and a later comparison with GitHub server time showed the Windows host clock about 304 seconds (roughly five minutes) ahead. This is no longer an open follow-up.
-- **Passkeys on port 3100.** Upstream hardcodes the development WebAuthn origin to `http://localhost:3000` (`lib/discourse_webauthn.rb`), so passkeys do not work on the Community development port. Do not patch core for this.
+- **Passkeys on port 3100.** Upstream hardcodes the development WebAuthn origin to `http://localhost:3000` (`lib/discourse_webauthn.rb`), so passkeys do not work on the Community development port. Do not patch core for this. **OPEN — local WebAuthn acceptance / environment issue:** security-key and passkey acceptance were not part of Task 32 and remain separate; this does not affect the TOTP acceptance.
 - **Correction-loop rule — future operating-layer improvement.** Lesson from Tasks 10–10B: bound a correction loop by finding and scope, not by a fixed number of commits. For the same validated finding, with an evidenced root cause and a tightly bounded correction that expands no product or scope, the official PM may authorize further bounded correction until the acceptance criterion converges. This is not an unlimited fix loop: a materially new finding returns to normal readiness / scope arbitration. The operating skills are not changed yet.
 
 ## NEXT
 
-Reconciled on 2026-10-02 (Task 31A); Tasks 28, 29, 30 and 31 are validated and closed.
+Reconciled on 2026-10-02 (Task 32A); Tasks 28, 29, 30, 31 and 32 are validated and closed.
 
-1. Staff 2FA acceptance, with recovery codes and a break-glass procedure — the likely next candidate among the remaining authentication-readiness work (last section of this file). The official PM chooses; nothing is authorized yet.
-2. A later slice proving a clean production-like environment end to end: supported production deployment, theme and plugin installation, bootstrap application, secrets, external services and smoke tests (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`).
-3. Legal / Privacy / Trust & Safety review.
-4. Authentication providers (external-provider acceptance tests first) and payment readiness as separate slices.
+1. The next bounded authentication slice — the official PM's choice. The likely direction is Google Authentication Provider Readiness / Acceptance (last section of this file). Nothing is authorized yet.
+2. Staff 2FA production rollout: enroll and verify every real staff account first, then rely on persistent `staff` enforcement (operational rule in "TASK 32" below). Required before production; not authorized.
+3. A later slice proving a clean production-like environment end to end: supported production deployment, theme and plugin installation, bootstrap application, secrets, external services and smoke tests (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`).
+4. Legal / Privacy / Trust & Safety review.
+5. The remaining authentication providers (external-provider acceptance tests first) and payment readiness as separate slices.
 
 The order is a candidate sequence, not an authorization. Visual polish is no longer the critical path. The Founder local test login is validated by Task 15A and its credential was rotated after Task 29; no credential is stored in the repository.
 
@@ -413,7 +414,7 @@ Task 30 was a read-only review; no product or runtime write occurred, and nothin
 | Google | core | target DECIDED | disabled; credentials required later |
 | Apple | bundled plugin `plugins/discourse-apple-auth` | target DECIDED | disabled; Apple credentials and domain prerequisites required later |
 | Facebook | core | OPEN / HYPOTHESIS (`DEC-034`); not DECIDED, not V1 | disabled |
-| Staff 2FA | core | required before production | not enabled |
+| Staff 2FA | core | required before production | not enabled; native mechanics validated in Task 32 |
 
 ### Local mail path — current dev-readiness gap
 
@@ -485,8 +486,65 @@ The synthetic user was deleted through the native lifecycle: zero synthetic auth
 
 Production remains NOT READY. No production SMTP provider is selected and no external authentication provider is enabled.
 
-## NEXT — OFFICIAL PM TO CHOOSE (NOTHING AUTHORIZED)
+## NEXT AFTER TASK 31 — STAFF 2FA ACCEPTANCE CANDIDATE (HISTORICAL)
+
+Status superseded: Staff 2FA Acceptance was authorized and is VALIDATED as Task 32 (next section). The text is kept as the record of what was recommended.
 
 After this closure the official PM chooses among the remaining authentication-readiness work. The likely candidate is **Staff 2FA Acceptance**: staff 2FA is already required before production, native TOTP is testable locally, it needs no Google, Apple or Facebook credentials, and Task 31 has shown that local mail and recovery work when a mail catcher is temporarily enabled. This is a candidate, not an authorization. Persistent Mailpit integration is not automatically next.
 
 Task 31A itself was documentation only: Mailpit was not started and nothing in the runtime, the database or the authentication settings was changed.
+
+## TASK 32 — VALIDATED STAFF 2FA ACCEPTANCE
+
+Status: `VALIDATED — STAFF 2FA ACCEPTANCE` (official PM adjudication). Task 32 made no repository write.
+
+The validation covers the native Discourse staff-enforcement behaviour, TOTP enrollment and login, wrong-TOTP rejection, backup-code generation and login, single-use backup codes, native break-glass recovery, the post-recovery re-enrollment requirement, baseline restoration and synthetic cleanup. It does **not** mean that production staff 2FA is enabled, that any real staff account is enrolled, or that `enforce_second_factor = staff` alone is a complete security boundary for an unenrolled staff account.
+
+- **Synthetic staff only.** One synthetic user, `qa_staff_t32`, was created and promoted to moderator only, never Admin. In this flow `staff = admin OR moderator`. No real staff user was modified. The one real staff account, `user1`, is unchanged and has no second factor enrolled. `bemstorm` is unchanged: non-admin, non-moderator, TL0, `membros_ativos`.
+- **Temporary enforcement.** Baseline `enforce_second_factor = no`. It was changed to `staff` through the supported native site-setting mechanism, held by a bounded process with automatic restoration, for about one minute. Afterwards it is `no` again with no database override row, and the site-settings fingerprint is back at baseline. **Staff enforcement is not currently enabled.**
+- **TOTP — proven through the native application path:** the enrollment creation and confirmation endpoints were exercised; TOTP became enabled; password-only authentication no longer completed a login; a wrong TOTP was rejected; a correct TOTP completed authentication; the authenticated identity was confirmed; logout invalidated the session. The synthetic secret was transient and is recorded nowhere.
+- **Backup codes — proven:** native generation created 10 codes; one valid code completed authentication and the identity was confirmed; the same consumed code was rejected on replay (single-use); nine codes remained unused at that stage. No code value is recorded.
+- **Native break-glass recovery — proven:** the rake task `users:disable_2fa[<username>]` was run against the synthetic user only. It removed TOTP and the backup-code rows; it would also remove second-factor security keys; it changed neither the password nor the moderator role; it does **not** remove passkeys. With `staff` enforcement still temporarily active, password login then succeeded and normal HTML navigation again redirected the recovered user to enrollment. Recovery therefore does not permanently exempt an account from the staff enrollment policy.
+
+### Enforcement boundary — MEDIUM (Security / Operational Readiness)
+
+Native enforcement of an unenrolled staff account is not a universal server-side authorization barrier.
+
+- An authenticated synthetic moderator without 2FA was redirected on normal HTML navigation: `/latest` returned 302 to `/u/<username>/preferences/second-factor`, and the enrollment page was accessible.
+- JSON requests remained accessible: `/latest.json` and `/review.json` returned 200. Current source explicitly exempts JSON and API requests from the `ApplicationController` second-factor redirect.
+- The frontend has native restricted routing (the `restricted-routing` service) that keeps the normal browser application on the enrollment route while the user needs 2FA. This was confirmed in source and not exercised in a browser.
+
+Operational interpretation: `enforce_second_factor = staff` must not be treated as the control that makes a previously unenrolled staff account safe by itself. JSON endpoints are not protected by the enrollment redirect. This is recorded as native behaviour, not as a vulnerability; that conclusion would need a later security review.
+
+**Production operational rule:** every real staff account must be enrolled and its recovery path verified **before** CannLabs relies on persistent staff enforcement in production. The intended sequence, none of it implemented or authorized here:
+
+1. identify every real staff account;
+2. enroll each staff account in native 2FA;
+3. verify login with its second factor;
+4. establish the recovery / backup-code procedure;
+5. confirm no staff account remains unenrolled;
+6. only then leave `enforce_second_factor = staff` enabled as ongoing policy.
+
+### Passkey / WebAuthn boundary — OPEN (local acceptance / environment issue)
+
+The development checkout still ties the WebAuthn origin to `http://localhost:3000`, while the Community local runtime uses `http://localhost:3100`. Security-key and passkey acceptance were therefore not part of Task 32. No core patch is authorized. This does not invalidate the TOTP acceptance and is not a Task 32 blocker.
+
+### Development hygiene — LOW
+
+A TOTP secret can appear in `development.log` through development SQL logging. The request parameter `second_factor_token` was filtered in request logs during the test. Logging is unchanged; this stays part of the broader pre-production logging / security review.
+
+### Instrumentation correction
+
+During the test a long-lived `rails runner` process returned stale ActiveRecord query-cache counts, and the probe's apparent FAIL was that instrumentation defect, not a Discourse product failure. Those cached mid-run row counts are discounted. The authoritative evidence is the actual authentication behaviour, the server SQL trace, fresh-process uncached reads and the final regression. No product change is needed.
+
+### Cleanup and final state
+
+`enforce_second_factor = no` with no database override; the synthetic moderator privilege was removed and the synthetic user deleted; zero synthetic auth tokens, TOTP rows, backup-code rows and security-key rows; no custom-group or Qualified Access residue and no synthetic content. Real staff, real staff 2FA state and `bemstorm` are unchanged; ACLs, reporting and personal-message settings are unchanged; Chat is off; Qualified Access is healthy; the bootstrap audit passed 37 of 37; `/srv/status` is `ok`; Sidekiq is healthy; all repositories are clean. The normal staff-action and deletion audit history remains.
+
+Production remains NOT READY.
+
+## NEXT — OFFICIAL PM TO CHOOSE (NOTHING AUTHORIZED)
+
+After this closure the official PM chooses the next bounded authentication slice. The likely direction is **Google Authentication Provider Readiness / Acceptance**: local password authentication, local account recovery and the native staff TOTP / recovery mechanics are validated; Google is already a DECIDED product target and is core Discourse; custom authentication remains unjustified. Before anything starts, the official PM determines whether the next step is (A) credential / domain readiness only, or (B) an actual local Google OAuth acceptance with Founder-created provider credentials. This is a direction, not an authorization.
+
+Task 32A itself was documentation only: staff 2FA was not enabled, no real staff account was enrolled, and nothing in the runtime, the database, logging or the authentication settings was changed.

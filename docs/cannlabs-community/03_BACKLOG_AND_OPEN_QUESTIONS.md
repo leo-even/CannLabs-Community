@@ -9,7 +9,7 @@ Buckets: **NOW** · **NEXT** · **LATER** · **PARKED** · **OPEN**. States are 
 
 ## NOW
 
-**Current NOW (2026-10-02, Task 31A): no slice is in progress.** Tasks 28, 29, 30 and 31 are validated and closed. The official PM will choose the next slice among the remaining authentication-readiness work; Staff 2FA Acceptance is the likely candidate, not an authorization. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
+**Current NOW (2026-10-02, Task 32A): no slice is in progress.** Tasks 28, 29, 30, 31 and 32 are validated and closed. The official PM will choose the next bounded authentication slice; Google Authentication Provider Readiness / Acceptance is the likely direction, not an authorization. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
 
 The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.md` → NEXT.
 
@@ -346,7 +346,7 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 ## NEXT / OPEN — PRODUCTION FOUNDATION (after Task 28; none authorized)
 
 - **NEXT — clean production-like proof:** supported production deployment, theme and plugin installation, bootstrap application, secrets, external services, a clean database and smoke tests. Staging with synthetic data only is the recommended direction (HYPOTHESIS).
-- **REQUIRED BEFORE PRODUCTION — staff 2FA:** native `enforce_second_factor`, through a bounded acceptance slice with recovery codes and a break-glass procedure.
+- **REQUIRED BEFORE PRODUCTION — staff 2FA:** native `enforce_second_factor`. The acceptance slice is VALIDATED (Task 32: TOTP, backup codes and break-glass recovery). Still required: enroll and verify every real staff account, then rely on persistent `staff` enforcement. Not enabled and not authorized.
 - **OPEN — production hostname / domain, HTTPS and the Cloudflare role.**
 - **OPEN — SMTP provider** (SPF, DKIM, DMARC, bounce / complaint visibility).
 - **OPEN — backup policy:** off-site storage, retention, RPO / RTO and a restore drill.
@@ -377,9 +377,18 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 - **Status:** `VALIDATED — LOCAL EMAIL RECOVERY ACCEPTANCE` by official PM adjudication. Native forgot-password (code-based) and email login were proven end to end locally with a temporarily started Mailpit and one synthetic user, since deleted.
 - **Durable findings:** `02_PROJECT_STATE.md` → TASK 31.
 
+## TASK 32 — VALIDATED STAFF 2FA ACCEPTANCE
+
+- **Status:** `VALIDATED — STAFF 2FA ACCEPTANCE` by official PM adjudication. Native TOTP enrollment and login, wrong-TOTP rejection, single-use backup codes and `users:disable_2fa` recovery were proven with one synthetic moderator, since deleted. `enforce_second_factor` is back at `no`; no real staff account is enrolled or under persistent enforcement.
+- **Durable findings:** `02_PROJECT_STATE.md` → TASK 32.
+
 ## AUTHENTICATION READINESS — OPEN ITEMS (none authorized)
 
-- **CANDIDATE NEXT — Staff 2FA Acceptance.** The official PM chooses the next slice; this is the likely candidate, not an authorization. Staff 2FA is already required before production, native TOTP is testable locally and it needs no external-provider credentials.
+- **LIKELY NEXT DIRECTION — Google Authentication Provider Readiness / Acceptance.** The official PM chooses the next bounded authentication slice and first decides between (A) credential / domain readiness only and (B) a local Google OAuth acceptance with Founder-created provider credentials. Google is a DECIDED target and core Discourse. A direction, not an authorization.
+- **REQUIRED BEFORE PRODUCTION — staff 2FA rollout.** Enroll every real staff account, verify login with its second factor, establish the recovery / backup-code procedure, confirm no staff account remains unenrolled, and only then leave `enforce_second_factor = staff` enabled.
+- **MEDIUM — Security / Operational Readiness: staff enforcement boundary.** For an unenrolled staff account, native enforcement redirects HTML navigation to the enrollment page; JSON and API requests are exempt from that redirect. The setting alone does not make an unenrolled staff account safe. Recorded as native behaviour, not as a vulnerability.
+- **OPEN — local WebAuthn acceptance / environment issue.** The development WebAuthn origin is tied to `http://localhost:3000` while Community runs on `http://localhost:3100`; security-key and passkey acceptance are untested. No core patch is authorized.
+- **LOW — development hygiene:** a TOTP secret can appear in `development.log` through development SQL logging; `second_factor_token` is filtered in request logs. Part of the pre-production logging / security review.
 - **OPEN — local mail catcher (dev-readiness gap).** Task 31 proved the mechanism with a temporary Mailpit, which was stopped afterwards. No mail catcher runs by default, nothing listens on port 1025 and the mail UI port 8025 is not published. Persistent developer-mail ergonomics is a possible future slice, not automatically next. This is not the production SMTP decision.
 - **CONDITIONAL RISK — CLI link port (narrowed by Task 31).** The canonical local address for authentication is `http://localhost:3100`. Background-job mail uses it. Only a standalone CLI or Rails-runner context without `UNICORN_PORT=3100` can emit `http://localhost:3000` links; future link-generating CLI commands must account for the port.
 - **MEDIUM — Security / Privacy Readiness: transient authentication material in request logs.** The password-reset code input is not filtered from the request log, and reset and login tokens appear in request paths. Review before production; no logging change is authorized.
@@ -390,4 +399,4 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 - **REQUIRED BEFORE ENABLING ANY PROVIDER — external-provider acceptance tests,** covering automatic account linking by verified email (Google), provider emails treated as verified (Apple, Facebook), Apple private-relay addresses creating a second account, and external signups that are not automatically in `membros_ativos`. No mitigation is designed or authorized.
 - **NEEDS SECURITY REVIEW — Apple private key.** The bundled plugin does not flag `apple_pem` as `secret`. Review before real Apple credentials are entered; do not change plugin code.
 - **OPEN / HYPOTHESIS — Facebook login** (`DEC-034`).
-- **REQUIRED BEFORE PRODUCTION — staff 2FA** (unchanged; see the production-foundation list above).
+- **REQUIRED BEFORE PRODUCTION — staff 2FA** (decision unchanged; acceptance validated in Task 32, rollout above).
