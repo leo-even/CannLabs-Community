@@ -123,3 +123,7 @@ The synthetic native moderation lifecycle is validated: active TL0 report, Revie
 ## Task 26 — PARTIAL active membership safety boundary
 
 General is member-only and active TL0 reporting is native. Seeded Uncategorized and Site Feedback remain an open paid/private-boundary blocker because ordinary ACL edits are rejected by upstream special-category protections.
+
+## Task 26B — Site Feedback retirement
+
+The seeded Site Feedback category and definition topic are scaffold only and are not part of the V1 product surface. They may be retired only through a supported native Discourse lifecycle after the meta_category_id dependency and seed/reseed behavior are proven safe. Native staff/moderator-notification support remains the unpaid help path. Task 26 is not validated while this boundary remains open.

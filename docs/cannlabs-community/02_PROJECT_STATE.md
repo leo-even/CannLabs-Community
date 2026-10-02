@@ -290,3 +290,7 @@ Task 24 is durably validated with native Discourse primitives: an active TL0 mem
 ## TASK 26 — PARTIAL ACTIVE MEMBERSHIP SAFETY BOUNDARY
 
 Validated components: General is member-only and active TL0 reporting works through membros_ativos while unpaid TL0 reporting remains denied. Open blocker: seeded Uncategorized and seeded Site Feedback remain readable by authenticated unpaid users because current Discourse prevents ordinary security edits to those special categories.
+
+## TASK 26B — SITE FEEDBACK RETIREMENT PENDING SAFE NATIVE LIFECYCLE
+
+DEC-033 ratifies retiring the upstream seeded Site Feedback scaffold from V1. The category and definition topic remain present while the local meta_category_id dependency, native delete behavior, and seed/reseed durability are reviewed. No custom deletion code or direct database bypass is authorized. Task 26 remains partial and unvalidated until the paid/private boundary is closed.

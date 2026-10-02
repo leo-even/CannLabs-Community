@@ -316,3 +316,13 @@ By default, CannLabs Community is not:
 - Every active member may use native reporting regardless of Trust Level; reporting authority is based on membros_ativos, not generic TL0 or everyone access.
 - Authenticated unpaid users do not gain normal reading or reporting rights merely by logging in. Native equipe support remains available; member-to-member PM and Chat remain off.
 - Trust levels remain independent native reputation and anti-abuse controls. No custom moderation code is required.
+
+## 26. Site Feedback retirement — ratified Task 26B
+
+**DECIDED — the seeded Site Feedback scaffold is not a V1 product surface.**
+
+- The upstream Site Feedback category and definition topic are scaffold only; they are not onboarding, unpaid discussion, member support, or a normal V1 Community forum.
+- The scaffold should be retired only through a supported native Discourse lifecycle once the meta_category_id dependency and seed/reseed behavior are proven safe.
+- The native staff/moderator-notification support path remains the supported route for unpaid help and appeals.
+- Future feedback or governance requires a separate deliberate member-only product decision; no custom replacement or custom deletion code is authorized.
+- This refines only the Site Feedback portion of DEC-032 and does not reopen paid/private access, General, Uncategorized, Comunidade, reporting, moderation, PM, or Chat decisions.

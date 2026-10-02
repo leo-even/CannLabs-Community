@@ -307,3 +307,9 @@ Task 24 is validated with native flags, Review Queue, staff content action, warn
 ## TASK 26 — PARTIAL ACTIVE MEMBERSHIP SAFETY BOUNDARY
 
 General is member-only and active TL0 reporting works through membros_ativos. Seeded Uncategorized and Site Feedback remain open to authenticated unpaid users because upstream protects their security settings. Task 26 is not validated.
+
+## Task 26B — Site Feedback retirement
+
+- **Decision:** Retire the seeded Site Feedback scaffold from V1 under DEC-033.
+- **Status:** Pending safe native lifecycle proof; do not delete or bypass native validation while meta_category_id and seed/reseed behavior remain unresolved.
+- **Boundary:** Preserve native staff/moderator-notification support for unpaid help and appeals. Any future feedback/governance surface requires a separate member-only decision.

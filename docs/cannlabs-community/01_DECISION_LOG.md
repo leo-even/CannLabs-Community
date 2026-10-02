@@ -325,3 +325,11 @@ Append-only record of ratified decisions. To change a decision, add a new entry 
 - **Rationale:** Align the paid/private access boundary and the reporting boundary with one auditable native membership signal while preserving staff support and native trust controls.
 - **Consequences / open items:** General, Uncategorized and Site Feedback require native member-only ACL treatment. flag_post_allowed_groups must include membros_ativos while preserving legitimate staff/trust groups. Payment, onboarding, 2FA, production and provider configuration remain separately gated.
 - **Supersedes:** Clarifies and operationalizes DEC-025, DEC-026, DEC-027 and Task 24 readiness findings.
+
+## DEC-033 — Retire Seeded Site Feedback Scaffold
+
+- **Date:** 2026-10-02
+- **Status:** DECIDED — official PM / Founder, Task 26B
+- **Decision:** The upstream seeded Site Feedback category and definition topic are scaffold only and are not a V1 product surface. Retire them only through a supported native Discourse lifecycle after the meta_category_id dependency and seed/reseed behavior are proven safe. Keep the native staff/moderator-notification support path for unpaid help and appeals. Any future feedback or governance surface requires a separate deliberate member-only product decision; no custom replacement or custom deletion code is authorized.
+- **Rationale:** Remove seeded surface ambiguity without weakening the paid/private membership boundary or bypassing native lifecycle and seed behavior.
+- **Consequences / open items:** Site Feedback remains pending safe native retirement; Task 26 is not validated until the paid/private boundary is closed. This decision refines only the Site Feedback portion of DEC-032 and does not reopen General, Uncategorized, Comunidade, reporting, moderation, PM, Chat, payment, onboarding, 2FA, production, or provider decisions.
