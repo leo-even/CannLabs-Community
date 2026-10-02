@@ -293,3 +293,9 @@ Parked without implementation: association dashboards, seats, delegated owners, 
 ## NOW — TASK 23 MODERATION / TRUST & SAFETY / OPERATIONS READINESS
 
 Perform a read-only native capability and operating-readiness review. No moderation settings, flags, trust levels, watched words, groups, categories, users, content, plugins, code or documentation changes are authorized in this review. Real onboarding, verification, evidence, payment and production remain gated.
+
+## TASK 26 — NOW: ACTIVE MEMBERSHIP SAFETY BOUNDARY
+
+Implement and validate the native paid/private boundary for General, Uncategorized and Site Feedback, add membros_ativos to native flag eligibility, then complete the synthetic moderation lifecycle. No real users, payment, production or custom moderation code.
+
+Task 23A is validated readiness; Task 24 resumes under this boundary; Task 25 remains read-only evidence.

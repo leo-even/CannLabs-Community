@@ -306,3 +306,13 @@ By default, CannLabs Community is not:
 - Native User Notes are an operational, staff-readable record (including moderators) and never credential evidence or a public profile surface. Initial approval and revocation are admin-only.
 - A public-name change requires re-review; no automatic verification or revocation automation is authorized. Self-service intake is deferred.
 - Legal, Privacy and Trust & Safety review remains a required production gate. This ratification authorizes only a synthetic local lifecycle acceptance.
+
+## 25. Active Membership Safety Boundary — ratified Task 26
+
+**DECIDED — normal Community content requires active membership.**
+
+- CannLabs Community V1 is closed/paid. Normal discussion content requires the canonical native membros_ativos group unless a more restrictive qualified-access group applies.
+- General, Uncategorized and Site Feedback are normal Community spaces, not onboarding spaces, and are member-only for V1.
+- Every active member may use native reporting regardless of Trust Level; reporting authority is based on membros_ativos, not generic TL0 or everyone access.
+- Authenticated unpaid users do not gain normal reading or reporting rights merely by logging in. Native equipe support remains available; member-to-member PM and Chat remain off.
+- Trust levels remain independent native reputation and anti-abuse controls. No custom moderation code is required.

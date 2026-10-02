@@ -316,3 +316,12 @@ Append-only record of ratified decisions. To change a decision, add a new entry 
 - **Rationale:** A bounded, reversible result-only record preserves the useful public identity and access decision while minimizing sensitive data and avoiding a credential repository.
 - **Consequences / open items:** Task 21 may validate only a synthetic local create/present/revoke/delete lifecycle using native primitives. Production Legal / Privacy / Trust & Safety review, real verification, intake, association onboarding and deployment remain unauthorized.
 - **Supersedes:** Refines the identity and verification boundary in `DEC-028` and Canon §22–24.
+
+## DEC-032 — Active Membership Safety Boundary
+
+- **Date:** 2026-10-02
+- **Status:** DECIDED — official PM / Founder, Task 26
+- **Decision:** CannLabs Community V1 is a closed, paid Community: normal discussion content requires membership in membros_ativos. General, Uncategorized and Site Feedback are normal Community spaces, not onboarding spaces, and are member-only. Every active member may use native reporting from day one regardless of Trust Level; reporting eligibility is based on membros_ativos, not generic TL0 or everyone access. Authenticated unpaid users do not gain ordinary reading or reporting access merely by logging in. The native equipe support path remains available to unpaid accounts under the existing support model. Trust levels remain independent native reputation and anti-abuse controls. No custom moderation code is required.
+- **Rationale:** Align the paid/private access boundary and the reporting boundary with one auditable native membership signal while preserving staff support and native trust controls.
+- **Consequences / open items:** General, Uncategorized and Site Feedback require native member-only ACL treatment. flag_post_allowed_groups must include membros_ativos while preserving legitimate staff/trust groups. Payment, onboarding, 2FA, production and provider configuration remain separately gated.
+- **Supersedes:** Clarifies and operationalizes DEC-025, DEC-026, DEC-027 and Task 24 readiness findings.

@@ -111,3 +111,7 @@ Task 22 is validated locally with native Discourse Groups. Association membershi
 Native Groups are the V1 association identity primitive. A custom Organization model is not required. Dashboards, seats, delegated owners, org-owned private forums, CRM, storefront, marketplace, company organization modeling and association billing are explicitly deferred. Existing Canon and `DEC-031` remain the decision authority.
 
 ## Task 23 — moderation / trust & safety / operations readiness
+
+## Task 26 — active membership safety boundary
+
+V1 normal Community content is member-only through membros_ativos. General, Uncategorized and Site Feedback are normal member spaces, not onboarding. Every active member may use native reporting regardless of Trust Level; unpaid accounts do not receive ordinary reporting access. Task 24 synthetic moderation acceptance resumes after this native configuration correction. Staff 2FA remains a Security / Product / Operations requirement and is not implemented here.

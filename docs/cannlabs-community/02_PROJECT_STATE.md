@@ -276,3 +276,9 @@ Task 23 is closed as readiness evidence. Native flags, Review Queue, warning, si
 
 Validate one reversible synthetic report → Review Queue → staff action → warning/silence → support/appeal path using native primitives only. No real moderation, real users, custom code or global policy changes are authorized.
 
+
+## TASK 26 — NOW: ACTIVE MEMBERSHIP SAFETY BOUNDARY
+
+The official PM ratified DEC-032: normal Community content requires membros_ativos; General, Uncategorized and Site Feedback are member-only, not onboarding spaces; all active members may report regardless of Trust Level; unpaid accounts retain only account/onboarding/legal/support surfaces and no ordinary reporting rights. Task 23A remains validated readiness. Task 24 is authorized to resume after the native flag eligibility correction. Task 25 evidence remains read-only readiness evidence.
+
+Staff 2FA is a Security / Product / Operations requirement, not a counsel gate; it is not implemented by Task 26.
