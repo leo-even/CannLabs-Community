@@ -313,3 +313,14 @@ General is member-only and active TL0 reporting works through membros_ativos. Se
 - **Decision:** Retire the seeded Site Feedback scaffold from V1 under DEC-033.
 - **Status:** Pending safe native lifecycle proof; do not delete or bypass native validation while meta_category_id and seed/reseed behavior remain unresolved.
 - **Boundary:** Preserve native staff/moderator-notification support for unpaid help and appeals. Any future feedback/governance surface requires a separate member-only decision.
+
+## TASK 26 — VALIDATED ACTIVE MEMBERSHIP SAFETY BOUNDARY
+
+- **Status:** VALIDATED by official PM after Task 26C.
+- **Evidence:** Native Site Feedback retirement survived restart and seed/update probes; General and Comunidade are member-only; Uncategorized normal posting is disabled with residual member-only access; unpaid users cannot read normal discussion or report; active TL0 members can report; native support remains available; PM and Chat remain off.
+- **Known dependency:** `meta_category_id=2` is tolerated upstream residue after deletion. It is not a V1 blocker, but every material Discourse upgrade must recheck Site Feedback absence, boot, seed/update tolerance, and the paid/private boundary.
+- **Next phase:** Task 27 — Production / Security Foundation Readiness.
+
+## TASK 27 — PRODUCTION / SECURITY FOUNDATION READINESS
+
+Read-only architecture, reproducibility, security, operations, and launch-gate review. No production deployment or implementation is authorized by this review.

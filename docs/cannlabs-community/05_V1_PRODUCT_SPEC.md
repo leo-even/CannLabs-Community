@@ -127,3 +127,13 @@ General is member-only and active TL0 reporting is native. Seeded Uncategorized 
 ## Task 26B — Site Feedback retirement
 
 The seeded Site Feedback category and definition topic are scaffold only and are not part of the V1 product surface. They may be retired only through a supported native Discourse lifecycle after the meta_category_id dependency and seed/reseed behavior are proven safe. Native staff/moderator-notification support remains the unpaid help path. Task 26 is not validated while this boundary remains open.
+
+## Task 26 — VALIDATED active membership safety boundary
+
+CannLabs Community V1 normal discussion requires `membros_ativos`, with stricter qualified groups for professional and leadership areas. General and Comunidade are member-only; normal Uncategorized posting is disabled and its residual category is not an unpaid discussion surface; Site Feedback was retired through native deletion under DEC-033. Authenticated unpaid users have no normal Community discussion access or ordinary reporting rights, while active TL0 members may report through native eligibility. Native staff support remains available; member-to-member PM and Chat remain off. No custom access or moderation code was required.
+
+The deleted Site Feedback category leaves `meta_category_id=2` as tolerated upstream residue. This is not a V1 blocker, but it is a permanent upgrade-regression check: after material Discourse upgrades verify absence, boot, seed/update tolerance, and the paid/private boundary.
+
+## Task 27 — Production / Security Foundation Readiness
+
+Production architecture and security readiness are reviewed read-only before implementation. Deployment, secrets, payment, real onboarding, and provider configuration remain deferred.

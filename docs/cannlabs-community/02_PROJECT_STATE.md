@@ -294,3 +294,13 @@ Validated components: General is member-only and active TL0 reporting works thro
 ## TASK 26B — SITE FEEDBACK RETIREMENT PENDING SAFE NATIVE LIFECYCLE
 
 DEC-033 ratifies retiring the upstream seeded Site Feedback scaffold from V1. The category and definition topic remain present while the local meta_category_id dependency, native delete behavior, and seed/reseed durability are reviewed. No custom deletion code or direct database bypass is authorized. Task 26 remains partial and unvalidated until the paid/private boundary is closed.
+
+## TASK 26 — VALIDATED ACTIVE MEMBERSHIP SAFETY BOUNDARY
+
+Task 26 is validated by the official PM following Task 26C runtime evidence. Normal Community discussion requires `membros_ativos`, unless a stricter qualified group applies. General and Comunidade are member-only; normal Uncategorized usage is disabled through the upstream lifecycle and its residual category is not an unpaid discussion surface; seeded Site Feedback was retired natively under DEC-033. Authenticated unpaid accounts cannot read normal Community discussion, active TL0 members can report through native group eligibility, unpaid TL0 accounts cannot report, native staff-support/moderator-notification support remains available, member-to-member PM and Chat remain off, and no custom access or moderation code was required.
+
+`meta_category_id=2` remains tolerated upstream residue after native Site Feedback deletion. It is a known upgrade-regression dependency, not a V1 blocker. After every material Discourse upgrade, verify that Site Feedback is not recreated, boot remains healthy, seed/update behavior remains tolerant, and the unpaid boundary remains closed.
+
+## NOW — TASK 27 PRODUCTION / SECURITY FOUNDATION READINESS
+
+Task 27 is a strictly read-only architecture and operations review. Production deployment, credentials, payment, real onboarding, and implementation remain unauthorized.
