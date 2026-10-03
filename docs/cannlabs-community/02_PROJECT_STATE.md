@@ -7,9 +7,9 @@ Evidence was captured from the development machine when this baseline was writte
 
 ## CURRENT STATE — 2026-10-02
 
-- **NOW:** no slice is in progress. Task 35A (documentation closure) brought the durable state up to date through Task 35. The recommended next bounded slice is Task 36 — OAuth Dev Logging Security Hygiene, OPEN and not started (last section of this file).
+- **NOW:** no slice is in progress. Task 36C (log cleanup and documentation closure) brought the durable state up to date through Task 36. The next items come from the approved NEXT sequence; nothing is authorized (last section of this file).
 - **Production:** NOT READY. Task 27 is a validated readiness review (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`). Task 28 closed the product-configuration bootstrap part of its principal gap; a clean production-like deployment, staff 2FA, SMTP, secrets, authentication providers, payment and the Legal / Privacy / Trust & Safety gates remain open. No production or staging environment exists.
-- **Validated so far:** repository bootstrap, isolation and operating layer (through Task 04B); design direction, prototype, theme architecture and handoff (Tasks 05–08); Community Theme v0.1 (Tasks 10 / 10B); V1 product model (Task 12A); Access Skeleton (Task 14); Founder local login (Task 15A); verified roles and restricted spaces (Tasks 16 / 16A); qualified-access gap, architecture and plugin v0.1 (Tasks 17, 18A, 19); verified-identity boundary and synthetic professional lifecycle (Tasks 20B, 21); synthetic association / leadership lifecycle (Tasks 22 / 22A); moderation readiness and native moderation lifecycle (Tasks 23A, 24); Active Membership Safety Boundary including the native Site Feedback retirement (Task 26, `DEC-032`, `DEC-033`); production / security foundation readiness review (Task 27); Product Bootstrap v0.1 (Task 28); local-auth baseline (Task 29); authentication and identity-provider readiness review (Task 30); local email recovery acceptance (Task 31); staff 2FA acceptance (Task 32); Git ownership hygiene of the application repository (Task 33); Google OAuth local acceptance (Task 35).
+- **Validated so far:** repository bootstrap, isolation and operating layer (through Task 04B); design direction, prototype, theme architecture and handoff (Tasks 05–08); Community Theme v0.1 (Tasks 10 / 10B); V1 product model (Task 12A); Access Skeleton (Task 14); Founder local login (Task 15A); verified roles and restricted spaces (Tasks 16 / 16A); qualified-access gap, architecture and plugin v0.1 (Tasks 17, 18A, 19); verified-identity boundary and synthetic professional lifecycle (Tasks 20B, 21); synthetic association / leadership lifecycle (Tasks 22 / 22A); moderation readiness and native moderation lifecycle (Tasks 23A, 24); Active Membership Safety Boundary including the native Site Feedback retirement (Task 26, `DEC-032`, `DEC-033`); production / security foundation readiness review (Task 27); Product Bootstrap v0.1 (Task 28); local-auth baseline (Task 29); authentication and identity-provider readiness review (Task 30); local email recovery acceptance (Task 31); staff 2FA acceptance (Task 32); Git ownership hygiene of the application repository (Task 33); Google OAuth local acceptance (Task 35); development logging hygiene (Task 36).
 - **Authentication:** native and bundled Discourse are sufficient for V1 (`YES — NATIVE/BUNDLED SUFFICIENT`). Local login, Google and Apple are the DECIDED direction; Facebook is OPEN / HYPOTHESIS (`DEC-034`); staff 2FA is required before production. Its native mechanics are validated (Task 32), but it is not enabled (`enforce_second_factor = no`) and no real staff account is enrolled. Google OAuth is locally accepted with core Discourse (Task 35) and Google signup does not grant paid membership; no external provider is enabled or configured. Local password reset and email login are proven end to end with a temporarily started mail catcher (Task 31); no production SMTP provider is selected.
 - **Repositories:** application `leo-even/CannLabs-Community` (this fork; docs, the operating layer and the Task 28 bootstrap mechanism); theme `leo-even/CannLabs-Community-Theme` at `aeb3a9d9154f532064dcc24ac9e78cf587588d77`; plugin `leo-even/CannLabs-Community-Qualified-Access` at `ca4f0070d7bf85e42dbfa7f8736469139bb20275`.
 - **Latest decision:** `DEC-034`.
@@ -243,13 +243,12 @@ None of these is solved in this slice.
 
 ## NEXT
 
-Reconciled on 2026-10-03 (Task 35A); Tasks 28 to 33 and Task 35 are validated and closed.
+Reconciled on 2026-10-03 (Task 36C); Tasks 28 to 33, 35 and 36 are validated and closed.
 
-1. Task 36 — OAuth Dev Logging Security Hygiene: the recommended next bounded slice (last section of this file). OPEN, not started, not authorized.
-2. Staff 2FA production rollout: enroll and verify every real staff account first, then rely on persistent `staff` enforcement (operational rule in "TASK 32" below). Required before production; not authorized.
-3. A later slice proving a clean production-like environment end to end: supported production deployment, theme and plugin installation, bootstrap application, secrets, external services and smoke tests (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`).
-4. Legal / Privacy / Trust & Safety review.
-5. The remaining authentication providers (external-provider acceptance tests first) and payment readiness as separate slices.
+1. Staff 2FA production rollout: enroll and verify every real staff account first, then rely on persistent `staff` enforcement (operational rule in "TASK 32" below). Required before production; not authorized.
+2. A later slice proving a clean production-like environment end to end: supported production deployment, theme and plugin installation, bootstrap application, secrets, external services, production-like logging acceptance (Task 36 limitation) and smoke tests (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`).
+3. Legal / Privacy / Trust & Safety review.
+4. The remaining authentication providers (external-provider acceptance tests first) and payment readiness as separate slices.
 
 The order is a candidate sequence, not an authorization. Visual polish is no longer the critical path. The Founder local test login is validated by Task 15A and its credential was rotated after Task 29; no credential is stored in the repository.
 
@@ -475,8 +474,8 @@ Mailpit v1.30.6 already exists in the development image. For the test it was sta
 
 ### Security / privacy findings — recorded, not fixed
 
-- **MEDIUM — Security / Privacy Readiness: transient authentication material in request logs.** In the development request log, the password-reset code input is not filtered, and reset and login tokens appear in request paths. This does not block the local validation. It must be reviewed before production. Production logging was not tested, and no exploitability is claimed beyond this observation. Discourse logging is unchanged.
-- **LOW — development hygiene: password credential logging.** The development environment can write newly generated password hash and salt values to `development.log`. No plaintext synthetic password was logged. Logging behaviour is unchanged.
+- **MEDIUM — Security / Privacy Readiness: transient authentication material in request logs.** In the development request log, the password-reset code input is not filtered, and reset and login tokens appear in request paths. This does not block the local validation. It must be reviewed before production. Production logging was not tested, and no exploitability is claimed beyond this observation. Discourse logging is unchanged. Later (Task 36): the reset `code` parameter is now filtered; tokens in URL paths remain open.
+- **LOW — development hygiene: password credential logging.** The development environment can write newly generated password hash and salt values to `development.log`. No plaintext synthetic password was logged. Logging behaviour is unchanged. Later (Task 36): resolved for local development (SQL logging off by default).
 - **LOW — localization.** The forgot-password code email arrived in English while the email-login mail rendered in pt-BR. Not an authentication blocker.
 - **OBSERVATION — sender identity.** Local mail used the default sender domain `unconfigured.discourse.org`. This belongs to future production SMTP / domain readiness; no provider is selected.
 
@@ -531,7 +530,7 @@ The development checkout still ties the WebAuthn origin to `http://localhost:300
 
 ### Development hygiene — LOW
 
-A TOTP secret can appear in `development.log` through development SQL logging. The request parameter `second_factor_token` was filtered in request logs during the test. Logging is unchanged; this stays part of the broader pre-production logging / security review.
+A TOTP secret can appear in `development.log` through development SQL logging. The request parameter `second_factor_token` was filtered in request logs during the test. Logging is unchanged; this stays part of the broader pre-production logging / security review. Later (Task 36): resolved for local development (SQL logging off by default).
 
 ### Instrumentation correction
 
@@ -589,7 +588,7 @@ Status: `GOOGLE OAUTH LOCAL ACCEPTANCE VALIDATED` (official PM). Task 35 made no
 - **Regression.** `user1` and `bemstorm` are unchanged apart from normal Founder-driven `last_seen_at`; category ACLs, custom groups, reporting, personal-message rules and Chat are unchanged; Qualified Access is healthy; the bootstrap audit passed 37 of 37; the runtime stayed healthy; all three repositories stayed clean.
 - **Retained on purpose.** The DEV Google Cloud project and OAuth client, and the credential file outside the repositories, remain for future controlled testing. The Founder removed the controlled Google account's grant to CannLabs Community (Dev) after the test.
 
-### OAuth development logging — MEDIUM (Security / Privacy Readiness), unresolved
+### OAuth development logging — MEDIUM (Security / Privacy Readiness) — RESOLVED — LOCAL DEVELOPMENT (Task 36)
 
 Development logging exposed Google OAuth token material during Task 35: access-token material, refresh-token material, the OAuth callback authorization `code` and the OAuth `state` were observed in development logging (SQL debug lines writing the provider association, and the callback request lines and parameters). The client secret was not found. **Production behaviour was not tested**, and no production-leakage conclusion may be drawn from this task. External containment: the Founder revoked the Dev grant from the controlled Google account. The local development log was intentionally left untouched as evidence; logging configuration is unchanged. Follow-up: Task 36 (below).
 
@@ -604,8 +603,31 @@ Development logging exposed Google OAuth token material during Task 35: access-t
 - **PARKED — not investigated in Task 35:** a native scheduled backup logged `[FAILED]` around 03:30Z on 2026-10-03.
 - The local runtime was down at the start of the task because the container started before the WSL bind mounts were available, leaving `/src` empty; a manual container restart restored it. No launcher change follows from this closure.
 
-## NEXT — TASK 36 OAUTH DEV LOGGING SECURITY HYGIENE (OPEN — NOT STARTED)
+## NEXT AFTER TASK 35 — TASK 36 (HISTORICAL)
+
+Status superseded: Task 36 was carried out and is VALIDATED; see "TASK 36" below. The text is kept as the record of what was recommended.
 
 The recommended next bounded slice is **Task 36 — OAuth Dev Logging Security Hygiene**. It is OPEN and not started; nothing is authorized until the official PM says so. Intended scope only: prevent OAuth token material from appearing in development SQL logs; review and filter the callback `code` and `state`; decide the safe handling of the already-contaminated local development logs; keep useful debugging available; distinguish development from production logging behaviour explicitly; no authentication redesign unless evidence requires it.
 
 Task 35A itself was documentation only: no runtime, database, Google Cloud, authentication-setting or logging change.
+
+## TASK 36 — VALIDATED DEVELOPMENT LOGGING HYGIENE
+
+Status: `VALIDATED` (official PM). Phase A (read-only root-cause review) was accepted; Phase B (implementation, commit `a1a163a6`) was validated; Task 36C removed the contaminated local logs after explicit Founder approval. Production remains NOT READY.
+
+- **Root causes — two independent paths.**
+  1. SQL debug lines carried literal values. Discourse runs with `prepared_statements: false`, so ActiveRecord writes values inline into the SQL text, and Rails bind filtering cannot redact them. In development this exposed OAuth access and refresh tokens, the Google `id_token`, password hashes and salts, and TOTP secrets.
+  2. Request parameters such as the OAuth callback `code` and `state` were not in the parameter-filter list, so they appeared in the request line and the parameter log.
+- **Validated fix.** One fork-owned initializer, `config/initializers/zz-cannlabs-logging-hygiene.rb`, with a spec; no upstream file modified, no prepared-statements change, no authentication redesign.
+  - Exact, anchored parameter filters in every environment, appended to the upstream list. Names covered: `code`, `state`, `token`, `access_token`, `refresh_token`, `id_token`, `client_secret`, `authenticity_token`. Names that merely contain them (for example `country_code`, `invite_code`) stay visible.
+  - In development, ActiveRecord SQL logging is off by default for every process (web, Sidekiq, runner, rake). `CANNLABS_ENABLE_ACTIVERECORD_LOGS=1` restores it for one process when debugging; those lines can contain sensitive values.
+- **Acceptance.** All eight names are `[FILTERED]` in both the request line and the parameter log; the negative controls stay visible; no SQL lines are written by default (runner, rake, web, Sidekiq); a single opted-in process does write them; normal request, processing and completion logging is unchanged; `google_oauth2_verbose_logging` stays `false`.
+- **Local log cleanup.** After the Founder approved it, the historical contaminated `log/development.log` and `log/development.log.0` were deleted with ordinary local deletion while the dev server was stopped. Task 36C kept no copies. The restarted runtime created a fresh `development.log` under the hardened defaults; re-acceptance on the fresh log showed the eight names filtered and no SQL lines.
+- **Historical finding resolution.** The Task 35 development-logging MEDIUM is `RESOLVED — LOCAL DEVELOPMENT`. The same mechanism also resolves, for local development, the password hash / salt (Task 31) and TOTP secret (Task 32) SQL logging findings and the unfiltered reset `code` parameter (Task 31). Reset and login tokens that appear as URL path segments (`/u/password-reset/…`, `/session/email-login/…`) are not covered by parameter filters and remain open.
+- **Limitation.** Production-like logging behaviour has not yet been acceptance-tested. The stock production configuration logs at `:info`, where SQL lines are not emitted, but no production-like environment has been checked.
+
+## NEXT — FROM THE APPROVED SEQUENCE (NOTHING AUTHORIZED)
+
+Task 36 is closed. The next items come from the existing NEXT list above, unchanged in substance: the staff 2FA production rollout, then the clean production-like environment proof, which now also carries the production-like logging acceptance. The official PM chooses; nothing is authorized and no other authentication provider is started.
+
+Task 36C changed no product code, database state, authentication setting or Google Cloud resource; it deleted only the two authorized local log files and restarted the local dev server.

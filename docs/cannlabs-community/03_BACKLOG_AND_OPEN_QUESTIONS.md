@@ -9,7 +9,7 @@ Buckets: **NOW** · **NEXT** · **LATER** · **PARKED** · **OPEN**. States are 
 
 ## NOW
 
-**Current NOW (2026-10-03, Task 35A): no slice is in progress.** Tasks 28 to 33 and Task 35 are validated and closed. The recommended next bounded slice is Task 36 — OAuth Dev Logging Security Hygiene, OPEN and not started. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
+**Current NOW (2026-10-03, Task 36C): no slice is in progress.** Tasks 28 to 33, 35 and 36 are validated and closed. The next items come from the approved sequence in `02_PROJECT_STATE.md` → NEXT; nothing is authorized. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
 
 The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.md` → NEXT.
 
@@ -345,7 +345,7 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 
 ## NEXT / OPEN — PRODUCTION FOUNDATION (after Task 28; none authorized)
 
-- **NEXT — clean production-like proof:** supported production deployment, theme and plugin installation, bootstrap application, secrets, external services, a clean database and smoke tests. Staging with synthetic data only is the recommended direction (HYPOTHESIS).
+- **NEXT — clean production-like proof:** supported production deployment, theme and plugin installation, bootstrap application, secrets, external services, a clean database, production-like logging acceptance (Task 36 limitation) and smoke tests. Staging with synthetic data only is the recommended direction (HYPOTHESIS).
 - **REQUIRED BEFORE PRODUCTION — staff 2FA:** native `enforce_second_factor`. The acceptance slice is VALIDATED (Task 32: TOTP, backup codes and break-glass recovery). Still required: enroll and verify every real staff account, then rely on persistent `staff` enforcement. Not enabled and not authorized.
 - **OPEN — production hostname / domain, HTTPS and the Cloudflare role.**
 - **OPEN — SMTP provider** (SPF, DKIM, DMARC, bounce / complaint visibility).
@@ -394,20 +394,25 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 - **Status:** `GOOGLE OAUTH LOCAL ACCEPTANCE VALIDATED` (official PM). Core Google auth is sufficient (`YES — CORE GOOGLE AUTH IS SUFFICIENT`); no custom OAuth is authorized. Same-email linking without duplicates, membership retained on link, a non-member Google signup, same-account relogin, full native cleanup and exact settings restoration were proven locally with synthetic Community accounts. Production remains NOT READY.
 - **Durable findings:** `02_PROJECT_STATE.md` → TASK 35.
 
+## TASK 36 — VALIDATED DEVELOPMENT LOGGING HYGIENE
+
+- **Status:** `VALIDATED` (official PM). A fork-owned initializer filters `code`, `state`, `token`, `access_token`, `refresh_token`, `id_token`, `client_secret` and `authenticity_token` by exact name in every environment, and turns development ActiveRecord SQL logging off by default (`CANNLABS_ENABLE_ACTIVERECORD_LOGS=1` opts one process back in). The contaminated local logs were removed after Founder approval; fresh logs run under the hardened defaults.
+- **Durable findings:** `02_PROJECT_STATE.md` → TASK 36.
+
 ## AUTHENTICATION READINESS — OPEN ITEMS (none authorized)
 
-- **NEXT — Task 36 — OAuth Dev Logging Security Hygiene (OPEN — NOT STARTED).** Prevent OAuth token material from appearing in development SQL logs; review and filter the callback `code` and `state`; decide the safe handling of the already-contaminated local development logs; keep useful debugging; distinguish development from production logging; no auth redesign unless evidence requires it.
-- **MEDIUM — Security / Privacy Readiness: OAuth development logging.** Development logging exposed Google OAuth token material during Task 35 (access and refresh token material, callback `code` and `state`; client secret not found). Production behaviour was not tested. Contained externally by the Founder's revocation of the Dev grant.
+- **NEXT — from the approved sequence** (`02_PROJECT_STATE.md` → NEXT): the staff 2FA production rollout, then the clean production-like proof including production-like logging acceptance. Not authorized.
+- **RESOLVED — LOCAL DEVELOPMENT (Task 36): OAuth development logging** (the Task 35 MEDIUM). Production-like logging behaviour has not yet been acceptance-tested.
 - **LOW — orphaned Google profile-picture upload** awaiting the native orphan-upload cleanup after its grace period.
 - **PARKED — native scheduled backup `[FAILED]` around 03:30Z on 2026-10-03,** not investigated in Task 35.
 - **REQUIRED BEFORE PRODUCTION — staff 2FA rollout.** Enroll every real staff account, verify login with its second factor, establish the recovery / backup-code procedure, confirm no staff account remains unenrolled, and only then leave `enforce_second_factor = staff` enabled.
 - **MEDIUM — Security / Operational Readiness: staff enforcement boundary.** For an unenrolled staff account, native enforcement redirects HTML navigation to the enrollment page; JSON and API requests are exempt from that redirect. The setting alone does not make an unenrolled staff account safe. Recorded as native behaviour, not as a vulnerability.
 - **OPEN — local WebAuthn acceptance / environment issue.** The development WebAuthn origin is tied to `http://localhost:3000` while Community runs on `http://localhost:3100`; security-key and passkey acceptance are untested. No core patch is authorized.
-- **LOW — development hygiene:** a TOTP secret can appear in `development.log` through development SQL logging; `second_factor_token` is filtered in request logs. Part of the pre-production logging / security review.
+- **RESOLVED — LOCAL DEVELOPMENT (Task 36): TOTP secret in development SQL logging** (was LOW). `second_factor_token` is filtered in request logs.
 - **OPEN — local mail catcher (dev-readiness gap).** Task 31 proved the mechanism with a temporary Mailpit, which was stopped afterwards. No mail catcher runs by default, nothing listens on port 1025 and the mail UI port 8025 is not published. Persistent developer-mail ergonomics is a possible future slice, not automatically next. This is not the production SMTP decision.
 - **CONDITIONAL RISK — CLI link port (narrowed by Task 31).** The canonical local address for authentication is `http://localhost:3100`. Background-job mail uses it. Only a standalone CLI or Rails-runner context without `UNICORN_PORT=3100` can emit `http://localhost:3000` links; future link-generating CLI commands must account for the port.
-- **MEDIUM — Security / Privacy Readiness: transient authentication material in request logs.** The password-reset code input is not filtered from the request log, and reset and login tokens appear in request paths. Review before production; no logging change is authorized.
-- **LOW — development hygiene:** the development log can record newly generated password hash and salt values.
+- **MEDIUM — Security / Privacy Readiness: transient authentication material in request logs.** Partly resolved by Task 36: the password-reset `code` parameter is now filtered. Reset and login tokens that appear as URL path segments remain open. Review before production.
+- **RESOLVED — LOCAL DEVELOPMENT (Task 36): password hash and salt in development SQL logging** (was LOW).
 - **LOW / LATER — localization:** the forgot-password code email arrives in English while the email-login mail is in pt-BR.
 - **TESTING CONSTRAINT — `.invalid` recipients receive no mail** (`Email::Sender` skips them). Mail acceptance tests use another reserved domain such as `.test`.
 - **OBSERVATION — sender identity:** local mail uses the default sender domain `unconfigured.discourse.org`; part of production SMTP / domain readiness (see the production-foundation list above).
