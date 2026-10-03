@@ -342,3 +342,21 @@ Append-only record of ratified decisions. To change a decision, add a new entry 
 - **Rationale:** The Founder explicitly reopened the option. Facebook login is a core Discourse capability, so considering it needs no custom authentication infrastructure.
 - **Consequences / open items:** Nothing is configured or enabled by this entry. Facebook stays disabled. Enabling any external provider first requires the external-provider acceptance tests recorded by the Task 30 readiness review (`02_PROJECT_STATE.md`). Making Facebook part of the product requires a new Decision Log entry.
 - **Supersedes:** Only the "Facebook is parked" wording of the Task 12A V1 contract (`DEC-025`, Canon §22, `05_V1_PRODUCT_SPEC.md`). It reopens no other Task 12A decision.
+
+## DEC-035 — Qualified Access is enabled in the production product profile
+
+- **Date:** 2026-10-03
+- **Status:** DECIDED — official PM, after the Task 37 Phase A readiness review
+- **Decision:** The production product profile intentionally requires `cannlabs_qualified_access_enabled = true`. It is applied reproducibly through the product bootstrap (`config/cannlabs_community/bootstrap.yml`), never by a manual toggle. User Notes is unaffected: `user_notes_enabled` stays gated in production.
+- **Rationale:** Restricted professional and association-leadership access is part of the V1 product model. A production-like proof must test the intended product, not a version with Qualified Access disabled.
+- **Consequences / open items:** The production audit reports drift when the flag is off and apply repairs it through the native site-setting setter. The plugin stays pinned at `ca4f0070d7bf85e42dbfa7f8736469139bb20275`; its access model is unchanged. This does not authorize a production deployment, real memberships, real verification or payment.
+- **Supersedes:** Only the "production enablement remains separately unauthorized" part of `DEC-030` for the plugin's enable flag. It does not change any other part of `DEC-030`.
+
+## DEC-036 — Production-like theme installs use an immutable tag
+
+- **Date:** 2026-10-03
+- **Status:** DECIDED — official PM, after the Task 37 Phase A readiness review
+- **Decision:** A production-like (and later production) theme install uses an immutable Git tag as its deployment ref, because the upstream theme importer installs a branch or tag, not an arbitrary commit. The tag must point exactly at the validated theme commit. Verification stays exact: the product bootstrap checks that the installed theme resolves to the pinned commit SHA, never to a tag name only. For Community Theme v0.1 the tag is `v0.1.0` → `aeb3a9d9154f532064dcc24ac9e78cf587588d77`.
+- **Rationale:** A tag gives the deployment layer a stable, installable ref without weakening the exact-commit pin.
+- **Consequences / open items:** Tags are never moved or overwritten; a new theme release gets a new tag and a manifest revision change.
+- **Supersedes:** Extends the pinning rule of `DEC-024`; does not replace it.

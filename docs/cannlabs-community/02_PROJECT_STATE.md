@@ -7,7 +7,7 @@ Evidence was captured from the development machine when this baseline was writte
 
 ## CURRENT STATE — 2026-10-02
 
-- **NOW:** no slice is in progress. Task 36C (log cleanup and documentation closure) brought the durable state up to date through Task 36. The next items come from the approved NEXT sequence; nothing is authorized (last section of this file).
+- **NOW:** Task 37A.1 (production-like build prerequisites) is implemented and awaiting official PM validation. Task 37 Phase A is accepted; Task 37B is not yet authorized (last section of this file).
 - **Production:** NOT READY. Task 27 is a validated readiness review (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`). Task 28 closed the product-configuration bootstrap part of its principal gap; a clean production-like deployment, staff 2FA, SMTP, secrets, authentication providers, payment and the Legal / Privacy / Trust & Safety gates remain open. No production or staging environment exists.
 - **Validated so far:** repository bootstrap, isolation and operating layer (through Task 04B); design direction, prototype, theme architecture and handoff (Tasks 05–08); Community Theme v0.1 (Tasks 10 / 10B); V1 product model (Task 12A); Access Skeleton (Task 14); Founder local login (Task 15A); verified roles and restricted spaces (Tasks 16 / 16A); qualified-access gap, architecture and plugin v0.1 (Tasks 17, 18A, 19); verified-identity boundary and synthetic professional lifecycle (Tasks 20B, 21); synthetic association / leadership lifecycle (Tasks 22 / 22A); moderation readiness and native moderation lifecycle (Tasks 23A, 24); Active Membership Safety Boundary including the native Site Feedback retirement (Task 26, `DEC-032`, `DEC-033`); production / security foundation readiness review (Task 27); Product Bootstrap v0.1 (Task 28); local-auth baseline (Task 29); authentication and identity-provider readiness review (Task 30); local email recovery acceptance (Task 31); staff 2FA acceptance (Task 32); Git ownership hygiene of the application repository (Task 33); Google OAuth local acceptance (Task 35); development logging hygiene (Task 36).
 - **Authentication:** native and bundled Discourse are sufficient for V1 (`YES — NATIVE/BUNDLED SUFFICIENT`). Local login, Google and Apple are the DECIDED direction; Facebook is OPEN / HYPOTHESIS (`DEC-034`); staff 2FA is required before production. Its native mechanics are validated (Task 32), but it is not enabled (`enforce_second_factor = no`) and no real staff account is enrolled. Google OAuth is locally accepted with core Discourse (Task 35) and Google signup does not grant paid membership; no external provider is enabled or configured. Local password reset and email login are proven end to end with a temporarily started mail catcher (Task 31); no production SMTP provider is selected.
@@ -199,7 +199,7 @@ Nothing below is authorized. Presence in the backlog does not authorize work.
 - private messaging changes;
 - Design System import or integration;
 - theme implementation beyond the validated v0.1;
-- plugin implementation beyond the validated Qualified Access plugin v0.1 (Task 19, `DEC-030`), and production enablement of that plugin;
+- plugin implementation beyond the validated Qualified Access plugin v0.1 (Task 19, `DEC-030`). Its enable flag is part of the production product profile (`DEC-035`), but no production deployment is authorized;
 - a strain database;
 - structured-post mechanics;
 - production or staging deployment, domain, DNS, Cloudflare, HTTPS, SMTP and secrets;
@@ -246,7 +246,7 @@ None of these is solved in this slice.
 Reconciled on 2026-10-03 (Task 36C); Tasks 28 to 33, 35 and 36 are validated and closed.
 
 1. Staff 2FA production rollout: enroll and verify every real staff account first, then rely on persistent `staff` enforcement (operational rule in "TASK 32" below). Required before production; not authorized.
-2. A later slice proving a clean production-like environment end to end: supported production deployment, theme and plugin installation, bootstrap application, secrets, external services, production-like logging acceptance (Task 36 limitation) and smoke tests (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`).
+2. A later slice proving a clean production-like environment end to end: supported production deployment, theme and plugin installation, bootstrap application, secrets, external services, production-like logging acceptance (Task 36 limitation) and smoke tests (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`). This is Task 37: Phase A accepted, Task 37A.1 prerequisites awaiting validation, Task 37B (the build) not yet authorized; see "TASK 37" below.
 3. Legal / Privacy / Trust & Safety review.
 4. The remaining authentication providers (external-provider acceptance tests first) and payment readiness as separate slices.
 
@@ -371,7 +371,7 @@ Product Bootstrap v0.1 is implemented in this repository. Operator guide: `08_PR
 - **Shape:** a declarative manifest (`config/cannlabs_community/bootstrap.yml`), one Rails-backed runner (`lib/cannlabs_community/bootstrap.rb`) and two rake tasks, `cannlabs_community:bootstrap:audit` (default-safe, no writes) and `cannlabs_community:bootstrap:apply`. No core file was modified; the fork gains four new files and their documentation.
 - **Reuse:** native site-setting setter, group creation service, category permissions, Guardian-checked category deletion, and the native staff-action and group-history logs. No direct SQL, no schema, no request-time code.
 - **Identity:** groups by technical name, native automatic groups by their stable key, categories by native site setting or slug. No database ids and no secrets in the manifest.
-- **Profiles:** `local` also manages `user_notes_enabled` and `cannlabs_qualified_access_enabled`; in `production` both are gated and never applied.
+- **Profiles:** `local` also manages `user_notes_enabled` and `cannlabs_qualified_access_enabled`; in `production` both are gated and never applied. Later (Task 37A.1, `DEC-035`): `production` now manages `cannlabs_qualified_access_enabled=true`; User Notes stays gated.
 - **Automated evidence:** 24 examples, 0 failures (`spec/lib/cannlabs_community/bootstrap_spec.rb`, plugins loaded).
 - **Local runtime evidence (2026-10-02):** audit PASS on all 37 invariants; two consecutive applies reported NO CHANGE with an unchanged database fingerprint; one bounded live drift (removing `membros_ativos` from reporting eligibility) was detected by audit, repaired by apply and left no further change.
 - **Finding kept for later:** once a group has an automatic trust level, core accepts only 0 ("none") to clear it, and treats 0 and unset as the same. The bootstrap follows that.
@@ -626,8 +626,32 @@ Status: `VALIDATED` (official PM). Phase A (read-only root-cause review) was acc
 - **Historical finding resolution.** The Task 35 development-logging MEDIUM is `RESOLVED — LOCAL DEVELOPMENT`. The same mechanism also resolves, for local development, the password hash / salt (Task 31) and TOTP secret (Task 32) SQL logging findings and the unfiltered reset `code` parameter (Task 31). Reset and login tokens that appear as URL path segments (`/u/password-reset/…`, `/session/email-login/…`) are not covered by parameter filters and remain open.
 - **Limitation.** Production-like logging behaviour has not yet been acceptance-tested. The stock production configuration logs at `:info`, where SQL lines are not emitted, but no production-like environment has been checked.
 
-## NEXT — FROM THE APPROVED SEQUENCE (NOTHING AUTHORIZED)
+## NEXT AFTER TASK 36 — APPROVED SEQUENCE (HISTORICAL)
+
+Status superseded: the official PM moved to the production-like environment proof (Task 37); see "TASK 37" below. The text is kept as the record of what was recommended.
 
 Task 36 is closed. The next items come from the existing NEXT list above, unchanged in substance: the staff 2FA production rollout, then the clean production-like environment proof, which now also carries the production-like logging acceptance. The official PM chooses; nothing is authorized and no other authentication provider is started.
 
 Task 36C changed no product code, database state, authentication setting or Google Cloud resource; it deleted only the two authorized local log files and restarted the local dev server.
+
+## TASK 37 — PRODUCTION-LIKE ENVIRONMENT PROOF
+
+### Phase A — ACCEPTED (read-only architecture / readiness review)
+
+The official PM accepted the Task 37 Phase A review and took these readiness decisions. The production-like proof (Task 37B) is not yet authorized.
+
+- **Architecture direction for the proof:** the official `discourse_docker` lifecycle; the CannLabs application fork built at a pinned revision; the theme installed from an immutable tag with exact installed-commit verification (`DEC-036`); the Qualified Access plugin pinned at `ca4f0070d7bf85e42dbfa7f8736469139bb20275`; a clean database; the production Rails environment; a persistent `/shared` directory. A synthetic local hostname and a local Mailpit are acceptable. Public DNS, TLS, OAuth, payment and real staff are not required for this proof.
+- **Qualified Access:** DECIDED — enabled in the production product profile (`DEC-035`). User Notes stays gated; the two are independent.
+- **Task 37B execution target:** a new, disposable Ubuntu 24.04 WSL2 distribution with its own Docker Engine. Not the current development distribution, not the Docker Desktop shared daemon, not staging; it is destroyed after acceptance. No development database or filesystem is reused.
+- **Backup / restore correction:** native backups also live under `/shared`, so the proof must not delete the only copy. Contract: create a native backup; record its filename, size and checksum; copy it outside the instance's `/shared` but inside the disposable machine; destroy the instance and its `/shared`; rebuild from zero; put the saved backup in the restore location; restore; re-run the product audit; remove the temporary copy when the proof ends. No off-site backup infrastructure is needed for this proof.
+
+### Task 37A.1 — production-like build prerequisites (implemented, awaiting PM validation)
+
+- **Qualified Access production profile.** `config/cannlabs_community/bootstrap.yml` now lists `cannlabs_qualified_access_enabled: production: true` beside `local: true`; no runner code changed. The production audit passes when the flag is on, reports drift when it is off, and apply repairs it through the native site-setting setter without touching memberships; a second apply changes nothing. `user_notes_enabled` remains gated in production.
+- **Theme immutable pin.** The theme repository had no tags. Annotated tag `v0.1.0` was created on `aeb3a9d9154f532064dcc24ac9e78cf587588d77` and pushed alone; no theme commit was made. The bootstrap already verifies the installed commit (`local_version`) against the manifest revision, so the contract "deploy by tag, verify exact SHA" needed no code change.
+
+Production remains NOT READY.
+
+## NEXT — TASK 37B CLEAN PRODUCTION-LIKE ENVIRONMENT BUILD (NOT AUTHORIZED)
+
+After the official PM validates Task 37A.1, the next slice is **Task 37B — Clean Production-Like Environment Build**, on the execution target and with the backup contract above. It is not started and not authorized.

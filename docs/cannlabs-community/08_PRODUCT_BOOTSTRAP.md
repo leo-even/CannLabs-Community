@@ -49,7 +49,7 @@ Changes go through the same native code paths the admin UI uses (site-setting se
 | Profile | Use |
 | --- | --- |
 | `local` | The local development Community. Also manages `user_notes_enabled=true` and `cannlabs_qualified_access_enabled=true`. |
-| `production` | Reserved for a future authorized environment. Those two settings are `GATED`: reported, never applied. Enabling them in production needs a later explicit authorization (User Notes is Legal / Privacy / T&S gated). |
+| `production` | The production product profile, first exercised by the production-like proof (Task 37B). Manages `cannlabs_qualified_access_enabled=true` (`DEC-035`). `user_notes_enabled` stays `GATED`: reported, never applied (Legal / Privacy / T&S gated). |
 
 The `production` profile existing in the manifest does not mean production is authorized or ready.
 

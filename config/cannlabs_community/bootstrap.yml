@@ -38,6 +38,7 @@ profile_settings:
     local: true
   cannlabs_qualified_access_enabled:
     local: true
+    production: true # DEC-035
 
 # Native automatic groups the manifest refers to. Verified, never created.
 builtin_groups:

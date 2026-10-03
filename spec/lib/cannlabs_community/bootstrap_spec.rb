@@ -72,8 +72,55 @@ RSpec.describe CannlabsCommunity::Bootstrap do
         },
         "cannlabs_qualified_access_enabled" => {
           "local" => true,
+          "production" => true,
         },
       )
+    end
+  end
+
+  describe "Qualified Access in the production profile" do
+    before do
+      skip("needs LOAD_PLUGINS=1") if !SiteSetting.has_setting?(:cannlabs_qualified_access_enabled)
+    end
+
+    def result_for(key)
+      bootstrap.results.find { |result| result.key == key }
+    end
+
+    it "passes when Qualified Access is enabled" do
+      SiteSetting.cannlabs_qualified_access_enabled = true
+
+      bootstrap.audit
+
+      expect(status_of("settings.cannlabs_qualified_access_enabled")).to eq(:pass)
+    end
+
+    it "reports drift when disabled and repairs only that setting, once" do
+      bootstrap.apply
+      SiteSetting.cannlabs_qualified_access_enabled = false
+
+      bootstrap.audit
+      expect(status_of("settings.cannlabs_qualified_access_enabled")).to eq(:drift)
+      expect(SiteSetting.cannlabs_qualified_access_enabled).to eq(false)
+
+      expect { bootstrap.apply }.not_to change { [GroupUser.count, GroupHistory.count] }
+      expect(SiteSetting.cannlabs_qualified_access_enabled).to eq(true)
+      expect(bootstrap.results.select(&:changed).map(&:key)).to eq(
+        ["settings.cannlabs_qualified_access_enabled"],
+      )
+
+      bootstrap.apply
+      expect(result_for("settings.cannlabs_qualified_access_enabled").changed).to eq(false)
+      expect(bootstrap.results.count(&:changed)).to eq(0)
+    end
+
+    it "keeps User Notes gated" do
+      SiteSetting.user_notes_enabled = false
+
+      bootstrap.apply
+
+      expect(status_of("settings.user_notes_enabled")).to eq(:gated)
+      expect(SiteSetting.user_notes_enabled).to eq(false)
     end
   end
 

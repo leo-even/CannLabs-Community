@@ -9,7 +9,7 @@ Buckets: **NOW** · **NEXT** · **LATER** · **PARKED** · **OPEN**. States are 
 
 ## NOW
 
-**Current NOW (2026-10-03, Task 36C): no slice is in progress.** Tasks 28 to 33, 35 and 36 are validated and closed. The next items come from the approved sequence in `02_PROJECT_STATE.md` → NEXT; nothing is authorized. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
+**Current NOW (2026-10-03, Task 37A.1): production-like build prerequisites implemented, awaiting official PM validation.** Task 37 Phase A is accepted; Task 37B (the clean production-like build) is next but not yet authorized. See `02_PROJECT_STATE.md` → TASK 37. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
 
 The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.md` → NEXT.
 
@@ -345,7 +345,7 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 
 ## NEXT / OPEN — PRODUCTION FOUNDATION (after Task 28; none authorized)
 
-- **NEXT — clean production-like proof:** supported production deployment, theme and plugin installation, bootstrap application, secrets, external services, a clean database, production-like logging acceptance (Task 36 limitation) and smoke tests. Staging with synthetic data only is the recommended direction (HYPOTHESIS).
+- **NEXT — clean production-like proof (Task 37; Phase A accepted, 37A.1 awaiting validation, 37B not authorized):** supported production deployment, theme and plugin installation, bootstrap application, secrets, external services, a clean database, production-like logging acceptance (Task 36 limitation) and smoke tests. Staging with synthetic data only is the recommended direction (HYPOTHESIS).
 - **REQUIRED BEFORE PRODUCTION — staff 2FA:** native `enforce_second_factor`. The acceptance slice is VALIDATED (Task 32: TOTP, backup codes and break-glass recovery). Still required: enroll and verify every real staff account, then rely on persistent `staff` enforcement. Not enabled and not authorized.
 - **OPEN — production hostname / domain, HTTPS and the Cloudflare role.**
 - **OPEN — SMTP provider** (SPF, DKIM, DMARC, bounce / complaint visibility).
@@ -401,7 +401,7 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 
 ## AUTHENTICATION READINESS — OPEN ITEMS (none authorized)
 
-- **NEXT — from the approved sequence** (`02_PROJECT_STATE.md` → NEXT): the staff 2FA production rollout, then the clean production-like proof including production-like logging acceptance. Not authorized.
+- **NEXT — Task 37B, the clean production-like build** (after Task 37A.1 validation), then the remaining approved sequence (`02_PROJECT_STATE.md` → NEXT), including the staff 2FA production rollout. Not authorized.
 - **RESOLVED — LOCAL DEVELOPMENT (Task 36): OAuth development logging** (the Task 35 MEDIUM). Production-like logging behaviour has not yet been acceptance-tested.
 - **LOW — orphaned Google profile-picture upload** awaiting the native orphan-upload cleanup after its grace period.
 - **PARKED — native scheduled backup `[FAILED]` around 03:30Z on 2026-10-03,** not investigated in Task 35.
