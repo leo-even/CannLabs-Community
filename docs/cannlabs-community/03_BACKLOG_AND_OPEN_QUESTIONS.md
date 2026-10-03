@@ -9,7 +9,7 @@ Buckets: **NOW** · **NEXT** · **LATER** · **PARKED** · **OPEN**. States are 
 
 ## NOW
 
-**Current NOW (2026-10-02, Task 33A): no slice is in progress.** Tasks 28 to 33 are validated and closed. The official PM will choose the next bounded authentication slice; Google Authentication Provider Readiness is the likely direction, not an authorization, and nothing of it is started. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
+**Current NOW (2026-10-03, Task 35A): no slice is in progress.** Tasks 28 to 33 and Task 35 are validated and closed. The recommended next bounded slice is Task 36 — OAuth Dev Logging Security Hygiene, OPEN and not started. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
 
 The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.md` → NEXT.
 
@@ -102,7 +102,7 @@ Explore: institutional verification; representatives; institutional profile; dis
 
 The original exploration question (Google, Facebook, Apple and the native Discourse flows; initial dated inventory in `04_DISCOVERY_BASELINE.md` §1.3) is answered by the Task 30 readiness review: native and bundled Discourse are sufficient, and no custom authentication infrastructure is needed.
 
-- **DECIDED:** local login, Google and Apple are the V1 direction (Canon §22). Google and Apple are disabled and need credentials later.
+- **DECIDED:** local login, Google and Apple are the V1 direction (Canon §22). Google and Apple are disabled and need production credentials later. Google OAuth is locally accepted with core Discourse (Task 35); Apple is untested.
 - **OPEN / HYPOTHESIS:** Facebook login, reopened by the Founder (`DEC-034`). Not DECIDED, not V1.
 - **REQUIRED BEFORE PRODUCTION:** staff 2FA.
 
@@ -389,9 +389,17 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 - **OPEN / LATER — local filesystem hygiene (separate, not authorized):** root-owned paths under `tmp/` and the root-owned `plugins/cannlabs-community-qualified-access` mount-point directory. Neither is Git metadata, and neither was repaired.
 - **Durable findings:** `02_PROJECT_STATE.md` → TASK 33.
 
+## TASK 35 — VALIDATED GOOGLE OAUTH LOCAL ACCEPTANCE
+
+- **Status:** `GOOGLE OAUTH LOCAL ACCEPTANCE VALIDATED` (official PM). Core Google auth is sufficient (`YES — CORE GOOGLE AUTH IS SUFFICIENT`); no custom OAuth is authorized. Same-email linking without duplicates, membership retained on link, a non-member Google signup, same-account relogin, full native cleanup and exact settings restoration were proven locally with synthetic Community accounts. Production remains NOT READY.
+- **Durable findings:** `02_PROJECT_STATE.md` → TASK 35.
+
 ## AUTHENTICATION READINESS — OPEN ITEMS (none authorized)
 
-- **LIKELY NEXT DIRECTION — Google Authentication Provider Readiness.** The official PM chooses the next bounded authentication slice and first decides between (A) credential / domain readiness only and (B) a local Google OAuth acceptance with Founder-created provider credentials. Google is a DECIDED target and core Discourse. A direction, not an authorization.
+- **NEXT — Task 36 — OAuth Dev Logging Security Hygiene (OPEN — NOT STARTED).** Prevent OAuth token material from appearing in development SQL logs; review and filter the callback `code` and `state`; decide the safe handling of the already-contaminated local development logs; keep useful debugging; distinguish development from production logging; no auth redesign unless evidence requires it.
+- **MEDIUM — Security / Privacy Readiness: OAuth development logging.** Development logging exposed Google OAuth token material during Task 35 (access and refresh token material, callback `code` and `state`; client secret not found). Production behaviour was not tested. Contained externally by the Founder's revocation of the Dev grant.
+- **LOW — orphaned Google profile-picture upload** awaiting the native orphan-upload cleanup after its grace period.
+- **PARKED — native scheduled backup `[FAILED]` around 03:30Z on 2026-10-03,** not investigated in Task 35.
 - **REQUIRED BEFORE PRODUCTION — staff 2FA rollout.** Enroll every real staff account, verify login with its second factor, establish the recovery / backup-code procedure, confirm no staff account remains unenrolled, and only then leave `enforce_second_factor = staff` enabled.
 - **MEDIUM — Security / Operational Readiness: staff enforcement boundary.** For an unenrolled staff account, native enforcement redirects HTML navigation to the enrollment page; JSON and API requests are exempt from that redirect. The setting alone does not make an unenrolled staff account safe. Recorded as native behaviour, not as a vulnerability.
 - **OPEN — local WebAuthn acceptance / environment issue.** The development WebAuthn origin is tied to `http://localhost:3000` while Community runs on `http://localhost:3100`; security-key and passkey acceptance are untested. No core patch is authorized.
@@ -403,7 +411,7 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 - **LOW / LATER — localization:** the forgot-password code email arrives in English while the email-login mail is in pt-BR.
 - **TESTING CONSTRAINT — `.invalid` recipients receive no mail** (`Email::Sender` skips them). Mail acceptance tests use another reserved domain such as `.test`.
 - **OBSERVATION — sender identity:** local mail uses the default sender domain `unconfigured.discourse.org`; part of production SMTP / domain readiness (see the production-foundation list above).
-- **REQUIRED BEFORE ENABLING ANY PROVIDER — external-provider acceptance tests,** covering automatic account linking by verified email (Google), provider emails treated as verified (Apple, Facebook), Apple private-relay addresses creating a second account, and external signups that are not automatically in `membros_ativos`. No mitigation is designed or authorized.
+- **REQUIRED BEFORE ENABLING ANY PROVIDER — external-provider acceptance tests,** covering automatic account linking by verified email (Google), provider emails treated as verified (Apple, Facebook), Apple private-relay addresses creating a second account, and external signups that are not automatically in `membros_ativos`. No mitigation is designed or authorized. Google's linking and non-member signup were accepted locally in Task 35; Apple and Facebook remain untested.
 - **NEEDS SECURITY REVIEW — Apple private key.** The bundled plugin does not flag `apple_pem` as `secret`. Review before real Apple credentials are entered; do not change plugin code.
 - **OPEN / HYPOTHESIS — Facebook login** (`DEC-034`).
 - **REQUIRED BEFORE PRODUCTION — staff 2FA** (decision unchanged; acceptance validated in Task 32, rollout above).

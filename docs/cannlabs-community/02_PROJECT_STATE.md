@@ -7,10 +7,10 @@ Evidence was captured from the development machine when this baseline was writte
 
 ## CURRENT STATE — 2026-10-02
 
-- **NOW:** no slice is in progress. Task 33A (documentation closure) brought the durable state up to date through Task 33. The official PM intends to move toward the first external authentication provider; Google Authentication Provider Readiness is the likely next direction, not an authorization, and nothing of it is started (last section of this file).
+- **NOW:** no slice is in progress. Task 35A (documentation closure) brought the durable state up to date through Task 35. The recommended next bounded slice is Task 36 — OAuth Dev Logging Security Hygiene, OPEN and not started (last section of this file).
 - **Production:** NOT READY. Task 27 is a validated readiness review (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`). Task 28 closed the product-configuration bootstrap part of its principal gap; a clean production-like deployment, staff 2FA, SMTP, secrets, authentication providers, payment and the Legal / Privacy / Trust & Safety gates remain open. No production or staging environment exists.
-- **Validated so far:** repository bootstrap, isolation and operating layer (through Task 04B); design direction, prototype, theme architecture and handoff (Tasks 05–08); Community Theme v0.1 (Tasks 10 / 10B); V1 product model (Task 12A); Access Skeleton (Task 14); Founder local login (Task 15A); verified roles and restricted spaces (Tasks 16 / 16A); qualified-access gap, architecture and plugin v0.1 (Tasks 17, 18A, 19); verified-identity boundary and synthetic professional lifecycle (Tasks 20B, 21); synthetic association / leadership lifecycle (Tasks 22 / 22A); moderation readiness and native moderation lifecycle (Tasks 23A, 24); Active Membership Safety Boundary including the native Site Feedback retirement (Task 26, `DEC-032`, `DEC-033`); production / security foundation readiness review (Task 27); Product Bootstrap v0.1 (Task 28); local-auth baseline (Task 29); authentication and identity-provider readiness review (Task 30); local email recovery acceptance (Task 31); staff 2FA acceptance (Task 32); Git ownership hygiene of the application repository (Task 33).
-- **Authentication:** native and bundled Discourse are sufficient for V1 (`YES — NATIVE/BUNDLED SUFFICIENT`). Local login, Google and Apple are the DECIDED direction; Facebook is OPEN / HYPOTHESIS (`DEC-034`); staff 2FA is required before production. Its native mechanics are validated (Task 32), but it is not enabled (`enforce_second_factor = no`) and no real staff account is enrolled. No external provider is enabled or configured. Local password reset and email login are proven end to end with a temporarily started mail catcher (Task 31); no production SMTP provider is selected.
+- **Validated so far:** repository bootstrap, isolation and operating layer (through Task 04B); design direction, prototype, theme architecture and handoff (Tasks 05–08); Community Theme v0.1 (Tasks 10 / 10B); V1 product model (Task 12A); Access Skeleton (Task 14); Founder local login (Task 15A); verified roles and restricted spaces (Tasks 16 / 16A); qualified-access gap, architecture and plugin v0.1 (Tasks 17, 18A, 19); verified-identity boundary and synthetic professional lifecycle (Tasks 20B, 21); synthetic association / leadership lifecycle (Tasks 22 / 22A); moderation readiness and native moderation lifecycle (Tasks 23A, 24); Active Membership Safety Boundary including the native Site Feedback retirement (Task 26, `DEC-032`, `DEC-033`); production / security foundation readiness review (Task 27); Product Bootstrap v0.1 (Task 28); local-auth baseline (Task 29); authentication and identity-provider readiness review (Task 30); local email recovery acceptance (Task 31); staff 2FA acceptance (Task 32); Git ownership hygiene of the application repository (Task 33); Google OAuth local acceptance (Task 35).
+- **Authentication:** native and bundled Discourse are sufficient for V1 (`YES — NATIVE/BUNDLED SUFFICIENT`). Local login, Google and Apple are the DECIDED direction; Facebook is OPEN / HYPOTHESIS (`DEC-034`); staff 2FA is required before production. Its native mechanics are validated (Task 32), but it is not enabled (`enforce_second_factor = no`) and no real staff account is enrolled. Google OAuth is locally accepted with core Discourse (Task 35) and Google signup does not grant paid membership; no external provider is enabled or configured. Local password reset and email login are proven end to end with a temporarily started mail catcher (Task 31); no production SMTP provider is selected.
 - **Repositories:** application `leo-even/CannLabs-Community` (this fork; docs, the operating layer and the Task 28 bootstrap mechanism); theme `leo-even/CannLabs-Community-Theme` at `aeb3a9d9154f532064dcc24ac9e78cf587588d77`; plugin `leo-even/CannLabs-Community-Qualified-Access` at `ca4f0070d7bf85e42dbfa7f8736469139bb20275`.
 - **Latest decision:** `DEC-034`.
 
@@ -243,9 +243,9 @@ None of these is solved in this slice.
 
 ## NEXT
 
-Reconciled on 2026-10-02 (Task 33A); Tasks 28 to 33 are validated and closed.
+Reconciled on 2026-10-03 (Task 35A); Tasks 28 to 33 and Task 35 are validated and closed.
 
-1. The next bounded authentication slice — the official PM's choice. The likely direction is Google Authentication Provider Readiness (last section of this file). Nothing is authorized or started.
+1. Task 36 — OAuth Dev Logging Security Hygiene: the recommended next bounded slice (last section of this file). OPEN, not started, not authorized.
 2. Staff 2FA production rollout: enroll and verify every real staff account first, then rely on persistent `staff` enforcement (operational rule in "TASK 32" below). Required before production; not authorized.
 3. A later slice proving a clean production-like environment end to end: supported production deployment, theme and plugin installation, bootstrap application, secrets, external services and smoke tests (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`).
 4. Legal / Privacy / Trust & Safety review.
@@ -411,7 +411,7 @@ Task 30 was a read-only review; no product or runtime write occurred, and nothin
 | --- | --- | --- | --- |
 | Local password | core | V1 (DECIDED) | enabled |
 | Email login link | core | native default | enabled by default; deliverable locally only while a mail catcher runs (none runs by default; proven in Task 31) |
-| Google | core | target DECIDED | disabled; credentials required later |
+| Google | core | target DECIDED | disabled; local OAuth acceptance VALIDATED with a DEV client (Task 35); production credentials not configured |
 | Apple | bundled plugin `plugins/discourse-apple-auth` | target DECIDED | disabled; Apple credentials and domain prerequisites required later |
 | Facebook | core | OPEN / HYPOTHESIS (`DEC-034`); not DECIDED, not V1 | disabled |
 | Staff 2FA | core | required before production | not enabled; native mechanics validated in Task 32 |
@@ -437,7 +437,7 @@ Observed native behaviour, recorded as a concern and not as new product logic. N
 - An Apple private-relay address may create a second Community account instead of matching an existing local account.
 - An external signup creates a valid Discourse account that is not automatically in `membros_ativos`.
 
-External-provider acceptance tests are therefore required before any provider is enabled.
+External-provider acceptance tests are therefore required before any provider is enabled. Later (Task 35): Google's verified-email auto-link and the non-member signup were accepted locally; Apple and Facebook remain untested.
 
 ### Apple private key — NEEDS SECURITY REVIEW
 
@@ -566,8 +566,46 @@ Task 33 closes Git-metadata ownership under the application `.git` only. It does
 
 Production remains NOT READY.
 
-## NEXT — OFFICIAL PM TO CHOOSE (NOTHING AUTHORIZED)
+## NEXT AFTER TASK 33 — GOOGLE DIRECTION (HISTORICAL)
+
+Status superseded: the Google direction was carried out as Tasks 34 and 35; see "TASK 35" below. The text is kept as the record of what was recommended.
 
 After this closure the official PM chooses the next bounded authentication slice. The likely direction is **Google Authentication Provider Readiness**: local password authentication, local account recovery and the native staff TOTP / recovery mechanics are validated; Google is already a DECIDED product target and is core Discourse; custom authentication remains unjustified. Before anything starts, the official PM determines whether the next step is (A) credential / domain readiness only, or (B) an actual local Google OAuth acceptance with Founder-created provider credentials. This is a direction, not an authorization. Google is not configured: no provider credentials exist, `enable_google_oauth2_logins` is not enabled, no secret was added and no OAuth acceptance has started.
 
 Task 32A itself was documentation only: staff 2FA was not enabled, no real staff account was enrolled, and nothing in the runtime, the database, logging or the authentication settings was changed. Task 33A was documentation only as well: no ownership, runtime, database or authentication change.
+
+## TASK 35 — VALIDATED GOOGLE OAUTH LOCAL ACCEPTANCE
+
+Status: `GOOGLE OAUTH LOCAL ACCEPTANCE VALIDATED` (official PM). Task 35 made no repository write. Production remains NOT READY.
+
+- **Upstream-first conclusion — `YES — CORE GOOGLE AUTH IS SUFFICIENT`.** This is the conclusion of the Task 34 read-only Google readiness review as stated by the official PM; Task 34 has no separate durable closure. The core provider (`google_oauth2`, `Auth::GoogleOAuth2Authenticator`, enabled by `enable_google_oauth2_logins` with `google_oauth2_client_id` / `google_oauth2_client_secret`) is the supported path. No custom Google OAuth implementation is authorized, and none was needed.
+- **Method.** A Founder-created DEV OAuth client (Google Cloud project `cannlabs-community-dev-2026`, client `community-dev-localhost`, callback `http://localhost:3100/auth/google_oauth2/callback`) and one Founder-controlled Google test identity. The credential file stays outside every repository; its contents are recorded nowhere. Google was configured and enabled only for the test, through native site settings, with the secret kept out of command lines, scripts and logs. Every Community account involved was synthetic, and the three browser logins were performed by the Founder.
+- **Redirect contract.** Native initiation redirected to Google with the exact callback `http://localhost:3100/auth/google_oauth2/callback` (not `127.0.0.1`).
+- **Same-email link (login #1):** a verified Google email matching an existing synthetic local account linked to that account; no duplicate was created; its existing `membros_ativos` membership survived; no Qualified Access was granted.
+- **New Google signup (login #2):** native signup created a new account. It was passwordless, TL0, non-staff, and received no `membros_ativos`, no Qualified Access, no professional or association-leadership group, no protected-category access, no personal-message ability and no flagging ability. **Google authentication does not grant paid membership.**
+- **Relogin (login #3):** returned to the same account through the same provider association; no duplicate and no repeated signup.
+- **Cleanup.** Native user deletion removed both synthetic users with their provider associations, provider access- and refresh-token material, auth sessions, group memberships and Qualified Access state; no synthetic content existed. A server session left valid after one login (the window was closed without logging out) was removed by the native deletion.
+- **Baseline restoration.** The three Google settings are back to the exact pre-task state: `enable_google_oauth2_logins` default (disabled), no local client ID, no local client secret, and no override row for any of them. Google is not exposed as a local provider. No other authentication setting changed.
+- **Regression.** `user1` and `bemstorm` are unchanged apart from normal Founder-driven `last_seen_at`; category ACLs, custom groups, reporting, personal-message rules and Chat are unchanged; Qualified Access is healthy; the bootstrap audit passed 37 of 37; the runtime stayed healthy; all three repositories stayed clean.
+- **Retained on purpose.** The DEV Google Cloud project and OAuth client, and the credential file outside the repositories, remain for future controlled testing. The Founder removed the controlled Google account's grant to CannLabs Community (Dev) after the test.
+
+### OAuth development logging — MEDIUM (Security / Privacy Readiness), unresolved
+
+Development logging exposed Google OAuth token material during Task 35: access-token material, refresh-token material, the OAuth callback authorization `code` and the OAuth `state` were observed in development logging (SQL debug lines writing the provider association, and the callback request lines and parameters). The client secret was not found. **Production behaviour was not tested**, and no production-leakage conclusion may be drawn from this task. External containment: the Founder revoked the Dev grant from the controlled Google account. The local development log was intentionally left untouched as evidence; logging configuration is unchanged. Follow-up: Task 36 (below).
+
+### Other observations
+
+- **LOW — orphaned profile-picture upload.** A Google login downloads the Google profile picture as the avatar. After the final deletion that upload is unreferenced and awaits the native orphan-upload cleanup after its grace period; nothing was deleted manually.
+- A Google-created account is passwordless, so the native UI will not disconnect its only login method; native user deletion removed the association.
+- Removing a provider association locally does not revoke the upstream Google grant.
+- In this test Google issued refresh-token material on first consent only, not on later logins.
+- Closing a private browser window does not end the server session; an explicit Community logout does.
+- `bypass_wizard_check = true` was written by native setup-wizard behaviour during the test window; it was not a Task 35 change and was not reverted.
+- **PARKED — not investigated in Task 35:** a native scheduled backup logged `[FAILED]` around 03:30Z on 2026-10-03.
+- The local runtime was down at the start of the task because the container started before the WSL bind mounts were available, leaving `/src` empty; a manual container restart restored it. No launcher change follows from this closure.
+
+## NEXT — TASK 36 OAUTH DEV LOGGING SECURITY HYGIENE (OPEN — NOT STARTED)
+
+The recommended next bounded slice is **Task 36 — OAuth Dev Logging Security Hygiene**. It is OPEN and not started; nothing is authorized until the official PM says so. Intended scope only: prevent OAuth token material from appearing in development SQL logs; review and filter the callback `code` and `state`; decide the safe handling of the already-contaminated local development logs; keep useful debugging available; distinguish development from production logging behaviour explicitly; no authentication redesign unless evidence requires it.
+
+Task 35A itself was documentation only: no runtime, database, Google Cloud, authentication-setting or logging change.
