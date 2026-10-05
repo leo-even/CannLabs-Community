@@ -3,7 +3,7 @@
 > **THIS IS THE VALIDATED PRODUCTION-LIKE DEFINITION, NOT A PRODUCTION DEFAULT.**
 > Production is `NOT READY`. Do not copy values from this directory into a production deployment without a separate, explicit decision.
 
-This directory is the durable, version-controlled owner of the production-like deployment definition (`DEC-039`). Everything else about the project's state and decisions is in `docs/cannlabs-community/` (`02_PROJECT_STATE.md` → TASK 37B, TASK 38A, TASK 38B; `01_DECISION_LOG.md` → `DEC-037` to `DEC-040`).
+This directory is the durable, version-controlled owner of the production-like deployment definition (`DEC-039`). Everything else about the project's state and decisions is in `docs/cannlabs-community/` (`02_PROJECT_STATE.md` → TASK 37B, TASK 38A, TASK 38B; `01_DECISION_LOG.md` → `DEC-037` to `DEC-041`).
 
 | File | Responsibility |
 | --- | --- |
@@ -15,7 +15,7 @@ This directory is the durable, version-controlled owner of the production-like d
 
 - A **production-like proof**, not the production deployment. Synthetic hostname, local Mailpit, no TLS, no public exposure, no real members, no real provider credentials.
 - Validated artifact: `cannlabs-prodlike.yml`, SHA-256 `89222f0af613aefacbbb26bac8c5f33c895aa7243eb70fca0eb4e7c64188065f` (9,292 bytes). The previous definition (`0eb16493…7885`) is `SUPERSEDED` and is not fresh-install-safe.
-- `MACHINE-INDEPENDENT DEPLOYMENT REPRODUCIBILITY — NOT YET VALIDATED`. The proof ran on one prepared host. It becomes validated only when the final Task 38B run (section 13) passes on an independent host, using only the tracked artifacts, pinned public sources and the values documented here.
+- `MACHINE-INDEPENDENT PRODUCTION-LIKE DEPLOYMENT REPRODUCIBILITY — VALIDATED` (Task 38B, 2026-10-05, `DEC-041`). An independent Google Compute Engine VM reproduced the validated production-like deployment from this directory's tracked artifacts at canon commit `d1981640e414d215f2d6fea7a182cd1bf6d1e5e9`, using only pinned public sources and the values documented here. Section 13 states what the claim means and what it does not. It is not production readiness.
 - **`FINAL TASK 38B ACCEPTANCE REQUIRES AN ISOLATED FRESH VM OR SEPARATE PHYSICAL HOST`** with an independent network namespace, Docker daemon and filesystem. A second WSL distribution on the same Windows host is not accepted, because WSL distributions on one host share the relevant network namespace and listeners. A same-host WSL rehearsal is optional, is not acceptance evidence, and must be labeled `REHEARSAL ONLY — DOES NOT VALIDATE TASK 38B`.
 - **Task 38B proves a clean install and the product bootstrap from the tracked canon.** It does not repeat backup creation, restore or the disaster-recovery proof: Task 37B.2B already validated them. Section 10 is reference, not part of that run.
 
@@ -60,7 +60,7 @@ Docker contract (what Task 37B validated):
 
 - **Source:** the official Docker apt repository, `deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu noble stable`, with its key fetched from `https://download.docker.com/linux/ubuntu/gpg` (key fingerprint `9DC858229FC7DD38854AE2D88D81803C0EBFCD88`). Key material comes from the public upstream, never from another machine.
 - **Components:** `docker-ce`, `docker-ce-cli`, `containerd.io`, `docker-buildx-plugin`, `docker-compose-plugin`; the daemon is systemd-managed (`systemctl enable --now docker`); there is no custom `/etc/docker/daemon.json`.
-- **Validated versions:** Docker Server `29.8.2`, packages `docker-ce 5:29.8.2-1~ubuntu.24.04~noble` and `containerd.io 2.3.6-1~ubuntu.24.04~noble`. The package revision of the other components was not recorded.
+- **Validated versions:** Docker Server `29.8.2`, packages `docker-ce 5:29.8.2-1~ubuntu.24.04~noble` and `containerd.io 2.3.6-1~ubuntu.24.04~noble`. Task 38B also recorded `docker-buildx-plugin 0.37.1-1~ubuntu.24.04~noble` and `docker-compose-plugin 5.6.0-1~ubuntu.24.04~noble`, installed from the same repository without a pin.
 - **Fresh data root:** `/var/lib/docker` must be new: no images, containers, volumes or networks.
 - **Verification contract:** `docker version --format '{{.Server.Version}}'` prints `29.8.2`; `dpkg-query -W -f='${Version}\n' docker-ce containerd.io` prints the two package versions above; `docker info --format '{{.DockerRootDir}}'` prints `/var/lib/docker`; `docker ps -a` and `docker images` list nothing; `/etc/docker/daemon.json` does not exist. If the apt repository now offers different versions, stop and report: it is a deviation for the PM to decide, not something to repair.
 
@@ -173,14 +173,15 @@ docker exec -u discourse -w /var/www/discourse -e PROFILE=production cannlabs-pr
 
 The bootstrap runs as the system user and needs no admin. The admin is needed by the upstream promotion workflow.
 
-**A clean site cannot converge at once.** The special Uncategorized category must first be replaced by the native upcoming change `remove_and_replace_uncategorized`, and the bootstrap reports `BLOCKED` until then. In the pinned source the native scheduler (`Jobs::CheckUpcomingChanges`, every 20 minutes) promotes it only when all of these hold:
+**A clean site cannot converge at once.** The special Uncategorized category must first be replaced by the native upcoming change `remove_and_replace_uncategorized`, and the bootstrap reports `BLOCKED` until then. In the pinned source the native scheduler (`Jobs::CheckUpcomingChanges`, every 20 minutes) promotes it once these gates hold (confirmed by the Task 38B cold build):
 
 - a human admin exists (`User.human_users.admins`);
 - the site counts as existing: the earliest `schema_migration_details` row is more than one hour old (`Migration::Helpers.existing_site?`);
-- the change has reached `promote_upcoming_changes_on_status` (default `beta`; this change is `stable`);
-- the change is still displayed (`allow_uncategorized_topics` is still on) and nobody toggled it by hand.
+- the scheduler's upcoming-change processing then runs (every 20 minutes).
 
-Do not change `allow_uncategorized_topics`, the upcoming change or any related setting manually, and do not call `remove_and_replace_uncategorized` yourself. Task 37B.1 observed schema creation at T0, the admin at about T+4 minutes, native `automatically_promoted` at about T+65 minutes, and the first successful apply immediately after. **Do not turn "65 minutes" into a fixed sleep.** Wait on the condition: poll every 5 minutes, bounded (suggested bound: 150 minutes from schema creation), and stop and report if it is not met. The condition is all of:
+Nothing else has to be prepared. On a fresh site `allow_uncategorized_topics` is `false` by upstream default and the promotion still happens, because a change at `stable` status, above the default `promote_upcoming_changes_on_status` of `beta`, already counts as enabled on a new site. `allow_uncategorized_topics` is therefore not a prerequisite, and nothing may turn it on.
+
+Do not change `allow_uncategorized_topics`, the upcoming change or any related setting manually, and do not call `remove_and_replace_uncategorized` yourself. Task 37B.1 observed schema creation at T0, the admin at about T+4 minutes, native `automatically_promoted` at about T+65 minutes, and the first successful apply immediately after; Task 38B.3 on the independent host saw the admin at about T+7 minutes and promotion at about T+69 minutes. **Do not turn "65 minutes" into a fixed sleep.** Wait on the condition: poll every 5 minutes, bounded (suggested bound: 150 minutes from schema creation), and stop and report if it is not met. The condition is all of:
 
 - a system `automatically_promoted` event exists for `remove_and_replace_uncategorized`;
 - `SiteSetting.uncategorized_category_id` is `-1`;
@@ -290,7 +291,7 @@ Recorded in `docs/cannlabs-community/02_PROJECT_STATE.md` → TASK 37B: the stoc
 
 **Forbidden inputs:** anything from the existing `/var/discourse` or `/shared`; the rollback tree and the failed zero-state tree; `/root/prodlike-backups`, `/root/prodlike-logs`, `/root/validate-37b2b` and `/root/p15`; old Docker images, Docker exports and `docker save` output; the current DEV worktree or any local worktree copy; shell history; Docker apt keys copied from another host.
 
-**What a pass means.** `MACHINE-INDEPENDENT PRODUCTION-LIKE DEPLOYMENT REPRODUCIBILITY — VALIDATED` is claimed only if the run happens on an independent fresh VM or physical host and passes. It then means that, using only the tracked deployment canon, pinned public sources and documented non-secret values, an operator reproduced the exact source pins, the deployment guards, the security hardening, the exact theme, Qualified Access and the product bootstrap final state `36 / 0 / 0 / 1`. It does **not** imply production readiness, production DNS or TLS, production secret delivery, external SMTP, production OAuth, billing, staff 2FA, Legal / LGPD / Trust & Safety readiness, a production first-admin process, or disaster-recovery restore on the second host.
+**What a pass means.** `MACHINE-INDEPENDENT PRODUCTION-LIKE DEPLOYMENT REPRODUCIBILITY — VALIDATED` is claimed only if the run happens on an independent fresh VM or physical host and passes. Task 38B passed it on 2026-10-05 on a Google Compute Engine VM. It means that, using only the tracked deployment canon, pinned public sources and documented non-secret values, an operator reproduced the exact source pins, the deployment guards, the security hardening, the exact theme, Qualified Access and the product bootstrap final state `36 / 0 / 0 / 1`. It does **not** imply production readiness, production DNS or TLS, production secret delivery, external SMTP, production OAuth, billing, staff 2FA, Legal / LGPD / Trust & Safety readiness, a production first-admin process, or disaster-recovery restore on the second host.
 
 ## Environment and secrets boundary
 
