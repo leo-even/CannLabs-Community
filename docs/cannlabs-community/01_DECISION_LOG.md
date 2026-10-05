@@ -360,3 +360,21 @@ Append-only record of ratified decisions. To change a decision, add a new entry 
 - **Rationale:** A tag gives the deployment layer a stable, installable ref without weakening the exact-commit pin.
 - **Consequences / open items:** Tags are never moved or overwritten; a new theme release gets a new tag and a manifest revision change.
 - **Supersedes:** Extends the pinning rule of `DEC-024`; does not replace it.
+
+## DEC-037 — The production-like deployment definition must install from empty storage
+
+- **Date:** 2026-10-05
+- **Status:** DECIDED — official PM, Task 37B validation
+- **Decision:** The production-like deployment definition must install and rebuild from truly empty persistent storage, not only rebuild over existing persistent state. Its log hardening therefore creates the directories it protects instead of assuming they exist: `/var/log/nginx` (`www-data:www-data`, mode 0750) and `/shared/log/rails` (`discourse:www-data`, mode 0750), idempotently, before the existing fail-closed owner and mode guards. The validated definition is `/var/discourse/containers/cannlabs-prodlike.yml` with SHA-256 `89222f0af613aefacbbb26bac8c5f33c895aa7243eb70fca0eb4e7c64188065f`. The previous definition, SHA-256 `0eb16493d21536bc7e7add07abde8d83db170348898a71241610c122231d7885`, is SUPERSEDED and must not be used for a fresh install.
+- **Rationale:** The first zero-state rebuild of Task 37B.2B failed on the old `chmod` of a log directory that the stock base image creates only after bootstrap, so a rebuild over existing state (Task 37B.1, Phase 18) had hidden a fresh-install defect. The corrected definition was then validated by a truly fresh install and a native restore.
+- **Consequences / open items:** This validates the content of the definition, not its custody. Where the canonical definition lives is `OPEN — DURABLE DEPLOYMENT DEFINITION OWNERSHIP` (`03_BACKLOG_AND_OPEN_QUESTIONS.md`); machine-independent production deployment reproducibility cannot be claimed until it is resolved. This does not authorize a production deployment.
+- **Supersedes:** The log-directory hardening step of the earlier definition (hash `0eb16493…`). Does not change `DEC-035` or `DEC-036`.
+
+## DEC-038 — Native restore conventions for the production-like instance
+
+- **Date:** 2026-10-05
+- **Status:** DECIDED — official PM, Task 37B.2B validation
+- **Decision:** A native Discourse restore of a CannLabs Community instance runs with `--no-disable-emails`. The stock restore otherwise changes `disable_emails` from `no` to `non-staff`. A restore is accepted only when `allow_restore` is back to `false`, read-only mode is off, `disable_emails` is `no`, and the product bootstrap audit passes.
+- **Rationale:** Task 37B.2B restored a native backup into a truly fresh database cluster and proved these checks. Without the flag the restore silently changes outgoing-mail behaviour.
+- **Consequences / open items:** Extra `remote_themes` rows (empty built-in Foundation and Horizon records) after a restore are an expected upstream seed side effect, not drift, and are not repaired. This does not select a backup retention, off-machine storage or schedule policy; those stay OPEN.
+- **Supersedes:** —

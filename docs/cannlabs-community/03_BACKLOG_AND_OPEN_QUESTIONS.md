@@ -1,7 +1,7 @@
 # CannLabs Community — Backlog and Open Questions
 
 Status: CURRENT
-Date: 2026-10-02 (baseline written 2026-09-29)
+Date: 2026-10-05 (baseline written 2026-09-29)
 
 > **Backlog ≠ authorization.** Listing an item here does not authorize it. Work starts only through an explicitly authorized slice from the official PM.
 
@@ -9,7 +9,7 @@ Buckets: **NOW** · **NEXT** · **LATER** · **PARKED** · **OPEN**. States are 
 
 ## NOW
 
-**Current NOW (2026-10-03, Task 37A.1): production-like build prerequisites implemented, awaiting official PM validation.** Task 37 Phase A is accepted; Task 37B (the clean production-like build) is next but not yet authorized. See `02_PROJECT_STATE.md` → TASK 37. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
+**Current NOW (2026-10-05, Task 37B): the production-like reproducibility and disaster-recovery proof is VALIDATED and closed.** Nothing further is authorized; `OPEN — DURABLE DEPLOYMENT DEFINITION OWNERSHIP` is the open item it leaves, and production remains NOT READY. See `02_PROJECT_STATE.md` → TASK 37B. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
 
 The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.md` → NEXT.
 
@@ -345,14 +345,15 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 
 ## NEXT / OPEN — PRODUCTION FOUNDATION (after Task 28; none authorized)
 
-- **NEXT — clean production-like proof (Task 37; Phase A accepted, 37A.1 awaiting validation, 37B not authorized):** supported production deployment, theme and plugin installation, bootstrap application, secrets, external services, a clean database, production-like logging acceptance (Task 36 limitation) and smoke tests. Staging with synthetic data only is the recommended direction (HYPOTHESIS).
+- **VALIDATED — clean production-like proof (Task 37B):** a pinned production-like build, product bootstrap, production-like logging acceptance and a native backup / zero-state restore proof passed on a disposable instance (see "TASK 37B" below). It does not make production ready. Staging with synthetic data only remains the recommended direction (HYPOTHESIS).
+- **OPEN — DURABLE DEPLOYMENT DEFINITION OWNERSHIP:** see "TASK 37B" below. Required before claiming machine-independent production deployment reproducibility.
 - **REQUIRED BEFORE PRODUCTION — staff 2FA:** native `enforce_second_factor`. The acceptance slice is VALIDATED (Task 32: TOTP, backup codes and break-glass recovery). Still required: enroll and verify every real staff account, then rely on persistent `staff` enforcement. Not enabled and not authorized.
 - **OPEN — production hostname / domain, HTTPS and the Cloudflare role.**
 - **OPEN — SMTP provider** (SPF, DKIM, DMARC, bounce / complaint visibility).
-- **OPEN — backup policy:** off-site storage, retention, RPO / RTO and a restore drill.
+- **OPEN — backup policy:** off-site storage, retention, RPO / RTO and a scheduled restore drill. The native backup and zero-state restore mechanics are VALIDATED in the production-like instance (Task 37B.2); no policy was chosen.
 - **OPEN — secrets mechanism,** which depends on the hosting model.
 - **OPEN — monitoring destination and on-call owner.**
-- **LATER — theme and logo bootstrap on a clean database** (Git theme installation, logo uploads).
+- **LATER — theme and logo bootstrap on a clean database** (Git theme installation, logo uploads). Git theme installation by exact pin is proven (Task 37B); logo bootstrap was not addressed.
 - **LATER — Founder launcher:** starting Docker Desktop when it is not running, and recreating an existing container whose mounts are wrong.
 - **LATER — local browser test stack:** the Playwright Chromium binary is gone since the container was recreated.
 
@@ -399,10 +400,23 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 - **Status:** `VALIDATED` (official PM). A fork-owned initializer filters `code`, `state`, `token`, `access_token`, `refresh_token`, `id_token`, `client_secret` and `authenticity_token` by exact name in every environment, and turns development ActiveRecord SQL logging off by default (`CANNLABS_ENABLE_ACTIVERECORD_LOGS=1` opts one process back in). The contaminated local logs were removed after Founder approval; fresh logs run under the hardened defaults.
 - **Durable findings:** `02_PROJECT_STATE.md` → TASK 36.
 
+## TASK 37B — VALIDATED PRODUCTION-LIKE REPRODUCIBILITY AND DISASTER-RECOVERY PROOF
+
+- **Status:** `VALIDATED` (official PM): Task 37B.1, Task 37B.2A, Task 37B.2B and Task 37B overall. `PRODUCTION — NOT READY`; this proves production-like infrastructure and disaster-recovery mechanics only.
+- **Durable findings and the validated state:** `02_PROJECT_STATE.md` → TASK 37B; decisions `DEC-037` and `DEC-038`.
+- **OPEN — DURABLE DEPLOYMENT DEFINITION OWNERSHIP.** The validated production-like deployment definition (`/var/discourse/containers/cannlabs-prodlike.yml`, SHA-256 `89222f0a…065f`) is not a version-controlled canonical artifact. Options, none decided: (A) a sanitized operations artifact in this repository; (B) a separate CannLabs Community deployment / operations repository; (C) generation from another canonical mechanism. Resolve it before claiming machine-independent production deployment reproducibility. Not authorized.
+- **RESOLVED — PRODUCTION-LIKE DEPLOYMENT DEFINITION: fresh-install defect.** Log hardening assumed a directory that does not exist on empty storage; the definition now creates it (`DEC-037`). The superseded definition (`0eb16493…7885`) must not be used.
+- **LOW / OBSERVATION — `remote_themes` rows after a native restore** (`EXPECTED UPSTREAM SEED SIDE EFFECT / NON-BLOCKING`). Do not fix.
+- **Retained — MEDIUM:** the stock runit service resets the nginx runtime log permissions on every start; `error_log emerg` is an observability trade-off; the zero-leak logging guarantee is bounded to the proven secret and message shapes.
+- **Retained — LOW:** safe `/invites/*` paths are over-redacted; `DISCOURSE_RELATIVE_URL_ROOT` is not covered; production Logster depends on its ignore list.
+- **Retained — OBSERVATION:** a launcher rebuild causes downtime; the prebuilt fork asset tarball returns 404 so assets build locally; the native restore flushes the Redis-backed Logster store; scheduled post-restore maintenance is normal; the application container has no Docker `HEALTHCHECK`.
+- **INTENTIONALLY RETAINED — CLEANUP NOT YET AUTHORIZED:** the rollback and failed-attempt trees under `/var/discourse/shared/`, the root-safe backup under `/root/prodlike-backups/`, evidence under `/root/prodlike-logs/` and `/root/validate-37b2b`, and dangling Docker images.
+- **PRODUCTION — NOT READY; remaining areas (none authorized):** durable deployment-definition ownership; real hostname and DNS; TLS and edge; production SMTP; real Google OAuth credentials; Apple OAuth production configuration; billing and paid-membership mechanism; real staff 2FA enrollment and recovery readiness; backup retention and off-machine backup policy; Legal / LGPD / Trust & Safety review; final security, privacy and launch sweep.
+
 ## AUTHENTICATION READINESS — OPEN ITEMS (none authorized)
 
-- **NEXT — Task 37B, the clean production-like build** (after Task 37A.1 validation), then the remaining approved sequence (`02_PROJECT_STATE.md` → NEXT), including the staff 2FA production rollout. Not authorized.
-- **RESOLVED — LOCAL DEVELOPMENT (Task 36): OAuth development logging** (the Task 35 MEDIUM). Production-like logging behaviour has not yet been acceptance-tested.
+- **NEXT — the remaining approved sequence** (`02_PROJECT_STATE.md` → NEXT AFTER TASK 37B), including the staff 2FA production rollout. Task 37B, the clean production-like build and restore proof, is VALIDATED. Not authorized.
+- **RESOLVED — LOCAL DEVELOPMENT (Task 36): OAuth development logging** (the Task 35 MEDIUM). Production-like logging behaviour was acceptance-tested in Task 37B.1 within a defined secret-shape contract.
 - **LOW — orphaned Google profile-picture upload** awaiting the native orphan-upload cleanup after its grace period.
 - **PARKED — native scheduled backup `[FAILED]` around 03:30Z on 2026-10-03,** not investigated in Task 35.
 - **REQUIRED BEFORE PRODUCTION — staff 2FA rollout.** Enroll every real staff account, verify login with its second factor, establish the recovery / backup-code procedure, confirm no staff account remains unenrolled, and only then leave `enforce_second_factor = staff` enabled.
@@ -411,7 +425,7 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 - **RESOLVED — LOCAL DEVELOPMENT (Task 36): TOTP secret in development SQL logging** (was LOW). `second_factor_token` is filtered in request logs.
 - **OPEN — local mail catcher (dev-readiness gap).** Task 31 proved the mechanism with a temporary Mailpit, which was stopped afterwards. No mail catcher runs by default, nothing listens on port 1025 and the mail UI port 8025 is not published. Persistent developer-mail ergonomics is a possible future slice, not automatically next. This is not the production SMTP decision.
 - **CONDITIONAL RISK — CLI link port (narrowed by Task 31).** The canonical local address for authentication is `http://localhost:3100`. Background-job mail uses it. Only a standalone CLI or Rails-runner context without `UNICORN_PORT=3100` can emit `http://localhost:3000` links; future link-generating CLI commands must account for the port.
-- **MEDIUM — Security / Privacy Readiness: transient authentication material in request logs.** Partly resolved by Task 36: the password-reset `code` parameter is now filtered. Reset and login tokens that appear as URL path segments remain open. Review before production.
+- **MEDIUM — Security / Privacy Readiness: transient authentication material in request logs.** Partly resolved by Task 36: the password-reset `code` parameter is now filtered. Reset and login tokens that appear as URL path segments are RESOLVED — PRODUCTION-LIKE, within the defined secret-shape contract (Task 37B.1); the bounded-guarantee limits are recorded under "TASK 37B" above.
 - **RESOLVED — LOCAL DEVELOPMENT (Task 36): password hash and salt in development SQL logging** (was LOW).
 - **LOW / LATER — localization:** the forgot-password code email arrives in English while the email-login mail is in pt-BR.
 - **TESTING CONSTRAINT — `.invalid` recipients receive no mail** (`Email::Sender` skips them). Mail acceptance tests use another reserved domain such as `.test`.

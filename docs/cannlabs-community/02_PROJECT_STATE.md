@@ -1,18 +1,18 @@
 # CannLabs Community — Project State
 
 Status: CURRENT
-Date: 2026-10-02 (baseline written 2026-09-29)
+Date: 2026-10-05 (baseline written 2026-09-29)
 
 Evidence was captured from the development machine when this baseline was written (2026-09-29). Later sections are appended as slices close; where an older section and a later one differ, the later one is current.
 
-## CURRENT STATE — 2026-10-02
+## CURRENT STATE — 2026-10-05
 
-- **NOW:** Task 37A.1 (production-like build prerequisites) is implemented and awaiting official PM validation. Task 37 Phase A is accepted; Task 37B is not yet authorized (last section of this file).
-- **Production:** NOT READY. Task 27 is a validated readiness review (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`). Task 28 closed the product-configuration bootstrap part of its principal gap; a clean production-like deployment, staff 2FA, SMTP, secrets, authentication providers, payment and the Legal / Privacy / Trust & Safety gates remain open. No production or staging environment exists.
-- **Validated so far:** repository bootstrap, isolation and operating layer (through Task 04B); design direction, prototype, theme architecture and handoff (Tasks 05–08); Community Theme v0.1 (Tasks 10 / 10B); V1 product model (Task 12A); Access Skeleton (Task 14); Founder local login (Task 15A); verified roles and restricted spaces (Tasks 16 / 16A); qualified-access gap, architecture and plugin v0.1 (Tasks 17, 18A, 19); verified-identity boundary and synthetic professional lifecycle (Tasks 20B, 21); synthetic association / leadership lifecycle (Tasks 22 / 22A); moderation readiness and native moderation lifecycle (Tasks 23A, 24); Active Membership Safety Boundary including the native Site Feedback retirement (Task 26, `DEC-032`, `DEC-033`); production / security foundation readiness review (Task 27); Product Bootstrap v0.1 (Task 28); local-auth baseline (Task 29); authentication and identity-provider readiness review (Task 30); local email recovery acceptance (Task 31); staff 2FA acceptance (Task 32); Git ownership hygiene of the application repository (Task 33); Google OAuth local acceptance (Task 35); development logging hygiene (Task 36).
+- **NOW:** Task 37B (production-like reproducibility and disaster-recovery proof: 37B.1, 37B.2A, 37B.2B) is VALIDATED and closed; see "TASK 37B" near the end of this file. Nothing further is authorized. One item is `OPEN — DURABLE DEPLOYMENT DEFINITION OWNERSHIP`.
+- **Production:** NOT READY. Task 27 is a validated readiness review (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`). Task 28 closed the product-configuration bootstrap part of its principal gap. Task 37B proved a production-like build and native backup / zero-state restore mechanics on a disposable instance; it does not make production ready. Durable deployment-definition ownership, hostname / DNS, TLS / edge, SMTP, authentication-provider credentials, payment, staff 2FA enrollment, backup policy, and the Legal / Privacy / Trust & Safety and final launch gates remain open. No production or staging environment exists.
+- **Validated so far:** repository bootstrap, isolation and operating layer (through Task 04B); design direction, prototype, theme architecture and handoff (Tasks 05–08); Community Theme v0.1 (Tasks 10 / 10B); V1 product model (Task 12A); Access Skeleton (Task 14); Founder local login (Task 15A); verified roles and restricted spaces (Tasks 16 / 16A); qualified-access gap, architecture and plugin v0.1 (Tasks 17, 18A, 19); verified-identity boundary and synthetic professional lifecycle (Tasks 20B, 21); synthetic association / leadership lifecycle (Tasks 22 / 22A); moderation readiness and native moderation lifecycle (Tasks 23A, 24); Active Membership Safety Boundary including the native Site Feedback retirement (Task 26, `DEC-032`, `DEC-033`); production / security foundation readiness review (Task 27); Product Bootstrap v0.1 (Task 28); local-auth baseline (Task 29); authentication and identity-provider readiness review (Task 30); local email recovery acceptance (Task 31); staff 2FA acceptance (Task 32); Git ownership hygiene of the application repository (Task 33); Google OAuth local acceptance (Task 35); development logging hygiene (Task 36); production-like build, production-like logging acceptance and native backup / zero-state restore proof (Task 37B).
 - **Authentication:** native and bundled Discourse are sufficient for V1 (`YES — NATIVE/BUNDLED SUFFICIENT`). Local login, Google and Apple are the DECIDED direction; Facebook is OPEN / HYPOTHESIS (`DEC-034`); staff 2FA is required before production. Its native mechanics are validated (Task 32), but it is not enabled (`enforce_second_factor = no`) and no real staff account is enrolled. Google OAuth is locally accepted with core Discourse (Task 35) and Google signup does not grant paid membership; no external provider is enabled or configured. Local password reset and email login are proven end to end with a temporarily started mail catcher (Task 31); no production SMTP provider is selected.
 - **Repositories:** application `leo-even/CannLabs-Community` (this fork; docs, the operating layer and the Task 28 bootstrap mechanism); theme `leo-even/CannLabs-Community-Theme` at `aeb3a9d9154f532064dcc24ac9e78cf587588d77`; plugin `leo-even/CannLabs-Community-Qualified-Access` at `ca4f0070d7bf85e42dbfa7f8736469139bb20275`.
-- **Latest decision:** `DEC-034`.
+- **Latest decision:** `DEC-038`.
 
 The sections below are kept as validated history in the order they were written.
 
@@ -246,7 +246,7 @@ None of these is solved in this slice.
 Reconciled on 2026-10-03 (Task 36C); Tasks 28 to 33, 35 and 36 are validated and closed.
 
 1. Staff 2FA production rollout: enroll and verify every real staff account first, then rely on persistent `staff` enforcement (operational rule in "TASK 32" below). Required before production; not authorized.
-2. A later slice proving a clean production-like environment end to end: supported production deployment, theme and plugin installation, bootstrap application, secrets, external services, production-like logging acceptance (Task 36 limitation) and smoke tests (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`). This is Task 37: Phase A accepted, Task 37A.1 prerequisites awaiting validation, Task 37B (the build) not yet authorized; see "TASK 37" below.
+2. A later slice proving a clean production-like environment end to end: supported production deployment, theme and plugin installation, bootstrap application, secrets, external services, production-like logging acceptance (Task 36 limitation) and smoke tests (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`). This is Task 37: Phase A accepted and Task 37B (the build and the restore proof) VALIDATED; see "TASK 37" and "TASK 37B" below. Production readiness still needs the open areas listed there.
 3. Legal / Privacy / Trust & Safety review.
 4. The remaining authentication providers (external-provider acceptance tests first) and payment readiness as separate slices.
 
@@ -638,20 +638,94 @@ Task 36C changed no product code, database state, authentication setting or Goog
 
 ### Phase A — ACCEPTED (read-only architecture / readiness review)
 
-The official PM accepted the Task 37 Phase A review and took these readiness decisions. The production-like proof (Task 37B) is not yet authorized.
+The official PM accepted the Task 37 Phase A review and took these readiness decisions. The production-like proof (Task 37B) was authorized afterwards and is VALIDATED; see "TASK 37B" below.
 
 - **Architecture direction for the proof:** the official `discourse_docker` lifecycle; the CannLabs application fork built at a pinned revision; the theme installed from an immutable tag with exact installed-commit verification (`DEC-036`); the Qualified Access plugin pinned at `ca4f0070d7bf85e42dbfa7f8736469139bb20275`; a clean database; the production Rails environment; a persistent `/shared` directory. A synthetic local hostname and a local Mailpit are acceptable. Public DNS, TLS, OAuth, payment and real staff are not required for this proof.
 - **Qualified Access:** DECIDED — enabled in the production product profile (`DEC-035`). User Notes stays gated; the two are independent.
 - **Task 37B execution target:** a new, disposable Ubuntu 24.04 WSL2 distribution with its own Docker Engine. Not the current development distribution, not the Docker Desktop shared daemon, not staging; it is destroyed after acceptance. No development database or filesystem is reused.
-- **Backup / restore correction:** native backups also live under `/shared`, so the proof must not delete the only copy. Contract: create a native backup; record its filename, size and checksum; copy it outside the instance's `/shared` but inside the disposable machine; destroy the instance and its `/shared`; rebuild from zero; put the saved backup in the restore location; restore; re-run the product audit; remove the temporary copy when the proof ends. No off-site backup infrastructure is needed for this proof.
+- **Backup / restore correction:** native backups also live under `/shared`, so the proof must not delete the only copy. Contract: create a native backup; record its filename, size and checksum; copy it outside the instance's `/shared` but inside the disposable machine; destroy the instance and its `/shared`; rebuild from zero; put the saved backup in the restore location; restore; re-run the product audit; remove the temporary copy when the proof ends. No off-site backup infrastructure is needed for this proof. (Task 37B followed this contract. The temporary copies and the rollback trees were not removed; they are retained until cleanup is authorized, see "TASK 37B".)
 
-### Task 37A.1 — production-like build prerequisites (implemented, awaiting PM validation)
+### Task 37A.1 — production-like build prerequisites (implemented; exercised by Task 37B)
 
 - **Qualified Access production profile.** `config/cannlabs_community/bootstrap.yml` now lists `cannlabs_qualified_access_enabled: production: true` beside `local: true`; no runner code changed. The production audit passes when the flag is on, reports drift when it is off, and apply repairs it through the native site-setting setter without touching memberships; a second apply changes nothing. `user_notes_enabled` remains gated in production.
 - **Theme immutable pin.** The theme repository had no tags. Annotated tag `v0.1.0` was created on `aeb3a9d9154f532064dcc24ac9e78cf587588d77` and pushed alone; no theme commit was made. The bootstrap already verifies the installed commit (`local_version`) against the manifest revision, so the contract "deploy by tag, verify exact SHA" needed no code change.
 
-Production remains NOT READY.
+Both prerequisites were exercised by Task 37B.1: the production audit passed with the Qualified Access flag on, and the theme was installed from `v0.1.0` and verified at its exact commit. Production remains NOT READY.
 
-## NEXT — TASK 37B CLEAN PRODUCTION-LIKE ENVIRONMENT BUILD (NOT AUTHORIZED)
+## TASK 37B — VALIDATED PRODUCTION-LIKE REPRODUCIBILITY AND DISASTER-RECOVERY PROOF
 
-After the official PM validates Task 37A.1, the next slice is **Task 37B — Clean Production-Like Environment Build**, on the execution target and with the backup contract above. It is not started and not authorized.
+Status: `VALIDATED` (official PM) for Task 37B.1, Task 37B.2A, Task 37B.2B and Task 37B overall (reproducibility and disaster-recovery proof). Production remains `PRODUCTION — NOT READY`: Task 37B proves production-like infrastructure and disaster-recovery mechanics only, on a disposable instance with a synthetic local hostname and a local Mailpit. Decisions: `DEC-037`, `DEC-038`.
+
+### Authoritative state
+
+- **Application** `leo-even/CannLabs-Community`: `73b2484ded24d04c874de49a328e76d10f226be4`.
+- **Theme** `leo-even/CannLabs-Community-Theme`: `aeb3a9d9154f532064dcc24ac9e78cf587588d77`, deployed by ref `v0.1.0` (`DEC-036`).
+- **Qualified Access plugin:** `ca4f0070d7bf85e42dbfa7f8736469139bb20275`.
+- **`discourse_docker`:** `8d705a91866c320592ce851f30895ddb4c3e85fe` (detached, clean).
+- **Production-like deployment definition (validated):** `/var/discourse/containers/cannlabs-prodlike.yml` on the disposable WSL distribution `CannLabsCommunityProdLike`, SHA-256 `89222f0af613aefacbbb26bac8c5f33c895aa7243eb70fca0eb4e7c64188065f`.
+- **Superseded definition:** SHA-256 `0eb16493d21536bc7e7add07abde8d83db170348898a71241610c122231d7885` is `SUPERSEDED` (not fresh-install-safe, `DEC-037`).
+- The definition is a host-local file. It is not version-controlled and its contents are not recorded here; see `OPEN — DURABLE DEPLOYMENT DEFINITION OWNERSHIP`.
+
+### Task 37B.1 — VALIDATED production-like build and acceptance
+
+- A pinned production-like build with product bootstrap applied: audit `PASS (pass 36, drift 0, blocked 0, gated 1)`, paid / private boundary intact, Qualified Access enabled (`DEC-035`), theme at its exact pinned commit.
+- Local password recovery and email-login flows work in the production-like instance.
+- **Logging security**, within a defined secret-shape contract, closes the Task 36 limitation that production-like logging had not been acceptance-tested. Three application commits implement it: `10a0511b` (credential URL path segments and Logster request environment), `35c92fd4` (secrets in Rails log messages such as router misses and redirects) and `73b2484d` (Logster failure path, which prints to the container log). Acceptance used real tokens across every log sink with zero raw secrets found. The guarantee is bounded: it covers the proven secret and message shapes only, not text that a database or library echoes into its own messages.
+- Operational soak, controlled restart and a non-destructive rebuild over the existing persistent state were all accepted.
+- **Phase 18 scope — `VALIDATED — NON-DESTRUCTIVE REBUILD OVER EXISTING PERSISTENT STATE`.** It rebuilt the container over persisted state. It did not prove an install or rebuild from truly empty persistent state; that was exposed, fixed and validated in Task 37B.2B. Phase 18 alone does not prove fresh-install reproducibility.
+
+### Task 37B.2A — VALIDATED native backup and restore readiness
+
+- Native Discourse backup of database and uploads, recognised by Discourse: `cannlabs-prodlike-37b2a-20261005-144245-v20260928103925.tar.gz`, 4,759,155 bytes, SHA-256 `e09ed040c0dec78cbb9615e7e8512be0423cbc268026c6bfb9d4b239c62412c0`.
+- A root-safe copy outside the instance's `/shared`, with the checksum verified, and the restore prerequisites confirmed.
+
+### Task 37B.2B — VALIDATED destructive zero-state rebuild and native restore
+
+- The active state was isolated by renaming it aside (retained, see below). The first zero-state attempt failed on a real fresh-install defect, which was fixed forward and re-validated; the single retry built a truly fresh PostgreSQL cluster.
+- Before restore: old product state absent and the bootstrap `BLOCKED`, as expected on an empty database. Native restore from the validated backup, with `--no-disable-emails`, succeeded. Restored data matched the snapshot, uploads were byte-identical, the bootstrap returned to `PASS (pass 36, drift 0, blocked 0, gated 1)`, and the pins and security settings were exact. After restore `disable_emails = no`, `allow_restore = false` and read-only mode is off.
+- **Three-cluster proof (PostgreSQL `system_identifier`):** original `7692772761484267569`; failed first attempt `7693197652249301041`; successful fresh retry `7693203710308749361`; after restore `7693203710308749361`. The original cluster did not survive. The restored data lives in the fresh cluster.
+- **Fresh-install defect — `RESOLVED — PRODUCTION-LIKE DEPLOYMENT DEFINITION`.** The log hardening assumed `/var/log/nginx` already existed during bootstrap. On empty storage `/var/log` is an empty bind mount and the stock runit service creates the nginx directory only after bootstrap, so the old `chmod` failed. The fix creates both log directories idempotently with their runtime owners before the existing fail-closed guards (`DEC-037`).
+- **Restore observation — LOW / OBSERVATION, `EXPECTED UPSTREAM SEED SIDE EFFECT / NON-BLOCKING`:** `remote_themes` went from 11 rows in the dump to 13 after restore. Rows 1–11 match the dump; rows 12 and 13 are empty built-in Foundation and Horizon records created by the native restore's seed step. The bootstrap passes and the theme pin is exact. Do not fix (`DEC-038`).
+
+### Retained findings (severities unchanged)
+
+- **MEDIUM:** the stock runit service resets the nginx runtime log directory and file permissions on every start, so the 0750 / 0640 hardening is not durable at runtime.
+- **MEDIUM:** `error_log emerg` is an observability trade-off: nginx logs less.
+- **MEDIUM:** the zero-leak logging guarantee is bounded to the proven secret and message shapes.
+- **LOW:** safe `/invites/*` paths are over-redacted; `DISCOURSE_RELATIVE_URL_ROOT` is not covered; production Logster depends on its ignore list.
+- **OBSERVATION:** a launcher rebuild causes downtime; the prebuilt fork asset tarball returns 404, so assets are built locally; the native restore flushes the Redis-backed Logster store; scheduled post-restore maintenance is normal; the application container has no Docker `HEALTHCHECK`.
+
+### Intentionally retained artifacts — `INTENTIONALLY RETAINED — CLEANUP NOT YET AUTHORIZED`
+
+- Rollback tree `/var/discourse/shared/standalone.pre-37b2b-20261005T145537Z`.
+- Failed-attempt tree `/var/discourse/shared/standalone.failed-37b2b-20261005T151854Z`.
+- Root-safe backup under `/root/prodlike-backups/` (checksum unchanged).
+- Evidence and build logs under `/root/prodlike-logs/`, validation artifacts under `/root/validate-37b2b`, and dangling Docker images.
+
+Nothing is deleted by this closure.
+
+### Current runtime (recorded, not changed by this closure)
+
+The restored production-like instance is healthy on the fresh cluster `7693203710308749361`, in a container built from the validated definition (`89222f0a…065f`); bootstrap `PASS (pass 36, drift 0, blocked 0, gated 1)`.
+
+### Open
+
+- **`OPEN — DURABLE DEPLOYMENT DEFINITION OWNERSHIP`.** The validated definition is not yet a version-controlled canonical artifact. Candidate options, none chosen: (A) a sanitized operations artifact in this repository; (B) a separate CannLabs Community deployment / operations repository; (C) generation from another canonical mechanism. Resolve it before claiming machine-independent production deployment reproducibility.
+
+## NEXT AFTER TASK 37B — NOT AUTHORIZED
+
+`PRODUCTION — NOT READY.` Areas that remain, listed and not started; the official PM chooses the order:
+
+1. Durable deployment-definition ownership (above).
+2. Real hostname and DNS.
+3. TLS and edge.
+4. Production SMTP.
+5. Real Google OAuth credentials.
+6. Apple OAuth production configuration.
+7. Billing and paid-membership mechanism.
+8. Real staff 2FA enrollment and recovery readiness.
+9. Backup retention and off-machine backup policy.
+10. Legal / LGPD / Trust & Safety review.
+11. Final security, privacy and launch sweep.
+
+Cleanup of the retained artifacts also needs its own authorization.

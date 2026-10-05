@@ -110,7 +110,7 @@ The manifest contains no password, key, token or credential, and must never cont
 - The theme and the plugin must already be installed by the deployment layer; the logo is a database upload and is not reproduced.
 - On a fresh database the bootstrap is `BLOCKED` until the native Uncategorized upcoming change has been promoted or enabled.
 - Seeded General and Staff categories must exist (the normal upstream seed creates them).
-- Nothing here has been run against a clean production-like database. That end-to-end proof, with a supported production deployment, secrets and external services, is a later slice.
+- The bootstrap has been run against a clean production-like instance (Task 37B): `BLOCKED` on an empty database before a native restore, `PASS (pass 36, drift 0, blocked 0, gated 1)` after it. That instance was a disposable proof with a synthetic hostname and Mailpit; a production deployment, real secrets and external services remain a later slice, and the bootstrap is still not a production installer.
 
 ## After a Discourse upgrade or a configuration change
 
