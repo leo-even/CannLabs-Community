@@ -9,7 +9,7 @@ Buckets: **NOW** · **NEXT** · **LATER** · **PARKED** · **OPEN**. States are 
 
 ## NOW
 
-**Current NOW (2026-10-05, Task 37B): the production-like reproducibility and disaster-recovery proof is VALIDATED and closed.** Nothing further is authorized; `OPEN — DURABLE DEPLOYMENT DEFINITION OWNERSHIP` is the open item it leaves, and production remains NOT READY. See `02_PROJECT_STATE.md` → TASK 37B. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
+**Current NOW (2026-10-05, Task 38A): the production-like reproducibility and disaster-recovery proof (Task 37B) is VALIDATED; its deployment definition is now tracked under `ops/discourse/` (`DEC-039`), awaiting official PM validation.** Nothing further is authorized; machine-independent deployment reproducibility is not yet validated, and production remains NOT READY. See `02_PROJECT_STATE.md` → TASK 37B and TASK 38A. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
 
 The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.md` → NEXT.
 
@@ -346,12 +346,12 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 ## NEXT / OPEN — PRODUCTION FOUNDATION (after Task 28; none authorized)
 
 - **VALIDATED — clean production-like proof (Task 37B):** a pinned production-like build, product bootstrap, production-like logging acceptance and a native backup / zero-state restore proof passed on a disposable instance (see "TASK 37B" below). It does not make production ready. Staging with synthetic data only remains the recommended direction (HYPOTHESIS).
-- **OPEN — DURABLE DEPLOYMENT DEFINITION OWNERSHIP:** see "TASK 37B" below. Required before claiming machine-independent production deployment reproducibility.
+- **DECIDED — DURABLE DEPLOYMENT DEFINITION OWNERSHIP = COMMUNITY REPO** (`DEC-039`, `ops/discourse/`). **OPEN — MACHINE-INDEPENDENT DEPLOYMENT REPRODUCIBILITY:** needs a fresh second host built only from the tracked artifacts and documented values; not validated, not authorized.
 - **REQUIRED BEFORE PRODUCTION — staff 2FA:** native `enforce_second_factor`. The acceptance slice is VALIDATED (Task 32: TOTP, backup codes and break-glass recovery). Still required: enroll and verify every real staff account, then rely on persistent `staff` enforcement. Not enabled and not authorized.
 - **OPEN — production hostname / domain, HTTPS and the Cloudflare role.**
 - **OPEN — SMTP provider** (SPF, DKIM, DMARC, bounce / complaint visibility).
 - **OPEN — backup policy:** off-site storage, retention, RPO / RTO and a scheduled restore drill. The native backup and zero-state restore mechanics are VALIDATED in the production-like instance (Task 37B.2); no policy was chosen.
-- **OPEN — secrets mechanism,** which depends on the hosting model.
+- **OPEN — secrets mechanism,** which depends on the hosting model (`OPEN — DELIVERY MECHANISM NOT YET DECIDED`). Real secrets placed in a `discourse_docker` `env:` block can appear in image and container metadata, so they must not go into the tracked definition; no manager or vendor is chosen.
 - **OPEN — monitoring destination and on-call owner.**
 - **LATER — theme and logo bootstrap on a clean database** (Git theme installation, logo uploads). Git theme installation by exact pin is proven (Task 37B); logo bootstrap was not addressed.
 - **LATER — Founder launcher:** starting Docker Desktop when it is not running, and recreating an existing container whose mounts are wrong.
@@ -404,14 +404,14 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 
 - **Status:** `VALIDATED` (official PM): Task 37B.1, Task 37B.2A, Task 37B.2B and Task 37B overall. `PRODUCTION — NOT READY`; this proves production-like infrastructure and disaster-recovery mechanics only.
 - **Durable findings and the validated state:** `02_PROJECT_STATE.md` → TASK 37B; decisions `DEC-037` and `DEC-038`.
-- **OPEN — DURABLE DEPLOYMENT DEFINITION OWNERSHIP.** The validated production-like deployment definition (`/var/discourse/containers/cannlabs-prodlike.yml`, SHA-256 `89222f0a…065f`) is not a version-controlled canonical artifact. Options, none decided: (A) a sanitized operations artifact in this repository; (B) a separate CannLabs Community deployment / operations repository; (C) generation from another canonical mechanism. Resolve it before claiming machine-independent production deployment reproducibility. Not authorized.
+- **DECIDED — DURABLE DEPLOYMENT DEFINITION OWNERSHIP = COMMUNITY REPO** (`DEC-039`; was `OPEN` at Task 37B closure). The validated production-like definition (SHA-256 `89222f0a…065f`) is tracked byte-identical at `ops/discourse/cannlabs-prodlike.yml` with a runbook (Task 38A, awaiting PM validation). **OPEN — MACHINE-INDEPENDENT DEPLOYMENT REPRODUCIBILITY:** it needs a fresh second host or distribution built only from the tracked artifacts and documented values. Not validated and not authorized.
 - **RESOLVED — PRODUCTION-LIKE DEPLOYMENT DEFINITION: fresh-install defect.** Log hardening assumed a directory that does not exist on empty storage; the definition now creates it (`DEC-037`). The superseded definition (`0eb16493…7885`) must not be used.
 - **LOW / OBSERVATION — `remote_themes` rows after a native restore** (`EXPECTED UPSTREAM SEED SIDE EFFECT / NON-BLOCKING`). Do not fix.
 - **Retained — MEDIUM:** the stock runit service resets the nginx runtime log permissions on every start; `error_log emerg` is an observability trade-off; the zero-leak logging guarantee is bounded to the proven secret and message shapes.
 - **Retained — LOW:** safe `/invites/*` paths are over-redacted; `DISCOURSE_RELATIVE_URL_ROOT` is not covered; production Logster depends on its ignore list.
 - **Retained — OBSERVATION:** a launcher rebuild causes downtime; the prebuilt fork asset tarball returns 404 so assets build locally; the native restore flushes the Redis-backed Logster store; scheduled post-restore maintenance is normal; the application container has no Docker `HEALTHCHECK`.
 - **INTENTIONALLY RETAINED — CLEANUP NOT YET AUTHORIZED:** the rollback and failed-attempt trees under `/var/discourse/shared/`, the root-safe backup under `/root/prodlike-backups/`, evidence under `/root/prodlike-logs/` and `/root/validate-37b2b`, and dangling Docker images.
-- **PRODUCTION — NOT READY; remaining areas (none authorized):** durable deployment-definition ownership; real hostname and DNS; TLS and edge; production SMTP; real Google OAuth credentials; Apple OAuth production configuration; billing and paid-membership mechanism; real staff 2FA enrollment and recovery readiness; backup retention and off-machine backup policy; Legal / LGPD / Trust & Safety review; final security, privacy and launch sweep.
+- **PRODUCTION — NOT READY; remaining areas (none authorized):** machine-independent deployment reproducibility (ownership is `DECIDED`); real hostname and DNS; TLS and edge; production SMTP; real Google OAuth credentials; Apple OAuth production configuration; billing and paid-membership mechanism; real staff 2FA enrollment and recovery readiness; backup retention and off-machine backup policy; Legal / LGPD / Trust & Safety review; final security, privacy and launch sweep.
 
 ## AUTHENTICATION READINESS — OPEN ITEMS (none authorized)
 

@@ -7,12 +7,12 @@ Evidence was captured from the development machine when this baseline was writte
 
 ## CURRENT STATE — 2026-10-05
 
-- **NOW:** Task 37B (production-like reproducibility and disaster-recovery proof: 37B.1, 37B.2A, 37B.2B) is VALIDATED and closed; see "TASK 37B" near the end of this file. Nothing further is authorized. One item is `OPEN — DURABLE DEPLOYMENT DEFINITION OWNERSHIP`.
-- **Production:** NOT READY. Task 27 is a validated readiness review (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`). Task 28 closed the product-configuration bootstrap part of its principal gap. Task 37B proved a production-like build and native backup / zero-state restore mechanics on a disposable instance; it does not make production ready. Durable deployment-definition ownership, hostname / DNS, TLS / edge, SMTP, authentication-provider credentials, payment, staff 2FA enrollment, backup policy, and the Legal / Privacy / Trust & Safety and final launch gates remain open. No production or staging environment exists.
+- **NOW:** Task 37B (production-like reproducibility and disaster-recovery proof: 37B.1, 37B.2A, 37B.2B) is VALIDATED and closed; see "TASK 37B" near the end of this file. Task 38A (the validated production-like deployment definition tracked under `ops/discourse/`, `DEC-039`) is implemented and awaiting official PM validation. Nothing further is authorized.
+- **Production:** NOT READY. Task 27 is a validated readiness review (`07_PRODUCTION_SECURITY_FOUNDATION_READINESS.md`). Task 28 closed the product-configuration bootstrap part of its principal gap. Task 37B proved a production-like build and native backup / zero-state restore mechanics on a disposable instance; it does not make production ready. Machine-independent deployment reproducibility (not yet validated), hostname / DNS, TLS / edge, SMTP, authentication-provider credentials, payment, staff 2FA enrollment, backup policy, and the Legal / Privacy / Trust & Safety and final launch gates remain open. No production or staging environment exists.
 - **Validated so far:** repository bootstrap, isolation and operating layer (through Task 04B); design direction, prototype, theme architecture and handoff (Tasks 05–08); Community Theme v0.1 (Tasks 10 / 10B); V1 product model (Task 12A); Access Skeleton (Task 14); Founder local login (Task 15A); verified roles and restricted spaces (Tasks 16 / 16A); qualified-access gap, architecture and plugin v0.1 (Tasks 17, 18A, 19); verified-identity boundary and synthetic professional lifecycle (Tasks 20B, 21); synthetic association / leadership lifecycle (Tasks 22 / 22A); moderation readiness and native moderation lifecycle (Tasks 23A, 24); Active Membership Safety Boundary including the native Site Feedback retirement (Task 26, `DEC-032`, `DEC-033`); production / security foundation readiness review (Task 27); Product Bootstrap v0.1 (Task 28); local-auth baseline (Task 29); authentication and identity-provider readiness review (Task 30); local email recovery acceptance (Task 31); staff 2FA acceptance (Task 32); Git ownership hygiene of the application repository (Task 33); Google OAuth local acceptance (Task 35); development logging hygiene (Task 36); production-like build, production-like logging acceptance and native backup / zero-state restore proof (Task 37B).
 - **Authentication:** native and bundled Discourse are sufficient for V1 (`YES — NATIVE/BUNDLED SUFFICIENT`). Local login, Google and Apple are the DECIDED direction; Facebook is OPEN / HYPOTHESIS (`DEC-034`); staff 2FA is required before production. Its native mechanics are validated (Task 32), but it is not enabled (`enforce_second_factor = no`) and no real staff account is enrolled. Google OAuth is locally accepted with core Discourse (Task 35) and Google signup does not grant paid membership; no external provider is enabled or configured. Local password reset and email login are proven end to end with a temporarily started mail catcher (Task 31); no production SMTP provider is selected.
 - **Repositories:** application `leo-even/CannLabs-Community` (this fork; docs, the operating layer and the Task 28 bootstrap mechanism); theme `leo-even/CannLabs-Community-Theme` at `aeb3a9d9154f532064dcc24ac9e78cf587588d77`; plugin `leo-even/CannLabs-Community-Qualified-Access` at `ca4f0070d7bf85e42dbfa7f8736469139bb20275`.
-- **Latest decision:** `DEC-038`.
+- **Latest decision:** `DEC-039`.
 
 The sections below are kept as validated history in the order they were written.
 
@@ -664,7 +664,7 @@ Status: `VALIDATED` (official PM) for Task 37B.1, Task 37B.2A, Task 37B.2B and T
 - **`discourse_docker`:** `8d705a91866c320592ce851f30895ddb4c3e85fe` (detached, clean).
 - **Production-like deployment definition (validated):** `/var/discourse/containers/cannlabs-prodlike.yml` on the disposable WSL distribution `CannLabsCommunityProdLike`, SHA-256 `89222f0af613aefacbbb26bac8c5f33c895aa7243eb70fca0eb4e7c64188065f`.
 - **Superseded definition:** SHA-256 `0eb16493d21536bc7e7add07abde8d83db170348898a71241610c122231d7885` is `SUPERSEDED` (not fresh-install-safe, `DEC-037`).
-- The definition is a host-local file. It is not version-controlled and its contents are not recorded here; see `OPEN — DURABLE DEPLOYMENT DEFINITION OWNERSHIP`.
+- The definition was a host-local file when Task 37B closed. Its custody is now decided (`DEC-039`) and it is tracked byte-identical under `ops/discourse/` (see "TASK 38A").
 
 ### Task 37B.1 — VALIDATED production-like build and acceptance
 
@@ -708,15 +708,15 @@ Nothing is deleted by this closure.
 
 The restored production-like instance is healthy on the fresh cluster `7693203710308749361`, in a container built from the validated definition (`89222f0a…065f`); bootstrap `PASS (pass 36, drift 0, blocked 0, gated 1)`.
 
-### Open
+### Open at closure
 
-- **`OPEN — DURABLE DEPLOYMENT DEFINITION OWNERSHIP`.** The validated definition is not yet a version-controlled canonical artifact. Candidate options, none chosen: (A) a sanitized operations artifact in this repository; (B) a separate CannLabs Community deployment / operations repository; (C) generation from another canonical mechanism. Resolve it before claiming machine-independent production deployment reproducibility.
+- **`OPEN — DURABLE DEPLOYMENT DEFINITION OWNERSHIP` — since `DECIDED` (`DEC-039`): the Community repository, under `ops/discourse/`.** At Task 37B closure the validated definition was not a version-controlled canonical artifact, and the candidate options were (A) a sanitized operations artifact in this repository, (B) a separate operations repository, (C) generation from another mechanism. Option A was chosen; see "TASK 38A".
 
 ## NEXT AFTER TASK 37B — NOT AUTHORIZED
 
 `PRODUCTION — NOT READY.` Areas that remain, listed and not started; the official PM chooses the order:
 
-1. Durable deployment-definition ownership (above).
+1. Machine-independent deployment reproducibility: a fresh second host built only from the tracked `ops/discourse/` artifacts and documented values (ownership itself is `DECIDED`, `DEC-039`).
 2. Real hostname and DNS.
 3. TLS and edge.
 4. Production SMTP.
@@ -729,3 +729,14 @@ The restored production-like instance is healthy on the fresh cluster `769320371
 11. Final security, privacy and launch sweep.
 
 Cleanup of the retained artifacts also needs its own authorization.
+
+## TASK 38A — TRACKED PRODLIKE DEPLOYMENT CANON (implemented, awaiting PM validation)
+
+Status: `TRACKED DEPLOYMENT CANON — ESTABLISHED`, awaiting official PM validation. `MACHINE-INDEPENDENT DEPLOYMENT REPRODUCIBILITY — NOT YET VALIDATED`. `DEC-039`: the Community repository owns the durable deployment definition, under `ops/discourse/`. Repository-only slice: no runtime, rebuild, restart or production configuration was touched.
+
+- **Tracked artifact.** `ops/discourse/cannlabs-prodlike.yml` is the validated production-like definition copied byte for byte: SHA-256 `89222f0af613aefacbbb26bac8c5f33c895aa7243eb70fca0eb4e7c64188065f`, 9,292 bytes, equal to the host file. It is named prodlike and is not a production default. A bounded secret review found no secret value (SMTP is Mailpit without credentials; the only long strings are commit pins, paths and URLs).
+- **Runbook.** `ops/discourse/README.md` carries the prodlike-only warning and assumptions, the source pins, host contract, prodlike network and Mailpit, definition placement, build order, theme contract (the YAML does not install the theme), bootstrap reference, first-admin note (not yet a machine-independent recipe), backup / restore (`--no-disable-emails`), the security-hardening contract, retained-finding pointers and the environment / secrets boundary. Real production secrets stay `OPEN — DELIVERY MECHANISM NOT YET DECIDED`; none is tracked and no manager or vendor is chosen.
+- **Drift protection.** `spec/lib/cannlabs_community/prodlike_deployment_parity_spec.rb` checks that the YAML's Qualified Access repository and commit equal the bootstrap manifest, and that its nginx credential-path rules mirror `CannlabsPathSecretRedaction::RULES`. Both fail on a deliberate mutation and pass on the tracked file.
+- **Application pin.** The deployment pin (`73b2484d…`) is a known ancestor of the repository `HEAD`, never `HEAD`, because the definition lives in the history that records the pin. This is expected, not drift.
+- **Not done, by decision.** No separate operations repository, generator, shared template or CI deployment; no upstream `containers/`, `samples/` or `templates/` change.
+- **Next validation (not authorized).** Machine-independent reproducibility needs a fresh second host or distribution built only from the tracked artifacts and the documented values.

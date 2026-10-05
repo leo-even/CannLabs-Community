@@ -378,3 +378,12 @@ Append-only record of ratified decisions. To change a decision, add a new entry 
 - **Rationale:** Task 37B.2B restored a native backup into a truly fresh database cluster and proved these checks. Without the flag the restore silently changes outgoing-mail behaviour.
 - **Consequences / open items:** Extra `remote_themes` rows (empty built-in Foundation and Horizon records) after a restore are an expected upstream seed side effect, not drift, and are not repaired. This does not select a backup retention, off-machine storage or schedule policy; those stay OPEN.
 - **Supersedes:** —
+
+## DEC-039 — Durable deployment definition ownership is the Community repository
+
+- **Date:** 2026-10-05
+- **Status:** DECIDED — official PM / Founder, Task 38 (option A)
+- **Decision:** The CannLabs Community application repository owns the durable deployment definition, under `ops/discourse/`. The validated production-like definition is tracked there byte-identical (`cannlabs-prodlike.yml`, SHA-256 `89222f0af613aefacbbb26bac8c5f33c895aa7243eb70fca0eb4e7c64188065f`), named prodlike so it does not imply production, with an adjacent runbook. No separate operations repository, custom deployment generator or shared multi-environment template is created. Environment abstraction is deferred until real production configuration exists. Custom operations artifacts stay isolated under `ops/discourse/`; upstream `containers/`, `samples/`, `templates/` and the launcher are not modified. Real secrets are never tracked.
+- **Rationale:** Make the validated truth durable first, with the lowest upstream-merge conflict, before any abstraction.
+- **Consequences / open items:** `TRACKED DEPLOYMENT CANON — ESTABLISHED`. `MACHINE-INDEPENDENT DEPLOYMENT REPRODUCIBILITY — NOT YET VALIDATED`: it needs a fresh second host or distribution built only from tracked artifacts and documented values. The deployment's application pin is a known ancestor of the repository `HEAD`, never `HEAD` itself, because the definition lives in the history that records the pin. The delivery mechanism for real production secrets stays `OPEN — DELIVERY MECHANISM NOT YET DECIDED`. Production remains NOT READY.
+- **Supersedes:** The `OPEN — DURABLE DEPLOYMENT DEFINITION OWNERSHIP` consequence recorded in `DEC-037` (custody is now decided). It does not change the validated content of `DEC-037` or `DEC-038`.
