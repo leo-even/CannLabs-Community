@@ -645,12 +645,12 @@ The official PM accepted the Task 37 Phase A review and took these readiness dec
 - **Task 37B execution target:** a new, disposable Ubuntu 24.04 WSL2 distribution with its own Docker Engine. Not the current development distribution, not the Docker Desktop shared daemon, not staging; it is destroyed after acceptance. No development database or filesystem is reused.
 - **Backup / restore correction:** native backups also live under `/shared`, so the proof must not delete the only copy. Contract: create a native backup; record its filename, size and checksum; copy it outside the instance's `/shared` but inside the disposable machine; destroy the instance and its `/shared`; rebuild from zero; put the saved backup in the restore location; restore; re-run the product audit; remove the temporary copy when the proof ends. No off-site backup infrastructure is needed for this proof. (Task 37B followed this contract. The temporary copies and the rollback trees were not removed; they are retained until cleanup is authorized, see "TASK 37B".)
 
-### Task 37A.1 — production-like build prerequisites (implemented; exercised by Task 37B)
+### Task 37A.1 — production-like build prerequisites — VALIDATED
 
 - **Qualified Access production profile.** `config/cannlabs_community/bootstrap.yml` now lists `cannlabs_qualified_access_enabled: production: true` beside `local: true`; no runner code changed. The production audit passes when the flag is on, reports drift when it is off, and apply repairs it through the native site-setting setter without touching memberships; a second apply changes nothing. `user_notes_enabled` remains gated in production.
 - **Theme immutable pin.** The theme repository had no tags. Annotated tag `v0.1.0` was created on `aeb3a9d9154f532064dcc24ac9e78cf587588d77` and pushed alone; no theme commit was made. The bootstrap already verifies the installed commit (`local_version`) against the manifest revision, so the contract "deploy by tag, verify exact SHA" needed no code change.
 
-Both prerequisites were exercised by Task 37B.1: the production audit passed with the Qualified Access flag on, and the theme was installed from `v0.1.0` and verified at its exact commit. Production remains NOT READY.
+Task 37A.1 was validated by the official PM before Task 37B. Task 37B.1 later exercised both prerequisites as supplementary evidence: the production audit passed with the Qualified Access flag on, and the theme was installed from `v0.1.0` and verified at its exact commit. Production remains NOT READY.
 
 ## TASK 37B — VALIDATED PRODUCTION-LIKE REPRODUCIBILITY AND DISASTER-RECOVERY PROOF
 
