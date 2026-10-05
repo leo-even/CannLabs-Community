@@ -3,7 +3,7 @@
 > **THIS IS THE VALIDATED PRODUCTION-LIKE DEFINITION, NOT A PRODUCTION DEFAULT.**
 > Production is `NOT READY`. Do not copy values from this directory into a production deployment without a separate, explicit decision.
 
-This directory is the durable, version-controlled owner of the production-like deployment definition (`DEC-039`). Everything else about the project's state and decisions is in `docs/cannlabs-community/` (`02_PROJECT_STATE.md` → TASK 37B, `01_DECISION_LOG.md` → `DEC-037`, `DEC-038`, `DEC-039`).
+This directory is the durable, version-controlled owner of the production-like deployment definition (`DEC-039`). Everything else about the project's state and decisions is in `docs/cannlabs-community/` (`02_PROJECT_STATE.md` → TASK 37B, TASK 38A, TASK 38B; `01_DECISION_LOG.md` → `DEC-037` to `DEC-040`).
 
 | File | Responsibility |
 | --- | --- |
@@ -15,7 +15,9 @@ This directory is the durable, version-controlled owner of the production-like d
 
 - A **production-like proof**, not the production deployment. Synthetic hostname, local Mailpit, no TLS, no public exposure, no real members, no real provider credentials.
 - Validated artifact: `cannlabs-prodlike.yml`, SHA-256 `89222f0af613aefacbbb26bac8c5f33c895aa7243eb70fca0eb4e7c64188065f` (9,292 bytes). The previous definition (`0eb16493…7885`) is `SUPERSEDED` and is not fresh-install-safe.
-- `MACHINE-INDEPENDENT DEPLOYMENT REPRODUCIBILITY — NOT YET VALIDATED`. The proof ran on one prepared host. It becomes validated only when a fresh second host or distribution is built from the tracked artifacts and the values documented here, and nothing else.
+- `MACHINE-INDEPENDENT DEPLOYMENT REPRODUCIBILITY — NOT YET VALIDATED`. The proof ran on one prepared host. It becomes validated only when the final Task 38B run (section 13) passes on an independent host, using only the tracked artifacts, pinned public sources and the values documented here.
+- **`FINAL TASK 38B ACCEPTANCE REQUIRES AN ISOLATED FRESH VM OR SEPARATE PHYSICAL HOST`** with an independent network namespace, Docker daemon and filesystem. A second WSL distribution on the same Windows host is not accepted, because WSL distributions on one host share the relevant network namespace and listeners. A same-host WSL rehearsal is optional, is not acceptance evidence, and must be labeled `REHEARSAL ONLY — DOES NOT VALIDATE TASK 38B`.
+- **Task 38B proves a clean install and the product bootstrap from the tracked canon.** It does not repeat backup creation, restore or the disaster-recovery proof: Task 37B.2B already validated them. Section 10 is reference, not part of that run.
 
 ### Prodlike-only assumptions: do not carry them into production
 
@@ -38,15 +40,31 @@ This directory is the durable, version-controlled owner of the production-like d
 | Qualified Access plugin `leo-even/CannLabs-Community-Qualified-Access` | `ca4f0070d7bf85e42dbfa7f8736469139bb20275` (cloned and checked out in `hooks.after_code`) |
 | Theme `leo-even/CannLabs-Community-Theme` | tag `v0.1.0`, peeling to `aeb3a9d9154f532064dcc24ac9e78cf587588d77` (not in the YAML, see section 7) |
 | `discourse_docker` | `8d705a91866c320592ce851f30895ddb4c3e85fe`, checked out detached |
+| Base image (named by the pinned `discourse_docker`) | `discourse/base:2.0.20260915-0028`, resolved digest `sha256:5028d077b061225507e7093fda1ff5bdc64d483b5c0397776f9a52c50008cd9b` as pulled in the Task 37B builds |
 
-**The application pin cannot equal this repository's `HEAD`.** The definition lives in the same history that records the pin, so the pin is always a known **ancestor** application commit. That is expected, not drift.
+**Application pin and canon commit.** The definition lives in the same history that records the pin, so the pin can never equal the commit that owns the canon. It is a known **ancestor** of that commit, and ancestry is checkable. This is expected, not drift. A fresh-host run must fail closed unless `git merge-base --is-ancestor 73b2484ded24d04c874de49a328e76d10f226be4 <canon commit>` succeeds, and after the build must find, inside `/var/www/discourse`, `HEAD` equal to the pin and `origin` pointing at the CannLabs fork. Never require the pin to equal the canon `HEAD`.
 
-## 3. Host assumptions (validated environment only)
+**Base image.** The YAML is not changed to pin the base image by digest. A future run records the digest the tag resolves to, compares it with the value above, and stops on an unexplained mismatch before claiming reproducibility.
 
-- Ubuntu 24.04 under WSL2 (a disposable distribution) or Linux, with a native Docker Engine. Not the Docker Desktop shared daemon.
-- `discourse_docker` cloned at `/var/discourse` and pinned (below). A detached `HEAD` also stops the launcher from self-updating.
+## 3. Host and Docker contract (validated environment only)
+
+Community requirements:
+
+- Ubuntu 24.04 (noble), amd64, with root or `sudo`.
+- A native Docker Engine (below), `git`, `curl`, `ca-certificates` and `gnupg`.
+- Enough free disk for Docker images and a build (record the free space at the start).
+- Outbound access to the public sources in section 13, and a materially correct clock.
 - A persistent `/shared` directory: `/var/discourse/shared/standalone` on the host. A fresh install starts from empty storage, and the definition is written for that case (`DEC-037`).
-- This is not a generic installation guide.
+
+Docker contract (what Task 37B validated):
+
+- **Source:** the official Docker apt repository, `deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu noble stable`, with its key fetched from `https://download.docker.com/linux/ubuntu/gpg` (key fingerprint `9DC858229FC7DD38854AE2D88D81803C0EBFCD88`). Key material comes from the public upstream, never from another machine.
+- **Components:** `docker-ce`, `docker-ce-cli`, `containerd.io`, `docker-buildx-plugin`, `docker-compose-plugin`; the daemon is systemd-managed (`systemctl enable --now docker`); there is no custom `/etc/docker/daemon.json`.
+- **Validated versions:** Docker Server `29.8.2`, packages `docker-ce 5:29.8.2-1~ubuntu.24.04~noble` and `containerd.io 2.3.6-1~ubuntu.24.04~noble`. The package revision of the other components was not recorded.
+- **Fresh data root:** `/var/lib/docker` must be new: no images, containers, volumes or networks.
+- **Verification contract:** `docker version --format '{{.Server.Version}}'` prints `29.8.2`; `dpkg-query -W -f='${Version}\n' docker-ce containerd.io` prints the two package versions above; `docker info --format '{{.DockerRootDir}}'` prints `/var/lib/docker`; `docker ps -a` and `docker images` list nothing; `/etc/docker/daemon.json` does not exist. If the apt repository now offers different versions, stop and report: it is a deviation for the PM to decide, not something to repair.
+
+Not Community requirements: the Windows keepalive process, the WSLInterop workaround, `appendWindowsPath=false` and the WSL `systemd=true` setting belong only to the earlier local WSL environment.
 
 ## 4. Network and Mailpit (prodlike only; create before the container)
 
@@ -63,53 +81,169 @@ docker run -d --name cannlabs-prodlike-mailpit --restart unless-stopped \
 - The Mailpit UI is published on loopback `127.0.0.1:8025` only. SMTP (`mailpit:1025`) is reachable only on `cannlabs-prodlike-net`, never published to the host.
 - Mailpit holds every message the instance sends, including reset codes and links. Treat it as sensitive.
 
-## 5. Container definition placement
+## 5. Acquire the canon and place the definition
 
-`discourse_docker` reads container definitions only from `/var/discourse/containers/<name>.yml`, and the container takes the file's name. The tracked file is the canonical source artifact; the file under `/var/discourse/containers/` is a local runtime copy named `cannlabs-prodlike.yml` (the validated copy is root-owned, mode 600).
-
-A future operator copies the tracked file into place and verifies the copy before building:
+A clean host obtains the canon from the public repository, never from another machine. This clone only supplies the canon: it is **not** the application checkout inside the container, which the YAML pins at `73b2484d…` (section 2).
 
 ```bash
+CANON=<the exact canon commit the PM authorizes for the run>   # it must contain this runbook and the validated YAML
+git clone --filter=blob:none --no-checkout https://github.com/leo-even/CannLabs-Community.git canon
+cd canon
+git sparse-checkout set --cone ops/discourse
+git -c advice.detachedHead=false checkout --detach "$CANON"
+test "$(git rev-parse HEAD)" = "$CANON" && test -z "$(git status --porcelain)"
+git merge-base --is-ancestor 73b2484ded24d04c874de49a328e76d10f226be4 "$CANON"
+sha256sum ops/discourse/cannlabs-prodlike.yml
+# must print 89222f0af613aefacbbb26bac8c5f33c895aa7243eb70fca0eb4e7c64188065f
+```
+
+`discourse_docker` reads container definitions only from `/var/discourse/containers/<name>.yml`, and the container takes the file's name. The tracked file is the canonical source artifact. The file under `/var/discourse/containers/` is a local runtime copy named `cannlabs-prodlike.yml` (the validated copy is root-owned, mode 600):
+
+```bash
+install -m 0600 -o root -g root ops/discourse/cannlabs-prodlike.yml /var/discourse/containers/cannlabs-prodlike.yml
 sha256sum /var/discourse/containers/cannlabs-prodlike.yml
 # must print 89222f0af613aefacbbb26bac8c5f33c895aa7243eb70fca0eb4e7c64188065f
 ```
 
-## 6. Build order (validated in Task 37B)
+## 6. Fresh-host build and acceptance order
 
-1. Clone `https://github.com/discourse/discourse_docker.git` to `/var/discourse` and `git -c advice.detachedHead=false checkout 8d705a91866c320592ce851f30895ddb4c3e85fe`.
-2. Create the network and Mailpit (section 4).
-3. Place and verify the definition (section 5).
-4. `cd /var/discourse && ./launcher rebuild cannlabs-prodlike`. On empty `/shared` this initializes a fresh Postgres cluster. A rebuild takes the site down while it runs, the prebuilt fork asset tarball returns 404 so assets are built locally, and the build must be allowed to finish (it has taken several minutes).
-5. Health gate: `curl -H 'Host: community-prodlike.test' http://127.0.0.1:80/srv/status` returns `ok`.
-6. First admin, theme and product bootstrap: sections 9, 7 and 8. They were performed in Task 37B.1 on the prepared host. They are not yet re-proven from tracked artifacts alone.
+Every step has a stop condition: on any mismatch, stop and report. Do not repair or improvise. All of it is `PRODLIKE ACCEPTANCE ONLY`.
+
+1. **Fresh-host preflight.** Confirm the isolation properties of section 13: no `/var/discourse`, `/shared` or Docker state, no Community containers, images or environment variables. Record OS, kernel, architecture, `date -u` and free disk.
+2. **Obtain the canon** at the exact commit (section 5).
+3. **Ancestry and pin preflight.** The ancestry check of section 5 succeeds, and the theme tag still peels to the validated commit:
+   ```bash
+   git ls-remote https://github.com/leo-even/CannLabs-Community-Theme.git 'refs/tags/v0.1.0^{}'
+   # must print aeb3a9d9154f532064dcc24ac9e78cf587588d77
+   ```
+4. **Install and verify Docker** (section 3).
+5. **Obtain the pinned `discourse_docker`:** `git clone https://github.com/discourse/discourse_docker.git /var/discourse`, then `git -c advice.detachedHead=false checkout 8d705a91866c320592ce851f30895ddb4c3e85fe`. Confirm `HEAD` equals the pin, is detached and has no local changes. A detached `HEAD` also stops the launcher from self-updating.
+6. **Create the network** (section 4).
+7. **Pull and start Mailpit by the validated digest** (section 4). Confirm the UI is on loopback only and SMTP is not published.
+8. **Copy the tracked YAML** into `/var/discourse/containers/` (section 5).
+9. **Verify the YAML SHA-256 is still exact** on the installed copy.
+10. **Rebuild.** First record the base image the tag resolves to, and compare it with section 2:
+    ```bash
+    docker pull discourse/base:2.0.20260915-0028
+    docker image inspect --format '{{index .RepoDigests 0}}' discourse/base:2.0.20260915-0028
+    ```
+    Then `cd /var/discourse && ./launcher rebuild cannlabs-prodlike`, and let it finish (several minutes). On empty `/shared` it initializes a fresh Postgres cluster. A rebuild takes the site down while it runs, and the prebuilt fork asset tarball returns 404 so assets are built locally. A guard failure in the YAML's `run:` section fails the build by design.
+11. **Health gate and post-build pins.** `curl -H 'Host: community-prodlike.test' http://127.0.0.1:80/srv/status` returns `ok`. Inside `/var/www/discourse`, `HEAD` equals `73b2484ded24d04c874de49a328e76d10f226be4` and `origin` is the CannLabs fork; inside `plugins/cannlabs-community-qualified-access`, `HEAD` equals `ca4f0070d7bf85e42dbfa7f8736469139bb20275`.
+12. **Create the synthetic admin** (section 9).
+13. **Import the theme and verify its exact commit** (section 7).
+14. **Bootstrap audit #1** (section 8). Expect `BLOCKED` with drift. Do not apply.
+15. **Wait for the native Uncategorized promotion** (section 8), condition-based and bounded. Do not force it.
+16. **Bootstrap audit #2.** The lifecycle blocker is gone and drift remains.
+17. **First legitimate `bootstrap apply`.** Task 38B authorizes it on this clean database.
+18. **Final audit.** Hard gate: `PASS (pass 36, drift 0, blocked 0, gated 1)`.
+19. **Second apply.** It must report no change.
+20. **Security and configuration acceptance** (section 11).
+
+Capture as evidence: the values of steps 1, 4, 5, 9–11 and 13; every audit and apply output; the times of schema creation, admin creation and native promotion; and the acceptance outputs of step 20.
 
 ## 7. Theme contract
 
-**The container definition does not install the theme.** `cannlabs-prodlike.yml` clones the plugin only. The theme is installed into the running instance afterwards, as product state, from `https://github.com/leo-even/CannLabs-Community-Theme.git` at tag `v0.1.0`, and the installed commit must equal `aeb3a9d9154f532064dcc24ac9e78cf587588d77` (`DEC-036`: install by tag, verify the exact SHA). Task 37B.1 did this once, with `RemoteTheme.import_theme(url, admin, branch: "v0.1.0")` in a Rails runner, and confirmed the commit. The product bootstrap audits the pin (`config/cannlabs_community/bootstrap.yml` → `theme`). The YAML alone does not make the theme present.
+**The container definition does not install the theme.** `cannlabs-prodlike.yml` clones the plugin only. The theme is installed into the running instance afterwards, as product state, from `https://github.com/leo-even/CannLabs-Community-Theme.git` at tag `v0.1.0`, and the installed commit must equal `aeb3a9d9154f532064dcc24ac9e78cf587588d77` (`DEC-036`: install by tag, verify the exact SHA). The YAML alone does not make the theme present. The product bootstrap audits the pin (`config/cannlabs_community/bootstrap.yml` → `theme`).
 
-## 8. Product bootstrap
+Step 13, after the remote tag check of step 3. It uses the native importer, no secret, and aborts unless the installed commit is exact:
 
-Use the repository's bootstrap, not a copy of its rules: `docs/cannlabs-community/08_PRODUCT_BOOTSTRAP.md`, run inside the container with `PROFILE=production`:
+```bash
+docker exec -i -u discourse -w /var/www/discourse cannlabs-prodlike bin/rails runner - <<'RUBY'
+theme = RemoteTheme.import_theme(
+  "https://github.com/leo-even/CannLabs-Community-Theme.git",
+  Discourse.system_user,
+  branch: "v0.1.0",
+)
+remote = theme.remote_theme.reload
+puts "theme id=#{theme.id} name=#{theme.name} branch=#{remote.branch} local_version=#{remote.local_version} error=#{remote.last_error_text.inspect}"
+abort "THEME COMMIT MISMATCH" unless remote.local_version == "aeb3a9d9154f532064dcc24ac9e78cf587588d77"
+RUBY
+```
+
+Task 37B.1 imported the same tag as the synthetic admin; this form uses the system user. If it fails, stop and report. Do not substitute another user or ref.
+
+## 8. Product bootstrap and the native Uncategorized lifecycle
+
+Use the repository's bootstrap, not a copy of its rules: `docs/cannlabs-community/08_PRODUCT_BOOTSTRAP.md`. Run inside the container with `PROFILE=production`; exit status `0` PASS, `1` DRIFT, `2` BLOCKED, `3` usage error:
 
 ```bash
 docker exec -u discourse -w /var/www/discourse -e PROFILE=production cannlabs-prodlike \
-  bin/rake cannlabs_community:bootstrap:audit
+  bin/rake cannlabs_community:bootstrap:audit     # or :apply
 ```
 
-Accepted production-like result: `PASS (pass 36, drift 0, blocked 0, gated 1)`. On an empty database the audit is `BLOCKED` until the data exists, as observed before the Task 37B.2B restore. The bootstrap is not a production installer.
+The bootstrap runs as the system user and needs no admin. The admin is needed by the upstream promotion workflow.
 
-## 9. First admin and the synthetic environment
+**A clean site cannot converge at once.** The special Uncategorized category must first be replaced by the native upcoming change `remove_and_replace_uncategorized`, and the bootstrap reports `BLOCKED` until then. In the pinned source the native scheduler (`Jobs::CheckUpcomingChanges`, every 20 minutes) promotes it only when all of these hold:
 
-Task 37B.1 created the first administrator with the native `bin/rake admin:create` inside the container, using synthetic `.test` data. The task prompts for the password, so none is recorded anywhere, and it defaults the Admin prompt to yes. No password, token or synthetic credential belongs in this repository. Creating a first admin is **not** yet a documented, machine-independent recipe, and no production first-admin process is defined here.
+- a human admin exists (`User.human_users.admins`);
+- the site counts as existing: the earliest `schema_migration_details` row is more than one hour old (`Migration::Helpers.existing_site?`);
+- the change has reached `promote_upcoming_changes_on_status` (default `beta`; this change is `stable`);
+- the change is still displayed (`allow_uncategorized_topics` is still on) and nobody toggled it by hand.
 
-## 10. Backup and restore (native Discourse)
+Do not change `allow_uncategorized_topics`, the upcoming change or any related setting manually, and do not call `remove_and_replace_uncategorized` yourself. Task 37B.1 observed schema creation at T0, the admin at about T+4 minutes, native `automatically_promoted` at about T+65 minutes, and the first successful apply immediately after. **Do not turn "65 minutes" into a fixed sleep.** Wait on the condition: poll every 5 minutes, bounded (suggested bound: 150 minutes from schema creation), and stop and report if it is not met. The condition is all of:
+
+- a system `automatically_promoted` event exists for `remove_and_replace_uncategorized`;
+- `SiteSetting.uncategorized_category_id` is `-1`;
+- the audit no longer reports the lifecycle blocker (exit status is not `2`).
+
+```bash
+docker exec -i -u discourse -w /var/www/discourse cannlabs-prodlike bin/rails runner - <<'RUBY'
+promoted = UpcomingChangeEvent.where(
+  upcoming_change_name: "remove_and_replace_uncategorized",
+  event_type: :automatically_promoted,
+  acting_user_id: Discourse.system_user.id,
+).exists?
+puts "native_promotion=#{promoted} uncategorized_category_id=#{SiteSetting.uncategorized_category_id}"
+RUBY
+```
+
+Expected transitions (do not overfit exact counts; upstream internals change them):
+
+| Moment | Audit | Action |
+| --- | --- | --- |
+| Before native promotion | `BLOCKED` plus `DRIFT` (Task 37B.2B saw `BLOCKED` on an empty database) | No apply. |
+| After native promotion, before apply | No lifecycle blocker; `DRIFT` remains | Apply is now legitimate. |
+| First apply | Product configuration is created and applied | Record the summary. |
+| Final audit | `PASS (pass 36, drift 0, blocked 0, gated 1)` | Hard gate. |
+| Second apply | `NO CHANGE` | Idempotence proof. |
+
+`REHEARSAL FALLBACK — NOT ACCEPTANCE`: forcing the promotion by hand may be tried on a rehearsal. Final acceptance must prove the upstream scheduler lifecycle. The bootstrap is not a production installer.
+
+## 9. Synthetic first admin (`PRODLIKE ACCEPTANCE ONLY — NOT PRODUCTION ADMIN BOOTSTRAP`)
+
+A clean installation must have exactly one synthetic human admin before the native promotion can happen (section 8). This is not a production first-admin process, and none is defined here.
+
+The password exists only in process memory: it is never printed, stored, committed or used, nobody logs in as this user, and it is destroyed with the disposable environment. The email uses the `.test` domain. The runner repeats the steps of the upstream `bin/rake admin:create` (validated in Task 37B.1, there with an operator-entered password): create the user, activate it, grant admin, set trust level 1 and confirm the email. It aborts unless exactly one active human admin results.
+
+```bash
+docker exec -i -u discourse -w /var/www/discourse cannlabs-prodlike bin/rails runner - <<'RUBY'
+admin = User.new
+admin.email = "acceptance@community-prodlike.test"
+admin.username = "prodlike_acceptance"
+admin.name = "Prodlike Acceptance"
+admin.password = SecureRandom.hex(24)
+admin.save!
+admin.active = true
+admin.save!
+admin.grant_admin!
+admin.change_trust_level!(1) if admin.trust_level < 1
+admin.email_tokens.update_all(confirmed: true)
+admin.activate
+admin.reload
+humans = User.human_users.admins
+puts "synthetic admin id=#{admin.id} admin=#{admin.admin} active=#{admin.active} email_confirmed=#{admin.email_confirmed?} human_admins=#{humans.count}"
+abort "ADMIN PRECONDITION FAILED" unless admin.admin && admin.active && humans.where(active: true).count == 1
+RUBY
+```
+
+## 10. Backup and restore (native Discourse; reference only, not part of Task 38B)
 
 - Backup: the native `discourse backup` inside the container (database and uploads). Backups hold private data: never commit one, and keep a copy outside the instance's `/shared`. The validated backup is not stored in Git.
 - Restore: `discourse enable_restore`, place the backup under `/shared/backups/default/`, then `discourse restore <file> --no-disable-emails`. **`--no-disable-emails` is required** (`DEC-038`); without it the stock restore changes `disable_emails` from `no` to `non-staff`.
 - `allow_restore` must be enabled for a restore and returns to `false` in the validated flow. Accept a restore only when `allow_restore = false`, read-only mode is off, `disable_emails = no` and the bootstrap audit passes.
 - Expected side effects: the Redis-backed store and sessions are flushed; scheduled post-restore maintenance runs; `remote_themes` may gain two empty built-in rows from the restore's seed step. None of them is drift.
 
-## 11. Security hardening contract
+## 11. Security hardening contract and bounded acceptance
 
 The YAML is the implementation authority. Its `run:` section does the following, each step with a guard that fails the build when stock config drifts, because `pups replace` is silent when its pattern does not match:
 
@@ -120,9 +254,43 @@ The YAML is the implementation authority. Its `run:` section does the following,
 - `nginx -t` runs last.
 - Docker `json-file` log limits come from `docker_args`.
 
+**Task 38B step 20 is bounded; it does not repeat the full Phase 15 suite.** No real credentials, no OAuth tokens, no password-reset emails, no broad sentinel matrix.
+
+1. **nginx hardening.** `docker exec cannlabs-prodlike nginx -T` shows exactly one active `error_log /var/log/nginx/error.log emerg;`, a `log_discourse` format that contains `$cannlabs_log_uri` and `$cannlabs_log_referer` and neither `"$request"` nor `"$http_referer"`, and the outlet `35-cannlabs-log-redaction.conf`; `/etc/logrotate.d/nginx` creates 0640; `/shared/log/rails` is `750 discourse:www-data`. Do not require `/var/log/nginx` to be 0750 at run time: the stock runit service resets it on every start (section 12), and the YAML guard checked it at build time.
+2. **Redaction modules loaded:**
+   ```bash
+   docker exec -i -u discourse -w /var/www/discourse cannlabs-prodlike bin/rails runner - <<'RUBY'
+   checks = {
+     path_secret_request: ActionDispatch::Request.ancestors.include?(CannlabsPathSecretRedaction::RequestExtension),
+     rails_log_subscriber: ActionController::LogSubscriber.ancestors.include?(CannlabsLogMessageRedaction::Subscriber),
+     logster_env: Logster::Message.singleton_class.ancestors.include?(CannlabsLogsterSecretRedaction),
+     logster_logger: Logster::Logger.ancestors.include?(CannlabsLogsterMessageRedaction),
+   }
+   puts checks.inspect
+   abort "REDACTION MODULE MISSING" unless checks.values.all?
+   RUBY
+   ```
+3. **One synthetic sentinel** (not a credential), sent to the loopback port:
+   ```bash
+   SENTINEL=$(head -c 16 /dev/urandom | od -An -tx1 | tr -d ' \n')
+   curl -sS -o /dev/null -H 'Host: community-prodlike.test' "http://127.0.0.1:80/u/password-reset/$SENTINEL"
+   ```
+4. **Raw value absent** from every sink: all files under `/var/log/nginx` and `/shared/log/rails` (`docker exec cannlabs-prodlike grep -rlF -- "$SENTINEL" /var/log/nginx /shared/log/rails` lists nothing), `docker logs cannlabs-prodlike` (no match), and the Logster store (a runner scanning `Logster.store.latest(limit: 1000)` messages and environments finds none).
+5. **`[FILTERED]` appears where expected:** `/u/password-reset/[FILTERED]` in the nginx access log, and in the Rails request log where it records the request line.
+
 ## 12. Known retained findings (not reopened here)
 
 Recorded in `docs/cannlabs-community/02_PROJECT_STATE.md` → TASK 37B: the stock runit service resets nginx runtime log permissions on every start; `error_log emerg` trades observability for secrecy; the zero-leak logging guarantee is bounded to the proven secret shapes; the prebuilt asset tarball returns 404 and assets build locally; a launcher rebuild causes downtime.
+
+## 13. Independent-host acceptance
+
+**Isolation.** The final run needs a fresh VM or a separate physical host with an independent network namespace, Docker daemon and `/var/lib/docker`, and no inherited Community filesystem, `/var/discourse`, `/shared`, Docker images, Community containers or Community environment variables. It is a **cold build**. The validated current environment must stay untouched: the run never stops or modifies the existing prodlike instance.
+
+**Allowed inputs:** public GitHub repositories; exact public Git SHAs and tags; Ubuntu public package sources; the official Docker apt source and key; public Docker Hub images by tag or digest; the tracked Community artifacts; documented non-secret values.
+
+**Forbidden inputs:** anything from the existing `/var/discourse` or `/shared`; the rollback tree and the failed zero-state tree; `/root/prodlike-backups`, `/root/prodlike-logs`, `/root/validate-37b2b` and `/root/p15`; old Docker images, Docker exports and `docker save` output; the current DEV worktree or any local worktree copy; shell history; Docker apt keys copied from another host.
+
+**What a pass means.** `MACHINE-INDEPENDENT PRODUCTION-LIKE DEPLOYMENT REPRODUCIBILITY — VALIDATED` is claimed only if the run happens on an independent fresh VM or physical host and passes. It then means that, using only the tracked deployment canon, pinned public sources and documented non-secret values, an operator reproduced the exact source pins, the deployment guards, the security hardening, the exact theme, Qualified Access and the product bootstrap final state `36 / 0 / 0 / 1`. It does **not** imply production readiness, production DNS or TLS, production secret delivery, external SMTP, production OAuth, billing, staff 2FA, Legal / LGPD / Trust & Safety readiness, a production first-admin process, or disaster-recovery restore on the second host.
 
 ## Environment and secrets boundary
 
@@ -139,4 +307,4 @@ Enforced by `spec/lib/cannlabs_community/prodlike_deployment_parity_spec.rb` (no
 1. The Qualified Access repository and commit in the YAML equal `plugin` in `config/cannlabs_community/bootstrap.yml`.
 2. The nginx credential-path rules in the YAML mirror `CannlabsPathSecretRedaction::RULES` (`config/initializers/zz-cannlabs-path-secret-redaction.rb`).
 
-Documented coupling, not enforced: the application pin is an ancestor of `HEAD` (section 2); the theme pin lives in the bootstrap manifest and `DEC-036`, not in the YAML; any new definition needs its own validation, hash and Decision Log entry.
+Checked by the fresh-host run, not by the spec: the application pin is an ancestor of the canon commit (`git merge-base --is-ancestor`, section 2). Documented coupling, not enforced: the theme pin lives in the bootstrap manifest and `DEC-036`, not in the YAML; any new definition needs its own validation, hash and Decision Log entry.
