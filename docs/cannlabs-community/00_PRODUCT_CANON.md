@@ -175,7 +175,7 @@ No custom DM or messaging system is authorized. Before any V1 decision, inspect 
 
 Upstream-first: treat this as configuration and reuse until proven otherwise. Before implementation, inspect exact support in the current Discourse version and in official / bundled plugins. Do not build custom OAuth or social-login infrastructure if upstream already solves it.
 
-**Current state** — §22 and `DEC-034` supersede the exploration above: local login, Google and Apple are the DECIDED V1 direction; Facebook is OPEN / HYPOTHESIS. The Task 30 readiness review found native and bundled Discourse sufficient, so V1 authentication needs no custom authentication infrastructure (`02_PROJECT_STATE.md`).
+**Current state** — §22 and `DEC-034` supersede the exploration above: local login, Google and Apple are the DECIDED V1 direction; Facebook is OPEN / HYPOTHESIS. Ordinary individual registration does not require manual approval, and invite-only or manual approval is not the ordinary-member model; the open item is the anti-spam mechanism (`DEC-043`). The Task 30 readiness review found native and bundled Discourse sufficient, so V1 authentication needs no custom authentication infrastructure (`02_PROJECT_STATE.md`).
 
 ## 17. Paid membership
 
@@ -191,7 +191,7 @@ Before building billing, inspect current Discourse subscription and payment prim
 
 **DECIDED** — CannLabs remains actively present in moderation.
 
-**HYPOTHESIS (V1)** — Start with CannLabs staff as the central moderation authority, native member flag / report mechanisms and native Discourse moderation primitives.
+**DECIDED (V1, `DEC-043`)** — CannLabs staff are the central moderation authority, using native member flags / reports, native trust levels and native Discourse moderation primitives.
 
 **PARKED (future)** — Trusted category or group moderators may be introduced deliberately later.
 
@@ -281,6 +281,7 @@ By default, CannLabs Community is not:
 
 - Member-to-member personal messages and native Chat are off for V1. No custom messaging system is authorized. Support uses a staff-controlled native path.
 - V1 authentication includes local login plus Google and Apple where supported by current Discourse primitives. Staff accounts require native 2FA.
+- Ordinary individual registration does not require manual approval (`DEC-043`); `invite_only` and `must_approve_users` are not the ordinary-member model. The anti-spam mechanism is OPEN. Sign in with Apple stays DECIDED for V1.
 - **OPEN / HYPOTHESIS — Facebook login.** Task 12A parked it; the Founder has since reopened it for consideration (`DEC-034`). It is not DECIDED and not part of V1.
 - Payment provider selection remains OPEN. The lifecycle contract is payment state → canonical active-member group; no provider-specific integration or custom billing engine is ratified.
 

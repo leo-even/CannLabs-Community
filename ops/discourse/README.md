@@ -3,13 +3,15 @@
 > **THIS IS THE VALIDATED PRODUCTION-LIKE DEFINITION, NOT A PRODUCTION DEFAULT.**
 > Production is `NOT READY`. Do not copy values from this directory into a production deployment without a separate, explicit decision.
 
-This directory is the durable, version-controlled owner of the production-like deployment definition (`DEC-039`). Everything else about the project's state and decisions is in `docs/cannlabs-community/` (`02_PROJECT_STATE.md` → TASK 37B, TASK 38A, TASK 38B; `01_DECISION_LOG.md` → `DEC-037` to `DEC-041`).
+This directory is the durable, version-controlled owner of the production-like deployment definition (`DEC-039`). Everything else about the project's state and decisions is in `docs/cannlabs-community/` (`02_PROJECT_STATE.md` → TASK 37B, TASK 38A, TASK 38B; `01_DECISION_LOG.md` → `DEC-037` to `DEC-043`).
 
 | File | Responsibility |
 | --- | --- |
 | `cannlabs-prodlike.yml` | The exact `discourse_docker` container definition validated by Task 37B. Byte-identical to the validated file; the implementation authority for everything below. Do not edit it casually: a change is a new definition and needs its own validation and Decision Log entry. |
 | `README.md` | This runbook. |
 | `spec/lib/cannlabs_community/prodlike_deployment_parity_spec.rb` | Two parity checks (see "Drift protection"). |
+| `SECRETS.md`, `production.env.example` | The production secrets delivery contract (`DEC-042`) and its non-secret example. The authority for how real secrets reach the container. |
+| `spec/lib/cannlabs_community/production_secrets_contract_spec.rb` | Guards the tracked artifacts against secret values and `DISCOURSE_DEVELOPER_EMAILS`. |
 
 ## 1. Purpose and scope
 
@@ -299,7 +301,7 @@ Recorded in `docs/cannlabs-community/02_PROJECT_STATE.md` → TASK 37B: the stoc
 
 **This repository must not contain:** SMTP passwords, OAuth client secrets, private keys, API tokens, backup files or production credentials.
 
-**Future production secrets: `OPEN — DELIVERY MECHANISM NOT YET DECIDED`.** Values placed directly in a `discourse_docker` `env:` block can appear in image and container metadata. Do not put real production secrets into this tracked YAML or into baked image metadata. No secrets manager or vendor is chosen here.
+**Production secrets: `DECIDED` (`DEC-042`).** They reach the container only through one root-only host file passed with `docker_args: --env-file`, as specified in `SECRETS.md`. Never put a real secret into a tracked YAML, into an `env:` block or into a template: those routes print the values in launcher output and process arguments. `DISCOURSE_DEVELOPER_EMAILS` is forbidden in production. No secrets manager or vendor is chosen.
 
 ## Drift protection
 
@@ -307,5 +309,7 @@ Enforced by `spec/lib/cannlabs_community/prodlike_deployment_parity_spec.rb` (no
 
 1. The Qualified Access repository and commit in the YAML equal `plugin` in `config/cannlabs_community/bootstrap.yml`.
 2. The nginx credential-path rules in the YAML mirror `CannlabsPathSecretRedaction::RULES` (`config/initializers/zz-cannlabs-path-secret-redaction.rb`).
+
+`spec/lib/cannlabs_community/production_secrets_contract_spec.rb` guards the secrets contract (`SECRETS.md`): it fails if a populated `*.env` file is tracked, if any non-Markdown file here mentions the developer-emails variable or holds a private key or a `secret_key_base`-shaped literal, if a tracked definition's `env:` holds a secret-class value, or if `production.env.example` holds anything but `<PLACEHOLDER>` values or an undocumented name.
 
 Checked by the fresh-host run, not by the spec: the application pin is an ancestor of the canon commit (`git merge-base --is-ancestor`, section 2). Documented coupling, not enforced: the theme pin lives in the bootstrap manifest and `DEC-036`, not in the YAML; any new definition needs its own validation, hash and Decision Log entry.

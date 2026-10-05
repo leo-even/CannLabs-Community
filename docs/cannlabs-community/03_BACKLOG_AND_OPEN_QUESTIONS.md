@@ -9,7 +9,7 @@ Buckets: **NOW** · **NEXT** · **LATER** · **PARKED** · **OPEN**. States are 
 
 ## NOW
 
-**Current NOW (2026-10-05, Task 38B closure): the production-like proof (Task 37B), its tracked deployment canon (Task 38A, `DEC-039`) and its machine-independent reproducibility (Task 38B, `DEC-041`) are VALIDATED, and the Google Cloud test resources are deleted.** Nothing further is authorized, and production remains NOT READY. See `02_PROJECT_STATE.md` → TASK 37B, TASK 38A and TASK 38B. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
+**Current NOW (2026-10-05, Task 40A): the production-like proof (Task 37B), its tracked deployment canon (Task 38A, `DEC-039`) and its machine-independent reproducibility (Task 38B, `DEC-041`) are VALIDATED; the production secrets delivery contract (`DEC-042`) is implemented and awaiting official PM validation.** Nothing further is authorized, and production remains NOT READY. See `02_PROJECT_STATE.md` → TASK 37B, TASK 38A, TASK 38B and TASK 40A. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
 
 The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.md` → NEXT.
 
@@ -351,7 +351,8 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 - **OPEN — production hostname / domain, HTTPS and the Cloudflare role.**
 - **OPEN — SMTP provider** (SPF, DKIM, DMARC, bounce / complaint visibility).
 - **OPEN — backup policy:** off-site storage, retention, RPO / RTO and a scheduled restore drill. The native backup and zero-state restore mechanics are VALIDATED in the production-like instance (Task 37B.2); no policy was chosen.
-- **OPEN — secrets mechanism,** which depends on the hosting model (`OPEN — DELIVERY MECHANISM NOT YET DECIDED`). Real secrets placed in a `discourse_docker` `env:` block can appear in image and container metadata, so they must not go into the tracked definition; no manager or vendor is chosen.
+- **DECIDED — production secrets delivery mechanism** (`DEC-042`, `ops/discourse/SECRETS.md`; was `OPEN`): one root-only host file passed with `docker_args: --env-file`; no secret manager or vendor. The real values, the real destination of backups and the hosting choices stay OPEN.
+- **OPEN — anti-spam mechanism for open registration.** Ordinary signup needs no manual approval (`DEC-043`); the mechanism (for example the bundled captcha plugin, new-user approval settings or watched words) is not chosen.
 - **OPEN — monitoring destination and on-call owner.**
 - **LATER — theme and logo bootstrap on a clean database** (Git theme installation, logo uploads). Git theme installation by exact pin is proven (Task 37B); logo bootstrap was not addressed.
 - **LATER — Founder launcher:** starting Docker Desktop when it is not running, and recreating an existing container whose mounts are wrong.
@@ -419,7 +420,13 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 - **Task 38B — `VALIDATED`** (`DEC-041`). `MACHINE-INDEPENDENT PRODUCTION-LIKE DEPLOYMENT REPRODUCIBILITY — VALIDATED` on an independent Google Compute Engine VM (clean install plus product bootstrap `36 / 0 / 0 / 1`, native Uncategorized lifecycle, one synthetic admin, no backup or restore, per `DEC-040`). The VM and its project are deleted. Details: `02_PROJECT_STATE.md` → TASK 38B and `ops/discourse/README.md`.
 - **`RETAINED — TASK 38B ACCEPTANCE EVIDENCE`:** `/home/leo/cannlabs-38b-evidence/task38b-evidence/` and `teardown-record.txt`. Task 37 artifacts stay `INTENTIONALLY RETAINED — CLEANUP NOT YET AUTHORIZED`.
 - **LOW / OBSERVATION — Task 38B security evidence limit:** the fresh Logster store held no messages, so the store-content part of the sentinel was vacuous. Full Logster failure-path acceptance is inherited from Task 37 / Phase 15. Non-blocking.
-- **OPEN — DELIVERY MECHANISM NOT YET DECIDED** for future production secrets (unchanged).
+- **DECIDED — secrets delivery mechanism** (`DEC-042`; was `OPEN — DELIVERY MECHANISM NOT YET DECIDED`). See `02_PROJECT_STATE.md` → TASK 40A.
+
+## TASK 40A — PRODUCTION SECRETS DELIVERY CONTRACT (implemented, awaiting PM validation)
+
+- **Status:** `PRODUCTION SECRETS CONTRACT VALIDATED` locally (`DEC-042`), awaiting official PM validation. One root-only host file via `docker_args: --env-file`; rehearsed with fake secrets, no spend. Details and evidence: `02_PROJECT_STATE.md` → TASK 40A and `ops/discourse/SECRETS.md`.
+- **Recorded decisions** (`DEC-043`): ordinary signup needs no manual approval; Apple is DECIDED for V1; V1 moderation is CannLabs staff with native flags and trust. **OPEN:** the anti-spam mechanism.
+- **Still open after this slice (none authorized):** the production first-admin path and real staff 2FA enrollment, then SMTP, hosting, TLS, backups and the other production areas. Recommended next slice: production first-admin and staff security readiness.
 
 ## AUTHENTICATION READINESS — OPEN ITEMS (none authorized)
 
@@ -439,6 +446,6 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 - **TESTING CONSTRAINT — `.invalid` recipients receive no mail** (`Email::Sender` skips them). Mail acceptance tests use another reserved domain such as `.test`.
 - **OBSERVATION — sender identity:** local mail uses the default sender domain `unconfigured.discourse.org`; part of production SMTP / domain readiness (see the production-foundation list above).
 - **REQUIRED BEFORE ENABLING ANY PROVIDER — external-provider acceptance tests,** covering automatic account linking by verified email (Google), provider emails treated as verified (Apple, Facebook), Apple private-relay addresses creating a second account, and external signups that are not automatically in `membros_ativos`. No mitigation is designed or authorized. Google's linking and non-member signup were accepted locally in Task 35; Apple and Facebook remain untested.
-- **NEEDS SECURITY REVIEW — Apple private key.** The bundled plugin does not flag `apple_pem` as `secret`. Review before real Apple credentials are entered; do not change plugin code.
+- **Apple private key — handling DECIDED (`DEC-042`), residual risk recorded.** The bundled plugin does not flag `apple_pem` as `secret`, and a multi-line PEM cannot travel by environment. It is therefore a DB-stored site setting, set through a Rails runner and never through the admin UI (a UI change would log it raw). It is present in every native backup, so backups must be encrypted and access-controlled before real Apple credentials are entered. Do not change plugin code.
 - **OPEN / HYPOTHESIS — Facebook login** (`DEC-034`).
 - **REQUIRED BEFORE PRODUCTION — staff 2FA** (decision unchanged; acceptance validated in Task 32, rollout above).
