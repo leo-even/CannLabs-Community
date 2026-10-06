@@ -3,7 +3,7 @@
 > **THIS IS THE VALIDATED PRODUCTION-LIKE DEFINITION, NOT A PRODUCTION DEFAULT.**
 > Production is `NOT READY`. Do not copy values from this directory into a production deployment without a separate, explicit decision.
 
-This directory is the durable, version-controlled owner of the production-like deployment definition (`DEC-039`). Everything else about the project's state and decisions is in `docs/cannlabs-community/` (`02_PROJECT_STATE.md` → TASK 37B, TASK 38A, TASK 38B; `01_DECISION_LOG.md` → `DEC-037` to `DEC-043`).
+This directory is the durable, version-controlled owner of the production-like deployment definition (`DEC-039`). Everything else about the project's state and decisions is in `docs/cannlabs-community/` (`02_PROJECT_STATE.md` → TASK 37B, TASK 38A, TASK 38B; `01_DECISION_LOG.md` → `DEC-037` to `DEC-044`).
 
 | File | Responsibility |
 | --- | --- |
@@ -12,6 +12,8 @@ This directory is the durable, version-controlled owner of the production-like d
 | `spec/lib/cannlabs_community/prodlike_deployment_parity_spec.rb` | Two parity checks (see "Drift protection"). |
 | `SECRETS.md`, `production.env.example` | The production secrets delivery contract (`DEC-042`) and its non-secret example. The authority for how real secrets reach the container. |
 | `spec/lib/cannlabs_community/production_secrets_contract_spec.rb` | Guards the tracked artifacts against secret values and `DISCOURSE_DEVELOPER_EMAILS`. |
+| `STAFF_SECURITY.md` | The production first-admin and staff security runbook (`DEC-044`): first administrator, native 2FA enrollment, the second administrator, enforcement, least privilege, API-key policy, break-glass, offboarding, the IP-allowlist position and the read-only staff security audit. |
+| `spec/lib/cannlabs_community/staff_security_runbook_spec.rb` | Guards that runbook: safe order, no forbidden bootstrap route in a command, no secret-shaped value or address, and a read-only audit that parses. |
 
 ## 1. Purpose and scope
 
@@ -214,7 +216,7 @@ Expected transitions (do not overfit exact counts; upstream internals change the
 
 ## 9. Synthetic first admin (`PRODLIKE ACCEPTANCE ONLY — NOT PRODUCTION ADMIN BOOTSTRAP`)
 
-A clean installation must have exactly one synthetic human admin before the native promotion can happen (section 8). This is not a production first-admin process, and none is defined here.
+A clean installation must have exactly one synthetic human admin before the native promotion can happen (section 8). This is not a production first-admin process. The production procedure (a real human, no developer emails, mandatory 2FA, two administrators) is `STAFF_SECURITY.md` (`DEC-044`). Production has two human administrators; the native promotion needs only that one human admin exists, so the second one does not affect it.
 
 The password exists only in process memory: it is never printed, stored, committed or used, nobody logs in as this user, and it is destroyed with the disposable environment. The email uses the `.test` domain. The runner repeats the steps of the upstream `bin/rake admin:create` (validated in Task 37B.1, there with an operator-entered password): create the user, activate it, grant admin, set trust level 1 and confirm the email. It aborts unless exactly one active human admin results.
 
@@ -311,5 +313,7 @@ Enforced by `spec/lib/cannlabs_community/prodlike_deployment_parity_spec.rb` (no
 2. The nginx credential-path rules in the YAML mirror `CannlabsPathSecretRedaction::RULES` (`config/initializers/zz-cannlabs-path-secret-redaction.rb`).
 
 `spec/lib/cannlabs_community/production_secrets_contract_spec.rb` guards the secrets contract (`SECRETS.md`): it fails if a populated `*.env` file is tracked, if any non-Markdown file here mentions the developer-emails variable or holds a private key or a `secret_key_base`-shaped literal, if a tracked definition's `env:` holds a secret-class value, or if `production.env.example` holds anything but `<PLACEHOLDER>` values or an undocumented name.
+
+`spec/lib/cannlabs_community/staff_security_runbook_spec.rb` guards the staff security runbook (`STAFF_SECURITY.md`): it fails if the first admin, its enrollment and the second admin do not come before the enforcement section, if a command block instructs `/finish-installation`, `rake admin:invite`, `RANDOM_PASSWORD`, a script-set password or turning enforcement off, if the runbook holds a secret-shaped value or an email address, or if its audit snippet stops parsing, writes anything or prints a second-factor secret.
 
 Checked by the fresh-host run, not by the spec: the application pin is an ancestor of the canon commit (`git merge-base --is-ancestor`, section 2). Documented coupling, not enforced: the theme pin lives in the bootstrap manifest and `DEC-036`, not in the YAML; any new definition needs its own validation, hash and Decision Log entry.

@@ -9,7 +9,7 @@ Buckets: **NOW** · **NEXT** · **LATER** · **PARKED** · **OPEN**. States are 
 
 ## NOW
 
-**Current NOW (2026-10-05, Task 40A): the production-like proof (Task 37B), its tracked deployment canon (Task 38A, `DEC-039`) and its machine-independent reproducibility (Task 38B, `DEC-041`) are VALIDATED; the production secrets delivery contract (`DEC-042`) is implemented and awaiting official PM validation.** Nothing further is authorized, and production remains NOT READY. See `02_PROJECT_STATE.md` → TASK 37B, TASK 38A, TASK 38B and TASK 40A. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
+**Current NOW (2026-10-05, Task 40B): the production-like proof (Task 37B), its tracked deployment canon (Task 38A, `DEC-039`), its machine-independent reproducibility (Task 38B, `DEC-041`) and the production secrets delivery contract (Task 40A, `DEC-042`) are VALIDATED; the production first-admin and staff security procedure (`DEC-044`) is implemented and awaiting official PM validation.** Nothing further is authorized, and production remains NOT READY. See `02_PROJECT_STATE.md` → TASK 37B, TASK 38A, TASK 38B, TASK 40A and TASK 40B. See the last sections of this file and `02_PROJECT_STATE.md` → CURRENT STATE. The list below and the later "NOW — TASK …" headings are kept as history in the order they were written; each was current only until the next one.
 
 The current phase is foundation work only. Its sequence is in `02_PROJECT_STATE.md` → NEXT.
 
@@ -347,7 +347,7 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 
 - **VALIDATED — clean production-like proof (Task 37B):** a pinned production-like build, product bootstrap, production-like logging acceptance and a native backup / zero-state restore proof passed on a disposable instance (see "TASK 37B" below). It does not make production ready. Staging with synthetic data only remains the recommended direction (HYPOTHESIS).
 - **DECIDED — DURABLE DEPLOYMENT DEFINITION OWNERSHIP = COMMUNITY REPO** (`DEC-039`, `ops/discourse/`). **VALIDATED — MACHINE-INDEPENDENT PRODUCTION-LIKE DEPLOYMENT REPRODUCIBILITY** (Task 38B, `DEC-041`; was `OPEN`). It is not production readiness.
-- **REQUIRED BEFORE PRODUCTION — staff 2FA:** native `enforce_second_factor`. The acceptance slice is VALIDATED (Task 32: TOTP, backup codes and break-glass recovery). Still required: enroll and verify every real staff account, then rely on persistent `staff` enforcement. Not enabled and not authorized.
+- **REQUIRED BEFORE PRODUCTION — staff 2FA:** native `enforce_second_factor`. The acceptance slice is VALIDATED (Task 32) and the production first-admin and staff security **procedure** is VALIDATED locally (Task 40B, `DEC-044`, `ops/discourse/STAFF_SECURITY.md`). Still required, `OPEN — PRODUCTION ENROLLMENT NOT DONE`: run that procedure on the real host and enroll the real staff, then rely on persistent `staff` enforcement. Not enabled and not authorized.
 - **OPEN — production hostname / domain, HTTPS and the Cloudflare role.**
 - **OPEN — SMTP provider** (SPF, DKIM, DMARC, bounce / complaint visibility).
 - **OPEN — backup policy:** off-site storage, retention, RPO / RTO and a scheduled restore drill. The native backup and zero-state restore mechanics are VALIDATED in the production-like instance (Task 37B.2); no policy was chosen.
@@ -422,11 +422,11 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 - **LOW / OBSERVATION — Task 38B security evidence limit:** the fresh Logster store held no messages, so the store-content part of the sentinel was vacuous. Full Logster failure-path acceptance is inherited from Task 37 / Phase 15. Non-blocking.
 - **DECIDED — secrets delivery mechanism** (`DEC-042`; was `OPEN — DELIVERY MECHANISM NOT YET DECIDED`). See `02_PROJECT_STATE.md` → TASK 40A.
 
-## TASK 40A — PRODUCTION SECRETS DELIVERY CONTRACT (implemented, awaiting PM validation)
+## TASK 40A — VALIDATED PRODUCTION SECRETS DELIVERY CONTRACT
 
-- **Status:** `PRODUCTION SECRETS CONTRACT VALIDATED` locally (`DEC-042`), awaiting official PM validation. One root-only host file via `docker_args: --env-file`; rehearsed with fake secrets, no spend. Details and evidence: `02_PROJECT_STATE.md` → TASK 40A and `ops/discourse/SECRETS.md`.
+- **Status:** `PRODUCTION SECRETS CONTRACT VALIDATED` (`DEC-042`) by official PM adjudication. One root-only host file via `docker_args: --env-file`; rehearsed with fake secrets, no spend. Details and evidence: `02_PROJECT_STATE.md` → TASK 40A and `ops/discourse/SECRETS.md`.
 - **Recorded decisions** (`DEC-043`): ordinary signup needs no manual approval; Apple is DECIDED for V1; V1 moderation is CannLabs staff with native flags and trust. **OPEN:** the anti-spam mechanism.
-- **Still open after this slice (none authorized):** the production first-admin path and real staff 2FA enrollment, then SMTP, hosting, TLS, backups and the other production areas. Recommended next slice: production first-admin and staff security readiness.
+- **Still open after this slice (none authorized):** the production first-admin path and real staff 2FA enrollment (the procedure is now Task 40B below), then SMTP, hosting, TLS, backups and the other production areas.
 
 ## AUTHENTICATION READINESS — OPEN ITEMS (none authorized)
 
@@ -434,7 +434,7 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 - **RESOLVED — LOCAL DEVELOPMENT (Task 36): OAuth development logging** (the Task 35 MEDIUM). Production-like logging behaviour was acceptance-tested in Task 37B.1 within a defined secret-shape contract.
 - **LOW — orphaned Google profile-picture upload** awaiting the native orphan-upload cleanup after its grace period.
 - **PARKED — native scheduled backup `[FAILED]` around 03:30Z on 2026-10-03,** not investigated in Task 35.
-- **REQUIRED BEFORE PRODUCTION — staff 2FA rollout.** Enroll every real staff account, verify login with its second factor, establish the recovery / backup-code procedure, confirm no staff account remains unenrolled, and only then leave `enforce_second_factor = staff` enabled.
+- **REQUIRED BEFORE PRODUCTION — staff 2FA rollout.** The procedure is written and validated (Task 40B, `ops/discourse/STAFF_SECURITY.md`): create two human administrators with `rake admin:create`, enroll TOTP and recovery codes, run the read-only audit, only then set `enforce_second_factor = staff`. The rollout itself, every real staff account enrolled and confirmed on the real host, stays OPEN.
 - **MEDIUM — Security / Operational Readiness: staff enforcement boundary.** For an unenrolled staff account, native enforcement redirects HTML navigation to the enrollment page; JSON and API requests are exempt from that redirect. The setting alone does not make an unenrolled staff account safe. Recorded as native behaviour, not as a vulnerability.
 - **OPEN — local WebAuthn acceptance / environment issue.** The development WebAuthn origin is tied to `http://localhost:3000` while Community runs on `http://localhost:3100`; security-key and passkey acceptance are untested. No core patch is authorized.
 - **RESOLVED — LOCAL DEVELOPMENT (Task 36): TOTP secret in development SQL logging** (was LOW). `second_factor_token` is filtered in request logs.
@@ -449,3 +449,12 @@ Implemented on 2026-10-02 and since VALIDATED by the official PM (see "TASK 28 �
 - **Apple private key — handling DECIDED (`DEC-042`), residual risk recorded.** The bundled plugin does not flag `apple_pem` as `secret`, and a multi-line PEM cannot travel by environment. It is therefore a DB-stored site setting, set through a Rails runner and never through the admin UI (a UI change would log it raw). It is present in every native backup, so backups must be encrypted and access-controlled before real Apple credentials are entered. Do not change plugin code.
 - **OPEN / HYPOTHESIS — Facebook login** (`DEC-034`).
 - **REQUIRED BEFORE PRODUCTION — staff 2FA** (decision unchanged; acceptance validated in Task 32, rollout above).
+
+## TASK 40B — PRODUCTION FIRST-ADMIN AND STAFF SECURITY PROCEDURE (implemented, awaiting PM validation)
+
+- **Status:** `PRODUCTION STAFF SECURITY PROCEDURE VALIDATED` locally (`DEC-044`), awaiting official PM validation. Procedure readiness only: `OPEN — PRODUCTION ENROLLMENT NOT DONE` (no real host, no real staff enrolled). Rehearsed on a disposable instance with synthetic identities, no spend. Details and evidence: `02_PROJECT_STATE.md` → TASK 40B and `ops/discourse/STAFF_SECURITY.md`.
+- **Recorded decisions** (`DEC-044`): first admin through `rake admin:create` on a terminal with the holder typing the password; two human administrators before real-member beta; native 2FA mandatory, enrollment before enforcement and before promotion, audit as the invariant; no staff API keys by default; peer-administrator break-glass preferred with root `users:disable_2fa` as the fallback and mandatory re-enrollment; admin IP allowlist off in V1 unless a stable trusted egress path exists.
+- **OPEN, for PM arbitration, no change made:** tighten `allow_user_api_key_scopes` and `user_api_key_allowed_groups` (a default-allowed `write` user API key reached admin routes without 2FA); the `allow_impersonation` default.
+- **OPEN, for the host slice:** the first administrator is password-only between creation and enrollment, so sections 4 to 6 of the runbook belong before public ingress; what client address the app records behind the real edge (matters for any IP allowlist and for rate limits); SMTP for the 2FA-disabled notification; an operations record for the actions that leave no staff-log row (`admin:create`, `users:disable_2fa`, root-side runners).
+- **OPEN, not proven:** security keys, passkeys and WebAuthn (the Task 32 local-origin issue remains); a real authenticator app; real SMTP; behavior behind a proxy, Cloudflare or TLS; backup encryption (TOTP keys are in clear text in the database and every native backup).
+- **Next candidate (none authorized):** the production host and edge decisions (hostname, TLS, ingress and the client-address question), which the runbook's first-admin ingress constraint depends on. SMTP provider selection stays parallel and Founder-driven.

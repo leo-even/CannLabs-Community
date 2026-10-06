@@ -280,7 +280,7 @@ By default, CannLabs Community is not:
 **DECIDED — V1 communications, authentication and payment boundary**
 
 - Member-to-member personal messages and native Chat are off for V1. No custom messaging system is authorized. Support uses a staff-controlled native path.
-- V1 authentication includes local login plus Google and Apple where supported by current Discourse primitives. Staff accounts require native 2FA.
+- V1 authentication includes local login plus Google and Apple where supported by current Discourse primitives. Staff accounts require native 2FA. The production procedure (first administrator, two administrators, enrollment before enforcement) is `ops/discourse/STAFF_SECURITY.md` (`DEC-044`); procedure readiness is validated, real production enrollment is OPEN.
 - Ordinary individual registration does not require manual approval (`DEC-043`); `invite_only` and `must_approve_users` are not the ordinary-member model. The anti-spam mechanism is OPEN. Sign in with Apple stays DECIDED for V1.
 - **OPEN / HYPOTHESIS — Facebook login.** Task 12A parked it; the Founder has since reopened it for consideration (`DEC-034`). It is not DECIDED and not part of V1.
 - Payment provider selection remains OPEN. The lifecycle contract is payment state → canonical active-member group; no provider-specific integration or custom billing engine is ratified.

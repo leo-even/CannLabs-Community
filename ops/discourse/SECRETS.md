@@ -120,6 +120,7 @@ Not rehearsed: deleting a key from the file (rebuild, then verify the variable i
 ## 9. Backup and restore boundary
 
 - **In a native Discourse backup:** everything stored in the database, which includes every secret that lives in a DB site setting (rehearsed: the fake `apple_pem`) and user data. Treat every backup as secret-bearing and protect it accordingly (encryption and the real destination are separate, later work).
+- **Also in a backup: every enrolled person's TOTP key.** Discourse stores TOTP seeds in clear text (`user_second_factors.data`), so every database dump and native backup contains the authenticator key of every user who enrolled, staff included (measured in Task 40B). Recovery codes and API keys are stored only as hashes and were absent from the dump. This is another reason to treat backups as secret-bearing (`STAFF_SECURITY.md`).
 - **Not in a backup:** env-delivered secrets and `secret_key_base` (rehearsed: ABSENT), and the file `production.env` itself.
 - **Deployment recovery material, stored separately and securely:** `production.env` (especially the pinned `secret_key_base`), the tracked definition at its commit, and the pins in `README.md`. Restore the file first, then rebuild, then restore the backup. With the key pinned, sessions survive the restore.
 - Restores keep the existing rule `--no-disable-emails` (`DEC-038`).
