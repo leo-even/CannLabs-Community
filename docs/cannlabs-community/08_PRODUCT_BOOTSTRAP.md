@@ -48,14 +48,15 @@ Changes go through the same native code paths the admin UI uses (site-setting se
 
 | Profile | Use |
 | --- | --- |
-| `local` | The local development Community. Also manages `user_notes_enabled=true` and `cannlabs_qualified_access_enabled=true`. |
-| `production` | The production product profile, first exercised by the production-like proof (Task 37B). Manages `cannlabs_qualified_access_enabled=true` (`DEC-035`). `user_notes_enabled` stays `GATED`: reported, never applied (Legal / Privacy / T&S gated). |
+| `local` | The local development Community. Also manages `user_notes_enabled=true` and `cannlabs_qualified_access_enabled=true`. `allow_index_in_robots_txt` stays `GATED`: reported, never applied. |
+| `production` | The production product profile, first exercised by the production-like proof (Task 37B). Manages `cannlabs_qualified_access_enabled=true` (`DEC-035`) and `allow_index_in_robots_txt=false` (`DEC-047`). `user_notes_enabled` stays `GATED`: reported, never applied (Legal / Privacy / T&S gated). |
 
 The `production` profile existing in the manifest does not mean production is authorized or ready.
 
 ## What the bootstrap owns
 
 - **Global settings (every profile):** `login_required=true`, `allow_uncategorized_topics=false`, `chat_enabled=false`, `default_locale=pt_BR`, personal-message eligibility (admins and moderators only), reporting eligibility (admins, moderators, native trust level 1 and `membros_ativos`).
+- **Search-engine indexing (production profile):** `allow_index_in_robots_txt=false`. The private Community is never indexed. Natively this makes `robots.txt` disallow everything and every GET response carry `X-Robots-Tag: noindex, nofollow`. The setting defaults to `true`, so an unmanaged site is crawlable at `/login` and `/signup`.
 - **The eight custom group definitions:** `membros_ativos`, `medicos_verif`, `farmaceuticos_verif`, `agronomos_verif`, `advogados_verif`, `liderancas_aprov`, `acesso_profissionais`, `acesso_liderancas` — name, full name, visibility, and staff-controlled membership (no public admission or exit, no membership requests, no automatic trust level, no automatic e-mail-domain membership).
 - **Category ACLs:** General and Comunidade → `membros_ativos`; Profissionais Verificados → `acesso_profissionais` only; Lideranças de Associações → `acesso_liderancas` only; the residual Uncategorized category → `membros_ativos`. The manifest ACL is complete, so an extra row is drift. The three Community categories are created when missing.
 - **Site Feedback absence** (see below).
@@ -110,6 +111,7 @@ The manifest contains no password, key, token or credential, and must never cont
 - The theme and the plugin must already be installed by the deployment layer; the logo is a database upload and is not reproduced.
 - On a fresh database the bootstrap is `BLOCKED` until the native Uncategorized upcoming change has been promoted or enabled.
 - Seeded General and Staff categories must exist (the normal upstream seed creates them).
+- Counts by application revision: at the prodlike pin (`73b2484d…`, before `DEC-047`) the production audit is `PASS (pass 36, drift 0, blocked 0, gated 1)`; with `allow_index_in_robots_txt` owned it is `PASS (pass 37, drift 0, blocked 0, gated 1)`.
 - The bootstrap has been run against a clean production-like instance (Task 37B): `BLOCKED` on an empty database before a native restore, `PASS (pass 36, drift 0, blocked 0, gated 1)` after it. That instance was a disposable proof with a synthetic hostname and Mailpit; a production deployment, real secrets and external services remain a later slice, and the bootstrap is still not a production installer.
 
 ## After a Discourse upgrade or a configuration change

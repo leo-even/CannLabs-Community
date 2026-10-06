@@ -74,7 +74,57 @@ RSpec.describe CannlabsCommunity::Bootstrap do
           "local" => true,
           "production" => true,
         },
+        "allow_index_in_robots_txt" => {
+          "production" => false,
+        },
       )
+    end
+  end
+
+  describe "search-engine indexing in the production profile" do
+    it "passes when indexing is off" do
+      SiteSetting.allow_index_in_robots_txt = false
+
+      bootstrap.audit
+
+      expect(status_of("settings.allow_index_in_robots_txt")).to eq(:pass)
+    end
+
+    it "reports drift when indexing is on and repairs only that setting, once" do
+      SiteSetting.allow_index_in_robots_txt = true
+
+      bootstrap.audit
+      expect(status_of("settings.allow_index_in_robots_txt")).to eq(:drift)
+      expect(SiteSetting.allow_index_in_robots_txt).to eq(true)
+
+      bootstrap.apply
+      expect(SiteSetting.allow_index_in_robots_txt).to eq(false)
+      expect(
+        bootstrap
+          .results
+          .find { |result| result.key == "settings.allow_index_in_robots_txt" }
+          .changed,
+      ).to eq(true)
+
+      bootstrap.apply
+      expect(
+        bootstrap
+          .results
+          .find { |result| result.key == "settings.allow_index_in_robots_txt" }
+          .changed,
+      ).to eq(false)
+    end
+
+    it "leaves the setting gated in the local profile" do
+      SiteSetting.allow_index_in_robots_txt = true
+      local = described_class.new(profile: "local", manifest:)
+
+      local.apply
+
+      expect(
+        local.results.find { |result| result.key == "settings.allow_index_in_robots_txt" }.status,
+      ).to eq(:gated)
+      expect(SiteSetting.allow_index_in_robots_txt).to eq(true)
     end
   end
 
