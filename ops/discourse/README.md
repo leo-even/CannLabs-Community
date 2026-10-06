@@ -3,7 +3,7 @@
 > **THIS IS THE VALIDATED PRODUCTION-LIKE DEFINITION, NOT A PRODUCTION DEFAULT.**
 > Production is `NOT READY`. Do not copy values from this directory into a production deployment without a separate, explicit decision.
 
-This directory is the durable, version-controlled owner of the production-like deployment definition (`DEC-039`). Everything else about the project's state and decisions is in `docs/cannlabs-community/` (`02_PROJECT_STATE.md` → TASK 37B, TASK 38A, TASK 38B; `01_DECISION_LOG.md` → `DEC-037` to `DEC-044`).
+This directory is the durable, version-controlled owner of the production-like deployment definition (`DEC-039`). Everything else about the project's state and decisions is in `docs/cannlabs-community/` (`02_PROJECT_STATE.md` → TASK 37B, TASK 38A, TASK 38B; `01_DECISION_LOG.md` → `DEC-037` to `DEC-045`).
 
 | File | Responsibility |
 | --- | --- |
@@ -14,6 +14,8 @@ This directory is the durable, version-controlled owner of the production-like d
 | `spec/lib/cannlabs_community/production_secrets_contract_spec.rb` | Guards the tracked artifacts against secret values and `DISCOURSE_DEVELOPER_EMAILS`. |
 | `STAFF_SECURITY.md` | The production first-admin and staff security runbook (`DEC-044`): first administrator, native 2FA enrollment, the second administrator, enforcement, least privilege, API-key policy, break-glass, offboarding, the IP-allowlist position and the read-only staff security audit. |
 | `spec/lib/cannlabs_community/staff_security_runbook_spec.rb` | Guards that runbook: safe order, no forbidden bootstrap route in a command, no secret-shaped value or address, and a read-only audit that parses. |
+| `anonymous_http_acceptance.py` | The live anonymous HTTP gate (`DEC-045`): proves that the running web workers serve the configured privacy state. Required by the restore acceptance contract (section 10); reusable as a pre-public-ingress gate. Standard-library Python, anonymous GETs only, `--self-test` built in. |
+| `spec/lib/cannlabs_community/post_restore_acceptance_spec.rb` | Guards the restore acceptance contract and that script: step order, no rebuild, liveness-only wording, GET-only and credential-free code, and the script's self-test. |
 
 ## 1. Purpose and scope
 
@@ -243,10 +245,29 @@ RUBY
 
 ## 10. Backup and restore (native Discourse; reference only, not part of Task 38B)
 
-- Backup: the native `discourse backup` inside the container (database and uploads). Backups hold private data: never commit one, and keep a copy outside the instance's `/shared`. The validated backup is not stored in Git.
+- Backup: the native `discourse backup` inside the container (database and uploads). Backups hold private data: never commit one, and keep a copy outside the instance's `/shared`. The validated backup is not stored in Git. A backup changes nothing underneath the running application and needs no restart.
 - Restore: `discourse enable_restore`, place the backup under `/shared/backups/default/`, then `discourse restore <file> --no-disable-emails`. **`--no-disable-emails` is required** (`DEC-038`); without it the stock restore changes `disable_emails` from `no` to `non-staff`.
-- `allow_restore` must be enabled for a restore and returns to `false` in the validated flow. Accept a restore only when `allow_restore = false`, read-only mode is off, `disable_emails = no` and the bootstrap audit passes.
+- `allow_restore` must be enabled for a restore and returns to `false` in the validated flow.
 - Expected side effects: the Redis-backed store and sessions are flushed; scheduled post-restore maintenance runs; `remote_themes` may gain two empty built-in rows from the restore's seed step. None of them is drift.
+
+### Restore acceptance contract (`DEC-045`)
+
+**A native restore replaces the database underneath web workers that are already running, and those workers do not notice.** Each worker keeps `SiteSetting` in memory and re-reads the database only when a `/site_settings` message tells it to. The restore refreshes the settings only in the process that runs it and publishes nothing to the others (`lib/backup_restore/restorer.rb`), and Pitchfork forks its workers from a mold process that was started before the restore (`config/pitchfork.conf.rb`, `Discourse.after_fork` re-subscribes but does not refresh). Measured on the retained prodlike instance (found by Task 40C, reproduced and closed by Task 40C.1): after the Task 37B.2B restore the database, a fresh Rails process and the bootstrap audit all said `login_required=true`, `pt_BR`, chat off and default theme 1, while the running workers served `login_required=false`, `en`, chat on, theme `-1`, the install wizard on `/`, and answered `/about.json` and `/directory_items.json` to anonymous requests. `/srv/status` returned `ok` throughout. One `./launcher restart` converged the instance with no change to the database.
+
+**`/srv/status` is a liveness check. It is necessary and never sufficient after a restore.** Restore acceptance is declared VALIDATED only after all six steps, in this order:
+
+1. The restore completes: `[SUCCESS]` in its output and exit status 0.
+2. Restart the application runtime with the supported mechanism, without rebuilding: `cd /var/discourse && ./launcher restart <container>`. At the pinned launcher this is `docker stop -t 600` followed by `docker start` of the **existing** container: the same container and image, no bootstrap, no definition change. Measured: the restart took about 5 seconds and the web stack answered after about 20. Do not substitute `rebuild`, and do not substitute a worker-only reload: workers fork from the old mold, so a reload is not shown to refresh them (not tested).
+3. Wait for health: poll `/srv/status` until it answers `ok`, with a bound (suggested 5 minutes), and stop and report if it does not. This proves liveness only.
+4. The database and bootstrap audit passes, run in a fresh process: `docker exec -u discourse -w /var/www/discourse -e PROFILE=production <container> bin/rake cannlabs_community:bootstrap:audit` prints `PASS (pass 36, drift 0, blocked 0, gated 1)`, and `allow_restore = false`, read-only mode is off and `disable_emails = no`.
+5. The live anonymous HTTP gate passes against the **running** workers: `python3 ops/discourse/anonymous_http_acceptance.py --base-url <url> --host-header <host> --expect-locale pt_BR` prints `HTTP_ACCEPTANCE=PASS` (exit status 0). Run it from the host that serves the instance, with the container's published address for `<url>`.
+6. Only then declare restore acceptance VALIDATED. `FAIL` (exit 1) is a blocker. `INCONCLUSIVE` (exit 2: unreachable, rate-limited or 5xx after retries) is not a pass: investigate and re-run.
+
+**What the gate checks (`anonymous_http_acceptance.py`).** Anonymous GETs only, no credentials, no cookies, no synthetic data needed. It asserts semantic invariants, not one status code: the live process reports `login_required=true` (`/site/basic-info.json`) and so does the app shell's boot data; the expected locale if given; `/` is not the install wizard; the anonymous boot data carries no categories, topic lists or user; every one of 17 representative data endpoints is **denied** (a login redirect, 401 or 403) or absent (404), and never a 2xx or an unexpected redirect; the always-reachable `/site/basic-info.json` holds only reviewed keys and `/site/statistics.json` only numbers. Upstream answers anonymous data requests with a login redirect (HTML) or 403 `not_logged_in` (JSON), and a few routes are reachable by design (`/`, `/login`, `/signup`, `/site/*`, `/session/csrf.json`, `/session/hp.json`, `/manifest.webmanifest`, `/service-worker.js`, `/robots.txt`, `/srv/status`); those are checked for content, not for denial. It paces itself (about 0.5 s per request, 30 to 60 seconds in all) to stay under the definition's nginx rate limits, which answer 429. `--require-noindex` additionally demands a disallow-all `robots.txt` and a noindex header; it is not part of restore acceptance and belongs to the later production-ingress gate. Run `--self-test` to verify the script itself.
+
+Known and out of scope for the gate: with the default `allow_index_in_robots_txt = true`, `/login` and `/signup` are crawlable and send no noindex header, and `/site/statistics.json` returns aggregate counts anonymously. Both are Task 40D items; the gate reports them as `INFO`.
+
+**Task 37B interpretation.** The native backup and restore mechanics are VALIDATED (Task 37B.2). The restore acceptance recorded in Task 37B.2B passed the audit but did not check the running workers; Task 40C.1 closes that gap on the retained instance, and this contract applies to every later restore.
 
 ## 11. Security hardening contract and bounded acceptance
 
@@ -315,5 +336,7 @@ Enforced by `spec/lib/cannlabs_community/prodlike_deployment_parity_spec.rb` (no
 `spec/lib/cannlabs_community/production_secrets_contract_spec.rb` guards the secrets contract (`SECRETS.md`): it fails if a populated `*.env` file is tracked, if any non-Markdown file here mentions the developer-emails variable or holds a private key or a `secret_key_base`-shaped literal, if a tracked definition's `env:` holds a secret-class value, or if `production.env.example` holds anything but `<PLACEHOLDER>` values or an undocumented name.
 
 `spec/lib/cannlabs_community/staff_security_runbook_spec.rb` guards the staff security runbook (`STAFF_SECURITY.md`): it fails if the first admin, its enrollment and the second admin do not come before the enforcement section, if a command block instructs `/finish-installation`, `rake admin:invite`, `RANDOM_PASSWORD`, a script-set password or turning enforcement off, if the runbook holds a secret-shaped value or an email address, or if its audit snippet stops parsing, writes anything or prints a second-factor secret.
+
+`spec/lib/cannlabs_community/post_restore_acceptance_spec.rb` guards the restore acceptance contract (section 10) and `anonymous_http_acceptance.py`: it fails if the six numbered steps lose their order (restore, restart, health, audit, live HTTP gate, validated), if a step instructs a rebuild, if the contract stops calling `/srv/status` liveness-only or stops saying a backup needs no restart, if the script imports outside the standard library, sends anything but a plain GET, handles cookies or credentials, or if its `--self-test` fails.
 
 Checked by the fresh-host run, not by the spec: the application pin is an ancestor of the canon commit (`git merge-base --is-ancestor`, section 2). Documented coupling, not enforced: the theme pin lives in the bootstrap manifest and `DEC-036`, not in the YAML; any new definition needs its own validation, hash and Decision Log entry.
