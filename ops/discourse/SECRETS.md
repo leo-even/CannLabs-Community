@@ -137,4 +137,21 @@ Task 39A and the source (`lib/auth/default_current_user_provider.rb`, `make_deve
 - That the same key in both `--env-file` and `-e` resolves in a particular order: never define it twice.
 - Disk or snapshot encryption, and host hardening: outside this task.
 
-Evidence is kept outside the repository (masked, non-secret); see `docs/cannlabs-community/02_PROJECT_STATE.md` → TASK 40A.
+## 12. TLS key material (`DEC-046`)
+
+The production definition (`PRODUCTION.md`) has the container obtain its own certificate through the official Let's Encrypt template. Task 40C found TLS key material under `/shared/ssl`. It is `HOST/DEPLOYMENT SECRET MATERIAL`, a class beside the env-delivered secrets, with a different delivery: nothing supplies it, the container creates it.
+
+| Material (inside the container; on the host under `/var/discourse/shared/standalone/`) | Notes |
+| --- | --- |
+| `/shared/ssl/<canonical>.key` and `<canonical>_ecc.key` | the private keys nginx serves with; the `.cer` files beside them are public |
+| everything under `/shared/letsencrypt/` | acme.sh's working directory: the ACME account key and the issued private keys, plus its logs |
+| `/shared/ssl/ssl.crt` and `ssl.key`, if anyone places them | a static pair that **disables** Let's Encrypt (`PRODUCTION.md` section 6): never place them in production |
+
+Rules:
+- Root-owned, mode `0600` for key files, never in Git, never printed, never in a ticket, chat or log. They are not environment variables, so `docker inspect` and the launcher output do not show them.
+- By upstream design a native Discourse backup holds the database and the uploads, not `/shared/ssl` or `/shared/letsencrypt` (not measured here). A host snapshot, a volume backup or a copy of `/shared` does hold them and is secret-bearing.
+- They are recoverable by re-issuance as long as DNS and port 80 work, so a lost host does not need them backed up. Do not copy them to other hosts.
+- Suspected key compromise: revoke at the CA, delete `/shared/ssl/<canonical>*` and `/shared/letsencrypt/<canonical>*`, `rebuild`, and confirm the new certificate. Mind the CA's duplicate-certificate rate limit.
+- A certificate that fails to renew is an outage with no alert: the expiry monitoring of `PRODUCTION.md` section 11 is required.
+
+Evidence is kept outside the repository (masked, non-secret); see `docs/cannlabs-community/02_PROJECT_STATE.md` → TASK 40A and TASK 40D.

@@ -1,0 +1,196 @@
+## CannLabs Community PRODUCTION deployment definition (Task 40D, DEC-046, DEC-047). Non-secret, tracked.
+## Not yet deployed: no production host exists, and production remains NOT READY. This file is distinct from
+## cannlabs-prodlike.yml, which stays byte-identical to the Task 37B validation. Contract: ops/discourse/PRODUCTION.md.
+##
+## Derived from the validated prodlike definition. The run: section starts with a byte-identical copy of its steps (the
+## Task 37B.1 nginx logging hardening and its guards) and adds one production-only block (the port-80 redirect server's log
+## format, which exists only with the SSL template). What differs, and why:
+##  - canonical hostname community.cannlabs.com.br (Founder decision, DEC-046). The Portuguese alias is handled
+##    natively: DISCOURSE_HOSTNAME_ALIASES puts it on the same certificate (web.letsencrypt.ssl.template.yml at the
+##    pinned discourse_docker), and the SSL template redirects every other host permanently to the canonical one.
+##    There is exactly one Discourse origin.
+##  - the official SSL and Let's Encrypt templates; public ACME issuance is NOT yet validated (needs real DNS).
+##  - IPv4 only, explicit 0.0.0.0 for TCP 80 and 443. A bare "80:80" also binds [::] in Docker. IPv6 is not enabled in V1.
+##  - no Mailpit, no custom Docker network, no synthetic values. SMTP is not chosen yet: its non-secret address, port and
+##    authentication entries are added to env: when the provider is chosen; its credentials go to the secrets file.
+##  - secrets arrive only through the root-only host file of DEC-042 (docker_args --env-file). Never put a secret here.
+##  - the application pin is the commit that owns allow_index_in_robots_txt=false in the production bootstrap profile.
+##  - starting-size profile, 2 vCPU / 8 GB (HYPOTHESIS until exercised on the real host): UNICORN_WORKERS and
+##    db_shared_buffers below follow the pinned official setup wizard. Recompute them if the VM is resized.
+
+templates:
+  - "templates/postgres.template.yml"
+  - "templates/redis.template.yml"
+  - "templates/web.template.yml"
+  - "templates/web.ratelimited.template.yml"
+  - "templates/web.ssl.template.yml"
+  - "templates/web.letsencrypt.ssl.template.yml"
+
+expose:
+  - "0.0.0.0:80:80"
+  - "0.0.0.0:443:443"
+
+docker_args: "--log-opt max-size=10m --log-opt max-file=3 --env-file /etc/cannlabs-community/production.env"
+
+params:
+  db_default_text_search_config: "pg_catalog.english"
+  db_shared_buffers: "2048MB"
+  version: 43bb05bd00c2f47ffa270d48b1128d2089a414cd
+
+env:
+  LC_ALL: en_US.UTF-8
+  LANG: en_US.UTF-8
+  LANGUAGE: en_US.UTF-8
+  DISCOURSE_HOSTNAME: "community.cannlabs.com.br"
+  DISCOURSE_HOSTNAME_ALIASES: "comunidade.cannlabs.com.br"
+  UNICORN_WORKERS: 4
+
+volumes:
+  - volume:
+      host: /var/discourse/shared/standalone
+      guest: /shared
+  - volume:
+      host: /var/discourse/shared/standalone/log/var-log
+      guest: /var/log
+
+hooks:
+  before_code:
+    - exec:
+        cd: $home
+        cmd:
+          - sudo -H -E -u discourse git remote set-url origin https://github.com/leo-even/CannLabs-Community.git
+  after_code:
+    - exec:
+        cd: $home/plugins
+        cmd:
+          - sudo -H -E -u discourse git clone https://github.com/leo-even/CannLabs-Community-Qualified-Access.git cannlabs-community-qualified-access
+          - sudo -H -E -u discourse git -C cannlabs-community-qualified-access -c advice.detachedHead=false checkout ca4f0070d7bf85e42dbfa7f8736469139bb20275
+
+run:
+  - exec: echo "Beginning of custom commands"
+
+  # ---- CannLabs Community: request secrets must not reach nginx logs (Task 37B.1) -------------
+  # Access log: method + redacted path + protocol. No query string. Referer reduced to its origin.
+  # Error log: emerg only. Every nginx error_log line below emerg can carry the request line, the
+  # upstream URI (with its query) and the Referer, and the format cannot be changed.
+  # pups `replace` is silent when its pattern does not match, so each step has a guard that fails
+  # the build when the stock config is not what was reviewed, and again when the result is not safe.
+
+  # Guards on the stock config (drift check). Each fails the build.
+  - exec:
+      cmd:
+        - |-
+          test "$(grep -c '^log_format log_discourse ' /etc/nginx/conf.d/discourse.conf)" = 1 || { >&2 echo 'CannLabs guard: expected exactly one log_discourse format'; exit 1; }
+        - |-
+          test "$(grep '^log_format log_discourse ' /etc/nginx/conf.d/discourse.conf | grep -oF '"$request"' | wc -l)" = 1 || { >&2 echo 'CannLabs guard: stock "$request" not found exactly once in log_discourse'; exit 1; }
+        - |-
+          test "$(grep '^log_format log_discourse ' /etc/nginx/conf.d/discourse.conf | grep -oF '"$http_referer"' | wc -l)" = 1 || { >&2 echo 'CannLabs guard: stock "$http_referer" not found exactly once in log_discourse'; exit 1; }
+        - |-
+          test -z "$(grep -hE '^[[:space:]]*access_log[[:space:]]' /etc/nginx/conf.d/discourse.conf | grep -vE 'access_log off;|log_discourse;')" || { >&2 echo 'CannLabs guard: an unexpected access_log format is active in discourse.conf'; exit 1; }
+        - |-
+          test "$(grep -rhE '^[[:space:]]*error_log[[:space:]]' /etc/nginx)" = 'error_log /var/log/nginx/error.log;' || { >&2 echo 'CannLabs guard: the active error_log directives are not exactly the reviewed stock line'; exit 1; }
+        - |-
+          test "$(grep -c 'create 0644 www-data www-data' /etc/logrotate.d/nginx)" = 1 || { >&2 echo 'CannLabs guard: stock nginx logrotate create mode not found exactly once'; exit 1; }
+
+  # Server outlet: the log variables. Credential-bearing core routes become [FILTERED] and keep a
+  # format suffix such as .json. These mirror CannlabsPathSecretRedaction::RULES in the app.
+  - file:
+      path: /etc/nginx/conf.d/outlets/server/35-cannlabs-log-redaction.conf
+      contents: |
+        set $cannlabs_log_uri $uri;
+        if ($uri ~ "^(/(?:u|users)/(?:password-reset|confirm-email-token|activate-account|confirm-old-email|confirm-new-email|confirm-admin)/)[^/.]+(.*)$") { set $cannlabs_log_uri "$1[FILTERED]$2"; }
+        if ($uri ~ "^(/session/(?:email-login|otp)/)[^/.]+(.*)$") { set $cannlabs_log_uri "$1[FILTERED]$2"; }
+        if ($uri ~ "^(/associate/)[^/.]+(.*)$") { set $cannlabs_log_uri "$1[FILTERED]$2"; }
+        if ($uri ~ "^(/invites/(?:show/)?)[^/.]+(.*)$") { set $cannlabs_log_uri "$1[FILTERED]$2"; }
+        if ($uri ~ "^(/email/unsubscribe/)[^/.]+(.*)$") { set $cannlabs_log_uri "$1[FILTERED]$2"; }
+        set $cannlabs_log_referer "-";
+        if ($http_referer ~ "^(https?://[^/?#]+)") { set $cannlabs_log_referer $1; }
+
+  - replace:
+      filename: /etc/nginx/conf.d/discourse.conf
+      from: '"$request"'
+      to: '"$request_method $cannlabs_log_uri $server_protocol"'
+
+  - replace:
+      filename: /etc/nginx/conf.d/discourse.conf
+      from: '"$http_referer"'
+      to: '"$cannlabs_log_referer"'
+
+  # Error log severity: exact stock line only. emerg is the only level whose request-context lines
+  # are structurally absent (error, crit and alert leak under upstream failure, rate limiting,
+  # try_files EACCES and fd exhaustion).
+  - replace:
+      filename: /etc/nginx/nginx.conf
+      from: 'error_log /var/log/nginx/error.log;'
+      to: 'error_log /var/log/nginx/error.log emerg;'
+
+  # New nginx logs 0640 (existing logs are not touched). Retention stays at the stock 7.
+  - replace:
+      filename: /etc/logrotate.d/nginx
+      from: 'create 0644 www-data www-data'
+      to: 'create 0640 www-data www-data'
+
+  # Log directories hold request-derived data: not world-readable. Exact directories, no -R. The
+  # parent log directory is left alone: discourse (uid 1000) and www-data reach /shared/log/rails
+  # through it.
+  # They are CREATED here, not assumed. /var/log is a bind mount of the persistent log/var-log, which is
+  # empty on a fresh /shared and hides the image's /var/log/nginx. Stock runit (00-fix-var-logs) only
+  # recreates it when the container starts, after this step, so a bare chmod fails the build on a fresh
+  # install (found by the Task 37B.2B zero-state rebuild). install -d is idempotent and sets owner and
+  # mode in one step: www-data:www-data for nginx (what 00-fix-var-logs sets) and discourse:www-data for
+  # Rails (what web.template.yml sets).
+  - exec: install -d -m 0750 -o www-data -g www-data /var/log/nginx
+  - exec: install -d -m 0750 -o discourse -g www-data /shared/log/rails
+
+  # Guards on the result. Each fails the build.
+  - exec:
+      cmd:
+        - |-
+          grep '^log_format log_discourse ' /etc/nginx/conf.d/discourse.conf | grep -qF '"$request_method $cannlabs_log_uri $server_protocol"' || { >&2 echo 'CannLabs guard: safe request representation is not in log_discourse'; exit 1; }
+        - |-
+          ! grep '^log_format log_discourse ' /etc/nginx/conf.d/discourse.conf | grep -qF '"$request"' || { >&2 echo 'CannLabs guard: stock "$request" is still in log_discourse'; exit 1; }
+        - |-
+          grep '^log_format log_discourse ' /etc/nginx/conf.d/discourse.conf | grep -qF '"$cannlabs_log_referer"' || { >&2 echo 'CannLabs guard: safe Referer is not in log_discourse'; exit 1; }
+        - |-
+          ! grep '^log_format log_discourse ' /etc/nginx/conf.d/discourse.conf | grep -qF '"$http_referer"' || { >&2 echo 'CannLabs guard: raw "$http_referer" is still in log_discourse'; exit 1; }
+        - |-
+          grep -qF 'set $cannlabs_log_uri $uri;' /etc/nginx/conf.d/outlets/server/35-cannlabs-log-redaction.conf && grep -qF 'set $cannlabs_log_referer "-";' /etc/nginx/conf.d/outlets/server/35-cannlabs-log-redaction.conf || { >&2 echo 'CannLabs guard: log variable outlet is incomplete'; exit 1; }
+        - |-
+          test "$(grep -rhE '^[[:space:]]*error_log[[:space:]]' /etc/nginx)" = 'error_log /var/log/nginx/error.log emerg;' || { >&2 echo 'CannLabs guard: the only active error_log must be the emerg line'; exit 1; }
+        - |-
+          grep -qE '^[[:space:]]*create 0640 www-data www-data$' /etc/logrotate.d/nginx && ! grep -q 'create 0644' /etc/logrotate.d/nginx && grep -qE '^[[:space:]]*rotate 7$' /etc/logrotate.d/nginx || { >&2 echo 'CannLabs guard: nginx logrotate must create 0640 and keep rotate 7'; exit 1; }
+        - |-
+          test "$(stat -c '%a %U:%G' /var/log/nginx)" = '750 www-data:www-data' && test "$(stat -c '%a %U:%G' /shared/log/rails)" = '750 discourse:www-data' || { >&2 echo 'CannLabs guard: log directories are not 0750 with the runtime owners (nginx www-data:www-data, rails discourse:www-data)'; exit 1; }
+        - nginx -t
+
+  # ---- CannLabs Community PRODUCTION only (Task 40D, DEC-047): the port-80 redirect server must not log request secrets -------
+  # Everything above this line is the validated prodlike hardening, copied unchanged. The SSL template adds a second nginx
+  # server on port 80, the catch-all redirect to the canonical HTTPS URL. It is written when the container starts, has no
+  # access_log of its own, and so inherits nginx's stock http-level default, which logs the raw request line, query string and
+  # Referer. A credential-bearing URL requested over plain HTTP would land on disk (measured with a fake token in the Task 40D
+  # rehearsal). The 37B.1 redaction covers only the application server. This replaces the stock default with a format that has
+  # no request line, no query string and no Referer; every server without its own access_log inherits it. The format is defined
+  # next to its use because discourse.conf, where log_discourse lives, is included after nginx.conf's access_log line.
+  - exec:
+      cmd:
+        - |-
+          test "$(grep -c '^[[:space:]]*access_log /var/log/nginx/access.log;$' /etc/nginx/nginx.conf)" = 1 || { >&2 echo 'CannLabs guard: the stock http-level access_log line was not found exactly once'; exit 1; }
+
+  - replace:
+      filename: /etc/nginx/nginx.conf
+      from: 'access_log /var/log/nginx/access.log;'
+      to: |-
+        log_format cannlabs_http_safe '[$time_local] "$host" $remote_addr "$request_method" "$http_user_agent" $status $bytes_sent';
+          access_log /var/log/nginx/access.log cannlabs_http_safe;
+
+  - exec:
+      cmd:
+        - |-
+          test "$(grep -cE '^[[:space:]]*log_format cannlabs_http_safe ' /etc/nginx/nginx.conf)" = 1 || { >&2 echo 'CannLabs guard: the safe default log format is not defined exactly once'; exit 1; }
+        - |-
+          ! grep -E '^[[:space:]]*log_format cannlabs_http_safe ' /etc/nginx/nginx.conf | grep -qE '[$]request([^_]|$)|[$]request_uri|[$]uri|[$]args|[$]query_string|[$]http_referer' || { >&2 echo 'CannLabs guard: the safe default log format contains a request line, URI, query string or Referer'; exit 1; }
+        - |-
+          test "$(grep -cE '^[[:space:]]*access_log /var/log/nginx/access.log cannlabs_http_safe;$' /etc/nginx/nginx.conf)" = 1 && ! grep -qE '^[[:space:]]*access_log /var/log/nginx/access.log;$' /etc/nginx/nginx.conf || { >&2 echo 'CannLabs guard: the http-level default access_log must use the safe format and only that'; exit 1; }
+        - nginx -t
+
+  - exec: echo "End of custom commands"

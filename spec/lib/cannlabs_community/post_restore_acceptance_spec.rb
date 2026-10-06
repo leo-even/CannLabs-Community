@@ -49,7 +49,7 @@ RSpec.describe "Post-restore acceptance contract" do # rubocop:disable RSpec/Des
 
   it "ships an anonymous, GET-only, standard-library gate" do
     imports = script.scan(/^(?:import|from) (\w+)/).flatten.uniq
-    stdlib = %w[argparse io json re sys time urllib collections]
+    stdlib = %w[argparse collections http io json re socket ssl sys time urllib]
 
     expect(imports - stdlib).to be_empty, "non-standard imports: #{(imports - stdlib).join(", ")}"
     expect(script).not_to match(/HTTPCookieProcessor|CookieJar|Authorization|Bearer|Api-Key/i)

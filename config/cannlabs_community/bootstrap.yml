@@ -39,8 +39,8 @@ profile_settings:
   cannlabs_qualified_access_enabled:
     local: true
     production: true # DEC-035
-  # The private Community is never indexed by search engines. Native: it makes robots.txt
-  # disallow everything and every GET answer X-Robots-Tag "noindex, nofollow".
+  # The private Community is never indexed by search engines. Native: robots.txt disallows every crawler
+  # except Googlebot (which may crawl to read the header) and rendered pages answer X-Robots-Tag "noindex, nofollow".
   allow_index_in_robots_txt:
     production: false # DEC-047
 
