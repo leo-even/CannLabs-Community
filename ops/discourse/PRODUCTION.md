@@ -2,6 +2,8 @@
 
 > **DEFINITION VALIDATED LOCALLY (`DEC-046`, `DEC-047`). NOT DEPLOYED. PRODUCTION — NOT READY.** `cannlabs-production.yml` is the tracked, non-secret definition that would be deployed to the production host. It was rehearsed once on a disposable local instance with a local certificate authority and fake secrets (Task 40D). **PUBLIC ACME ISSUANCE — NOT YET VALIDATED**: no real DNS, no real certificate and no real host were used. **PRODUCTION STARTING SIZE — HYPOTHESIS**: 2 vCPU, 8 GB RAM, one 80 GB SSD-class disk, São Paulo region preferred, none of it exercised on a real host.
 
+> **Pin policy while the production externalization track is parked (`DEC-048`).** This definition and its application pin are the last validated infrastructure snapshot. Do not advance the pin merely because local product code or configuration changed. When the track resumes, the pin is deliberately moved to the then-current product candidate and the whole definition is revalidated.
+
 This file is the authority for the production definition and for what must pass before public ingress opens. It does not choose a cloud provider, a firewall product, an SMTP provider or a monitoring service, and it creates no infrastructure. Related authorities: `SECRETS.md` (how secrets and host secret material are delivered), `STAFF_SECURITY.md` (first administrator and staff 2FA), `README.md` (the prodlike deployment, the product bootstrap and the restore acceptance contract). `cannlabs-prodlike.yml` stays byte-identical to the Task 37B validation and is not the production definition.
 
 ## 1. Decisions
