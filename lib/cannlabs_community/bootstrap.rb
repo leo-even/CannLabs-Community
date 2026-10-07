@@ -13,6 +13,7 @@ module CannlabsCommunity
     UNCATEGORIZED_CHANGE = "remove_and_replace_uncategorized"
     CONTENT_ROOT = "config/cannlabs_community"
     CONTENT_FIELD = "cannlabs_community_content"
+    SOLVED_FIELD = "enable_accepted_answers"
 
     Result = Struct.new(:key, :status, :detail, :changed, keyword_init: true)
 
@@ -104,7 +105,10 @@ module CannlabsCommunity
       check_uncategorized
       check_retired_categories
       check_unmanaged_categories
+      check_category_identity
       check_category_descriptions
+      check_tag_groups
+      check_category_tools
       check_content_topics
       check_navigation
       check_sidebar
@@ -311,6 +315,34 @@ module CannlabsCommunity
       end
     end
 
+    # The category a manifest entry means: the one already in place or, once, an empty
+    # category that it is declared to take over (`adopt_slug`).
+    def category_for(key)
+      definition = @manifest["categories"].fetch(key)
+      find_category(definition) || adoptable_category(definition)
+    end
+
+    def adoptable_category(definition)
+      slug = definition["adopt_slug"]
+      return if slug.nil?
+
+      candidate = Category.find_by(slug:, parent_category_id: nil)
+      candidate if candidate && adoption_blockers(candidate).empty?
+    end
+
+    def adoption_blockers(category)
+      blockers = []
+
+      blockers << "is a seeded category" if category.seeded?
+      blockers << "has subcategories" if category.has_children?
+      other_topics =
+        Topic.with_deleted.where(category_id: category.id).where.not(id: category.topic_id)
+      blockers << "contains topics" if other_topics.exists?
+      blockers << "a chat channel is attached to it" if chat_channel?(category)
+
+      blockers
+    end
+
     def resolve_permissions(permissions)
       missing = permissions.keys.reject { |group_name| find_group(group_name) }
 
@@ -373,7 +405,7 @@ module CannlabsCommunity
     def create_category(definition, expected)
       category =
         Category.new(
-          name: definition.dig("create", "name"),
+          name: definition["name"],
           slug: definition["slug"],
           description: definition["description"],
           user: Discourse.system_user,
@@ -387,7 +419,7 @@ module CannlabsCommunity
     def check_categories
       @manifest["categories"].each do |key, definition|
         invariant("categories.#{key}") do
-          category = find_category(definition)
+          category = category_for(key)
 
           if category
             @managed_category_ids << category.id
@@ -553,22 +585,74 @@ module CannlabsCommunity
     end
 
     def waiting_for_category(key)
-      if @manifest["categories"].fetch(key)["create"]
+      if @manifest["categories"].fetch(key).values_at("create", "adopt_slug").any?
         [:drift, "waits for category: #{key}"]
       else
         [:blocked, "native seeded category not found: #{key}; #{PREREQUISITE}"]
       end
     end
 
+    # Name, slug and native position. Categories that take another's slug are renamed first.
+    def check_category_identity
+      ordered =
+        @manifest["categories"].each_with_index.sort_by { |(_, d), i| [d["adopt_slug"] ? 0 : 1, i] }
+
+      ordered.each do |(key, definition), _|
+        next if definition["name"].nil?
+
+        invariant("category_identity.#{key}") do
+          category = category_for(key)
+          next waiting_for_category(key) if category.nil?
+
+          wanted = definition.slice("name", "slug", "position")
+          differences = wanted.reject { |attribute, value| category[attribute] == value }
+
+          if differences.empty?
+            [:pass, "#{category.name} (#{category.slug}, position #{category.position})"]
+          else
+            [
+              :drift,
+              "differs: #{differences.keys.join(", ")}",
+              -> { update_category_identity(category, differences) },
+            ]
+          end
+        end
+      end
+    end
+
+    def update_category_identity(category, differences)
+      holder =
+        if differences["slug"]
+          Category
+            .where(slug: differences["slug"], parent_category_id: nil)
+            .where.not(id: category.id)
+            .first
+        end
+
+      if holder
+        raise Blocked,
+              "slug #{differences["slug"]} is used by category #{holder.id}; operator review required"
+      end
+
+      category.update!(differences)
+      staff_action_logger.log_category_settings_change(
+        category,
+        differences.with_indifferent_access,
+        old_permissions: {
+        },
+      )
+    end
+
     # The description is the first paragraph of the category's native definition
     # ("About") topic: revising that post is how the admin UI changes it.
     def check_category_descriptions
       @manifest["categories"].each do |key, definition|
-        desired = definition["description"]
-        next if desired.nil?
+        next if definition["description"].nil?
+
+        desired = [definition["description"], definition["about"]].compact.join("\n\n")
 
         invariant("category_descriptions.#{key}") do
-          category = find_category(definition)
+          category = category_for(key)
           post = category&.topic&.first_post
 
           if category.nil?
@@ -578,11 +662,11 @@ module CannlabsCommunity
           else
             title = about_title(category)
             differences = []
-            differences << "description" if normalized(post.raw) != desired
+            differences << "text" if normalized(post.raw) != desired
             differences << "title" if post.topic.title != title
 
             if differences.empty?
-              [:pass, desired]
+              [:pass, definition["description"]]
             else
               [
                 :drift,
@@ -593,6 +677,99 @@ module CannlabsCommunity
           end
         end
       end
+    end
+
+    def check_tag_groups
+      (@manifest["tag_groups"] || {}).each do |key, definition|
+        invariant("tag_groups.#{key}") do
+          group = TagGroup.find_by_name_insensitive(definition["name"])
+
+          if group.nil?
+            [:drift, "missing; apply creates it", -> { create_tag_group(definition) }]
+          elsif group.tags.pluck(:name).sort != definition["tags"].sort
+            [
+              :drift,
+              "tags are [#{group.tags.pluck(:name).sort.join(", ")}], expected " \
+                "[#{definition["tags"].sort.join(", ")}]",
+              -> { group.update!(tag_names: definition["tags"]) },
+            ]
+          else
+            [:pass, "#{definition["name"]}: #{definition["tags"].join(", ")}"]
+          end
+        end
+      end
+    end
+
+    def create_tag_group(definition)
+      TagGroup.create!(name: definition["name"], tag_names: definition["tags"])
+    end
+
+    def solved_enabled?(category)
+      category.custom_fields[SOLVED_FIELD].to_s == "true"
+    end
+
+    # Composer template, tag availability and accepted solutions, for every managed category.
+    def check_category_tools
+      groups = @manifest["tag_groups"] || {}
+
+      @manifest["categories"].each do |key, definition|
+        invariant("category_tools.#{key}") do
+          category = category_for(key)
+          next waiting_for_category(key) if category.nil?
+
+          desired_groups =
+            (definition["tag_groups"] || []).map { |group| groups.fetch(group)["name"] }
+          differences = []
+          if normalized(category.topic_template) != normalized(definition["topic_template"])
+            differences << "template"
+          end
+          if category.tag_groups.pluck(:name).sort != desired_groups.sort
+            differences << "tag groups"
+          end
+          differences << "solved" if solved_enabled?(category) != (definition["solved"] == true)
+
+          if differences.empty?
+            [:pass, tools_label(definition)]
+          else
+            [
+              :drift,
+              "differs: #{differences.join(", ")}",
+              -> { apply_category_tools(category, definition, desired_groups) },
+            ]
+          end
+        end
+      end
+    end
+
+    def tools_label(definition)
+      [
+        definition["topic_template"] ? "template" : "no template",
+        definition["tag_groups"] ? "tags" : "no tags",
+        definition["solved"] ? "solved" : "no solved",
+      ].join(", ")
+    end
+
+    def apply_category_tools(category, definition, group_names)
+      old_fields = { SOLVED_FIELD => solved_enabled?(category).to_s }
+      solved = definition["solved"] == true
+
+      category.topic_template = definition["topic_template"]
+      category.allowed_tag_groups = group_names
+      category.save!
+      category.upsert_custom_fields(SOLVED_FIELD => solved.to_s)
+
+      staff_action_logger.log_category_settings_change(
+        category,
+        {
+          topic_template: category.topic_template,
+          custom_fields: {
+            SOLVED_FIELD => solved.to_s,
+          },
+        }.with_indifferent_access,
+        old_permissions: {
+        },
+        old_custom_fields: old_fields,
+      )
     end
 
     def normalized(text)
@@ -662,7 +839,7 @@ module CannlabsCommunity
     def check_content_topics
       (@manifest["content_topics"] || {}).each do |key, definition|
         invariant("content_topics.#{key}") do
-          category = find_category(@manifest["categories"].fetch(definition["category"]))
+          category = category_for(definition["category"])
           next waiting_for_category(definition["category"]) if category.nil?
 
           body =
@@ -747,7 +924,7 @@ module CannlabsCommunity
       return if keys.nil?
 
       invariant("navigation.default_categories") do
-        categories = keys.map { |key| find_category(@manifest["categories"].fetch(key)) }
+        categories = keys.map { |key| category_for(key) }
         missing = keys.zip(categories).filter_map { |key, category| key if category.nil? }
         next waiting_for_category(missing.first) if missing.any?
 

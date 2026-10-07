@@ -60,6 +60,7 @@ The `production` profile existing in the manifest does not mean production is au
 - **The eight custom group definitions:** `membros_ativos`, `medicos_verif`, `farmaceuticos_verif`, `agronomos_verif`, `advogados_verif`, `liderancas_aprov`, `acesso_profissionais`, `acesso_liderancas` — name, full name, visibility, and staff-controlled membership (no public admission or exit, no membership requests, no automatic trust level, no automatic e-mail-domain membership).
 - **Category ACLs:** General and Comunidade → `membros_ativos`; Profissionais Verificados → `acesso_profissionais` only; Lideranças de Associações → `acesso_liderancas` only; the residual Uncategorized category → staff only (an ordinary, empty category that members could otherwise list and post into). The manifest ACL is complete, so an extra row is drift. The three Community categories are created when missing.
 - **Member front door (Task 41B), in Brazilian Portuguese:** the description and native title of every managed category's About topic; three native text overrides; two owned topics, the welcome topic behind `welcome_topic_id` and the Rules topic behind `guidelines_topic_id`; the default sidebar categories; and the built-in links of the public Community sidebar section. See "Member front door" below.
+- **Community structure (Task 41C, `DEC-049`):** the six member-wide categories, the two restricted spaces and the Staff description, each with an owned name, slug and native position, an About text, a composer template, its tag groups and whether accepted solutions are on; the `Tipo de conteúdo` tag group and its five tags; and the settings that make them behave (`fixed_category_positions`, `fixed_category_positions_on_create`, `tagging_enabled`, `solved_enabled`, `allow_solved_on_all_topics`, `enable_solved_tags`). See "Community structure" below.
 - **Site Feedback absence** (see below).
 - **Theme pinning:** keeps automatic updates off and makes the installed, correctly pinned theme the default.
 
@@ -71,7 +72,7 @@ The `production` profile existing in the manifest does not mean production is au
 - **The Staff category.** Its ACL is verified only (`staff:full`); it is never recreated, and only its description is owned.
 - **The Uncategorized lifecycle.** Retiring the special category is done by the native upcoming change `remove_and_replace_uncategorized`. If it has not happened, the bootstrap reports `BLOCKED` and does not toggle it.
 - **Categories outside the manifest.** A category the manifest does not know that is readable outside the paid boundary is reported `BLOCKED` and left alone.
-- **Category names, colours and order** after creation; logo and other uploads; every other site setting; `meta_category_id`.
+- **Category colours and emoji, and the name of the seeded Staff category,** after creation; logo and other uploads; every other site setting; `meta_category_id`.
 - **Secrets, SMTP, authentication providers, 2FA, payment, domain, backups.**
 
 ## Member front door
@@ -92,6 +93,23 @@ Everything the front door says or shows is declared in the manifest and applied 
 **Edit the source, then apply.** The Markdown and the manifest are the source. A direct edit of an owned topic, text override or description in Discourse is drift and the next apply restores it. A `default_locale` change re-seeds an unedited seeded welcome topic (core's `014-track-setting-changes` initializer); run apply again afterwards.
 
 **Known native limits, left as they are.** Built-in sidebar links cannot be hidden per audience: `Usuários(as)`, `Sobre` and `Diretrizes` remain in "Mais" for everyone (`KNOWN STOCK SIDEBAR REMAINDER — DEFERRED TO DESIGN/NAVIGATION PASS`). The welcome banner is not rendered on mobile, so its help link is desktop-only. The empty-state button label is shared with other screens and stays stock.
+
+## Community structure
+
+The Community structure (`DEC-049`) is declared in the same manifest and applied through native code paths. No plugin, theme or core change.
+
+| Manifest key | Native primitive | Audit key |
+| --- | --- | --- |
+| `categories.*.name`, `slug`, `position` | `Category` attributes (the admin UI's edit and reorder paths); `fixed_category_positions` and `fixed_category_positions_on_create` make the lists, the sidebar and the composer's category chooser follow `position` | `category_identity.<key>` |
+| `categories.*.description`, `about` | the first post of the category's About topic: the first paragraph is the description, the rest is the About text | `category_descriptions.<key>` |
+| `tag_groups.*` | `TagGroup` with its tags (core creates them); optional, never required | `tag_groups.<key>` |
+| `categories.*.topic_template`, `tag_groups`, `solved` | `Category#topic_template`, `allowed_tag_groups` and the bundled Solved plugin's `enable_accepted_answers` category custom field | `category_tools.<key>` |
+
+**Every managed category is checked.** A template, a tag group or an accepted solution that the manifest does not declare is drift, so Solved cannot spread to another category and a restricted space cannot gain a tag by accident. `allow_solved_on_all_topics` is `false` and `enable_solved_tags` is empty for the same reason.
+
+**The seeded General is repurposed.** The manifest key `comunidade` finds the category through `general_category_id`; renaming it keeps its id, its setting and every topic in it. The seeded category is reseeded only by an explicit admin action (Admin, Customize, Text, Reseed) or the setup wizard, and either may rename it back; re-apply the bootstrap afterwards.
+
+**One-time adoption.** `acesso_cuidados` has `adopt_slug: comunidade`: the empty first `Comunidade` category becomes `Acesso & Cuidados` (same id, same About topic), and it is renamed before the seeded General takes the `comunidade` slug. A category with topics (deleted ones included), subcategories, a chat channel or a seeded role is never adopted, and a slug that another category still holds is `BLOCKED` and left alone.
 
 ## Safe failures
 
@@ -131,7 +149,7 @@ The manifest contains no password, key, token or credential, and must never cont
 - The theme and the plugin must already be installed by the deployment layer; the logo is a database upload and is not reproduced.
 - On a fresh database the bootstrap is `BLOCKED` until the native Uncategorized upcoming change has been promoted or enabled.
 - Seeded General and Staff categories must exist (the normal upstream seed creates them).
-- Counts by application revision (the member front door of Task 41B adds 14 invariants: the local and the production profile each report `pass 51, drift 0, blocked 0, gated 1` on a correct site; that is a product-HEAD count, not the production pin's):
+- Counts by application revision (the member front door of Task 41B added 14 invariants and the Community structure of Task 41C 35 more: the local and the production profile each report `pass 86, drift 0, blocked 0, gated 1` on a correct site; that is a product-HEAD count, not the production pin's):
 - Counts by application revision, earlier: at the prodlike pin (`73b2484d…`, before `DEC-047`) the production audit is `PASS (pass 36, drift 0, blocked 0, gated 1)`; with `allow_index_in_robots_txt` owned it is `PASS (pass 37, drift 0, blocked 0, gated 1)`.
 - The bootstrap has been run against a clean production-like instance (Task 37B): `BLOCKED` on an empty database before a native restore, `PASS (pass 36, drift 0, blocked 0, gated 1)` after it. That instance was a disposable proof with a synthetic hostname and Mailpit; a production deployment, real secrets and external services remain a later slice, and the bootstrap is still not a production installer.
 

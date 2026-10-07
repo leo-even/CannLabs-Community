@@ -192,8 +192,9 @@ RSpec.describe CannlabsCommunity::Bootstrap do
       expect(status_of("groups.membros_ativos")).to eq(:drift)
       expect(status_of("settings.login_required")).to eq(:drift)
       expect(status_of("settings.flag_post_allowed_groups")).to eq(:drift)
-      expect(status_of("categories.general")).to eq(:drift)
       expect(status_of("categories.comunidade")).to eq(:drift)
+      expect(status_of("categories.acesso_cuidados")).to eq(:drift)
+      expect(status_of("tag_groups.content_type")).to eq(:drift)
       expect(status_of("uncategorized.residual_category")).to eq(:drift)
     end
 
@@ -541,27 +542,25 @@ RSpec.describe CannlabsCommunity::Bootstrap do
       end
     end
 
-    it "owns the category descriptions and the native definition-topic titles" do
-      %w[general comunidade profissionais-verificados liderancas-de-associacoes].each do |slug|
-        category = Category.find_by!(slug:)
-        key =
-          manifest["categories"]
-            .find do |_, definition|
-              definition["slug"] == slug ||
-                (slug == "general" && definition["site_setting"] == "general_category_id")
-            end
-            .first
+    it "owns the category descriptions, the About text and the native definition-topic titles" do
+      manifest["categories"].each_value do |definition|
+        category =
+          if definition["site_setting"]
+            Category.find(SiteSetting.get(definition["site_setting"]))
+          else
+            Category.find_by!(slug: definition["slug"])
+          end
 
-        expect(category.topic.first_post.raw).to eq(manifest["categories"][key]["description"])
+        expect(category.topic.first_post.raw).to eq(
+          [definition["description"], definition["about"]].compact.join("\n\n"),
+        )
+        expect(category.description_text).to eq(definition["description"])
         expect(category.topic.title).to eq(
           I18n
             .with_locale(:pt_BR) { I18n.t("category.topic_prefix", category: category.name) }
             .strip,
         )
       end
-      expect(staff_category.topic.first_post.raw).to eq(
-        manifest["categories"]["staff"]["description"],
-      )
     end
 
     it "creates the welcome and Rules topics in General, pinned, owned and pointed to" do
@@ -745,9 +744,10 @@ RSpec.describe CannlabsCommunity::Bootstrap do
       end
 
       member_guardian = Guardian.new(member)
-      expect(Category.secured(member_guardian).pluck(:id)).to contain_exactly(
-        general.id,
-        Category.find_by(slug: "comunidade").id,
+      expect(Category.secured(member_guardian).pluck(:name)).to match_array(
+        manifest["categories"].values.filter_map do |definition|
+          definition["name"] if definition["permissions"].keys == ["membros_ativos"]
+        end,
       )
       expect(member_guardian.can_see?(owned("welcome"))).to eq(true)
       expect(member_guardian.can_see?(owned("rules"))).to eq(true)
@@ -767,6 +767,300 @@ RSpec.describe CannlabsCommunity::Bootstrap do
       }
 
       expect(bootstrap.results.count(&:changed)).to eq(0)
+    end
+  end
+
+  describe "community structure v1" do
+    fab!(:member, :user)
+    fab!(:outsider, :user)
+
+    let(:categories) { manifest["categories"] }
+    let(:member_keys) do
+      %w[
+        comunidade
+        acesso_cuidados
+        cultivo_producao_qualidade
+        ciencia_pesquisa
+        regulacao_direitos
+        mercado_ecossistema
+      ]
+    end
+    let(:full) { CategoryGroup.permission_types[:full] }
+
+    before do
+      bootstrap.apply
+      Group.find_by(name: "membros_ativos").add(member)
+    end
+
+    def category_of(key)
+      definition = categories.fetch(key)
+      if definition["site_setting"]
+        Category.find(SiteSetting.get(definition["site_setting"]))
+      else
+        Category.find_by!(slug: definition["slug"])
+      end
+    end
+
+    def solved?(category)
+      category.reload.custom_fields["enable_accepted_answers"] == "true"
+    end
+
+    def visible_names(user)
+      Category.secured(Guardian.new(user)).order(:position).pluck(:name)
+    end
+
+    it "declares exactly the six member-wide categories, the two restricted spaces and Staff" do
+      expect(categories.keys).to match_array(
+        member_keys + %w[profissionais_verificados liderancas_de_associacoes staff],
+      )
+      expect(member_keys.map { |key| categories[key]["name"] }).to eq(
+        [
+          "Comunidade",
+          "Acesso & Cuidados",
+          "Cultivo, Produção & Qualidade",
+          "Ciência & Pesquisa",
+          "Regulação & Direitos",
+          "Mercado & Ecossistema",
+        ],
+      )
+    end
+
+    it "has no category per profession, patient, association or persona, and no subcategory" do
+      member_keys.each do |key|
+        expect([categories[key]["name"], categories[key]["slug"]].join(" ")).not_to match(
+          /m[eé]dic[oa]s?\b|advogad|pacient|farmac[eê]utic|agr[oô]nom|pesquisador|empreendedor|associa[cç][õo]es/i,
+        )
+        expect(categories[key]).not_to have_key("parent")
+      end
+      expect(Category.where.not(parent_category_id: nil)).to be_empty
+    end
+
+    it "orders the categories by the manifest, for the lists and for the composer" do
+      positions =
+        (member_keys + %w[profissionais_verificados liderancas_de_associacoes]).map do |key|
+          categories[key]["position"]
+        end
+      expect(positions).to eq(positions.uniq.sort)
+      expect(SiteSetting.fixed_category_positions).to eq(true)
+      expect(SiteSetting.fixed_category_positions_on_create).to eq(true)
+      expect(visible_names(Fabricate(:admin)).grep_v(/Staff|Uncategorized/)).to eq(
+        (member_keys + %w[profissionais_verificados liderancas_de_associacoes]).map do |key|
+          categories[key]["name"]
+        end,
+      )
+    end
+
+    it "keeps every member-wide category behind the existing membership boundary" do
+      member_keys.each { |key| expect(acl_of(category_of(key))).to eq([["membros_ativos", full]]) }
+      expect(acl_of(category_of("profissionais_verificados"))).to eq(
+        [["acesso_profissionais", full]],
+      )
+      expect(acl_of(category_of("liderancas_de_associacoes"))).to eq([["acesso_liderancas", full]])
+      expect(acl_of(staff_category)).to eq([["staff", full]])
+      expect(acl_of(uncategorized)).to eq([["staff", full]])
+    end
+
+    it "shows each person only the categories their groups open" do
+      professional = Fabricate(:user)
+      leader = Fabricate(:user)
+      [professional, leader].each { |user| Group.find_by(name: "membros_ativos").add(user) }
+      Group.find_by(name: "acesso_profissionais").add(professional)
+      Group.find_by(name: "acesso_liderancas").add(leader)
+      member_names = member_keys.map { |key| categories[key]["name"] }
+
+      expect(visible_names(outsider)).to be_empty
+      expect(Category.secured(Guardian.new).pluck(:id)).to be_empty
+      expect(visible_names(member)).to eq(member_names)
+      expect(visible_names(professional)).to eq(member_names + ["Profissionais Verificados"])
+      expect(visible_names(leader)).to eq(member_names + ["Lideranças de Associações"])
+    end
+
+    it "offers exactly five content-type tags, to the six member-wide categories only, never required" do
+      group = TagGroup.find_by!(name: "Tipo de conteúdo")
+
+      expect(group.tags.pluck(:name)).to match_array(%w[pergunta relato guia estudo notícia])
+      expect(Tag.pluck(:name)).to match_array(%w[pergunta relato guia estudo notícia])
+      expect(group.categories.pluck(:id)).to match_array(
+        member_keys.map { |key| category_of(key).id },
+      )
+      expect(CategoryRequiredTagGroup.count).to eq(0)
+      %w[profissionais_verificados liderancas_de_associacoes staff].each do |key|
+        expect(category_of(key).tag_groups).to be_empty
+      end
+      expect(TagGroupPermission.where(tag_group: group).pluck(:group_id)).to eq(
+        [Group::AUTO_GROUPS[:everyone]],
+      )
+    end
+
+    it "turns accepted solutions on in Cultivo, Produção & Qualidade and nowhere else" do
+      expect(SiteSetting.solved_enabled).to eq(true)
+      expect(SiteSetting.allow_solved_on_all_topics).to eq(false)
+      expect(SiteSetting.enable_solved_tags).to be_blank
+
+      expect(categories.select { |_, definition| definition["solved"] }.keys).to eq(
+        ["cultivo_producao_qualidade"],
+      )
+      categories.each_key do |key|
+        expect(solved?(category_of(key))).to eq(key == "cultivo_producao_qualidade"), key
+      end
+    end
+
+    it "binds a short composer template to five categories and none to Comunidade or the restricted spaces" do
+      with_template = member_keys - ["comunidade"]
+
+      with_template.each { |key| expect(category_of(key).topic_template).to be_present }
+      %w[comunidade profissionais_verificados liderancas_de_associacoes staff].each do |key|
+        expect(category_of(key).topic_template).to be_blank
+      end
+      expect(category_of("acesso_cuidados").topic_template).to match(/dados pessoais/i)
+      expect(category_of("acesso_cuidados").topic_template).not_to match(
+        /diagn[óo]stico|medica[çc][ãa]o/i,
+      )
+      expect(category_of("regulacao_direitos").topic_template).to match(/jur[ií]dico/i)
+      expect(category_of("mercado_ecossistema").topic_template).to match(/venda/i)
+      with_template.each { |key| expect(category_of(key).topic_template.lines.size).to be <= 10 }
+    end
+
+    it "names the Rules page, not the guidelines, for members" do
+      overrides = manifest.dig("text_overrides", "pt_BR")
+
+      expect(overrides["js.guidelines"]).to eq("Regras")
+      expect(overrides["js.sidebar.sections.community.links.guidelines.content"]).to eq("Regras")
+    end
+
+    it "keeps the seeded General's id, its setting and every topic in it when it becomes Comunidade" do
+      human =
+        Fabricate(
+          :post,
+          topic: Fabricate(:topic, category: general, title: "Qual é a melhor Strain?"),
+        )
+      before = [
+        human.raw,
+        human.topic.reload.title,
+        human.topic.updated_at,
+        human.topic.category_id,
+      ]
+
+      bootstrap.apply
+
+      expect(general.reload.name).to eq("Comunidade")
+      expect(general.slug).to eq("comunidade")
+      expect(SiteSetting.general_category_id).to eq(general.id)
+      expect(
+        [
+          human.reload.raw,
+          human.topic.reload.title,
+          human.topic.updated_at,
+          human.topic.category_id,
+        ],
+      ).to eq(before)
+      expect(PostRevision.where(post_id: human.id)).to be_empty
+    end
+
+    it "changes nothing on a second run" do
+      expect { bootstrap.apply }.not_to change {
+        [
+          Category.count,
+          Category.maximum(:updated_at),
+          Tag.count,
+          TagGroup.count,
+          CategoryTagGroup.count,
+          CategoryCustomField.maximum(:updated_at),
+          UserHistory.count,
+          Topic.maximum(:updated_at),
+        ]
+      }
+
+      expect(bootstrap.results.count(&:changed)).to eq(0)
+    end
+
+    it "repairs a drifted structure and reports it" do
+      cultivo = category_of("cultivo_producao_qualidade")
+      ciencia = category_of("ciencia_pesquisa")
+      ciencia.upsert_custom_fields("enable_accepted_answers" => "true")
+      cultivo.update!(topic_template: "x")
+      category_of("comunidade").update!(topic_template: "should not be here")
+      category_of("regulacao_direitos").update!(position: 99)
+      TagGroup.find_by!(name: "Tipo de conteúdo").update!(tag_names: %w[pergunta relato])
+      category_of("ciencia_pesquisa").update!(allowed_tag_groups: [])
+      category_of("staff").update!(allowed_tag_groups: ["Tipo de conteúdo"])
+
+      bootstrap.audit
+      expect(
+        %w[
+          category_tools.ciencia_pesquisa
+          category_tools.cultivo_producao_qualidade
+          category_tools.comunidade
+          category_tools.staff
+          category_identity.regulacao_direitos
+          tag_groups.content_type
+        ].map { |key| status_of(key) }.uniq,
+      ).to eq([:drift])
+
+      bootstrap.apply
+      expect(solved?(ciencia)).to eq(false)
+      expect(solved?(cultivo)).to eq(true)
+      expect(category_of("comunidade").topic_template).to be_blank
+      expect(category_of("ciencia_pesquisa").tag_groups.pluck(:name)).to eq(["Tipo de conteúdo"])
+      expect(category_of("staff").tag_groups).to be_empty
+      expect(category_of("regulacao_direitos").position).to eq(
+        categories["regulacao_direitos"]["position"],
+      )
+      expect(TagGroup.find_by!(name: "Tipo de conteúdo").tags.pluck(:name)).to match_array(
+        %w[pergunta relato guia estudo notícia],
+      )
+    end
+  end
+
+  describe "adopting the first empty Comunidade category" do
+    let(:old_category) do
+      Fabricate(
+        :category_with_definition,
+        name: "Comunidade",
+        slug: "comunidade",
+        user: Discourse.system_user,
+      )
+    end
+
+    it "turns it into Acesso & Cuidados, keeping its id, and frees the slug for the seeded General" do
+      old_id = old_category.id
+
+      bootstrap.apply
+
+      expect(Category.find(old_id).slice(:name, :slug)).to eq(
+        "name" => "Acesso & Cuidados",
+        "slug" => "acesso-cuidados",
+      )
+      expect(general.reload.slug).to eq("comunidade")
+      expect(Category.where(slug: "acesso-cuidados").pluck(:id)).to eq([old_id])
+      expect(acl_of(Category.find(old_id))).to eq(
+        [["membros_ativos", CategoryGroup.permission_types[:full]]],
+      )
+    end
+
+    it "never adopts a category that holds a topic, and reports the slug conflict" do
+      topic = Fabricate(:topic, category: old_category)
+      Fabricate(:post, topic:, raw: "Written by a person")
+
+      bootstrap.apply
+
+      expect(old_category.reload.slug).to eq("comunidade")
+      expect(old_category.name).to eq("Comunidade")
+      expect(topic.reload.category_id).to eq(old_category.id)
+      expect(status_of("category_identity.comunidade")).to eq(:blocked)
+      expect(general.reload.slug).not_to eq("comunidade")
+    end
+
+    it "never adopts the seeded General under the first Comunidade slug on a later run" do
+      bootstrap.apply
+      Topic.where(category_id: general.id).where.not(id: general.topic_id).find_each(&:destroy!)
+      Category.find_by!(slug: "acesso-cuidados").destroy!
+
+      bootstrap.audit
+
+      expect(status_of("categories.acesso_cuidados")).to eq(:drift)
+      expect(general.reload.slug).to eq("comunidade")
+      expect(Category.exists?(slug: "acesso-cuidados")).to eq(false)
     end
   end
 

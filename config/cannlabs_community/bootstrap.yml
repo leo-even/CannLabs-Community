@@ -24,6 +24,15 @@ settings:
   default_locale: pt_BR
   site_description: "Comunidade privada do ecossistema de cannabis no Brasil."
   short_site_description: "Conhecimento que não se perde no WhatsApp."
+  # Community structure (Task 41C). Categories keep the order the manifest gives them.
+  # Tags classify content. Accepted solutions are enabled per category (`solved: true`) and
+  # never on all topics or by tag, so no other category can offer one.
+  fixed_category_positions: true
+  fixed_category_positions_on_create: true # the composer's category chooser follows the same order
+  tagging_enabled: true
+  solved_enabled: true
+  allow_solved_on_all_topics: false
+  enable_solved_tags: ""
   personal_message_enabled_groups:
     - admins
     - moderators
@@ -96,33 +105,160 @@ groups:
     visibility_level: staff
     members_visibility_level: staff
 
-# Each category is found by a native site setting or by its top-level slug.
-# `permissions` is the complete ACL: any other row is drift. `description` is owned
-# text: it is the first paragraph of the category's native definition ("About") topic.
+# Community structure v1 (DECIDED, Task 41C): six member-wide topical categories, two restricted
+# spaces and the internal Staff category. No subcategories; no category per profession, patient
+# or association. Categories answer "what is this conversation about?"; tags answer "what kind of
+# content is it?".
+#
+# Each category is found by a native site setting or by its top-level slug. `permissions` is the
+# complete ACL: any other row is drift. `name`, `slug` and `position` (native order, honoured
+# because `fixed_category_positions` is on) are owned when present. `description` is the first
+# paragraph, and `about` the rest, of the category's native definition ("About") topic.
+# `topic_template` is the native composer template, `tag_groups` names `tag_groups` keys, and
+# `solved: true` turns accepted solutions on. Every managed category is checked: a template, a tag
+# group or an accepted solution that the manifest does not declare is drift.
+#
+# `comunidade` is the seeded General category, repurposed (renaming it keeps its topics and its
+# `general_category_id`). `adopt_slug` lets `acesso_cuidados` take over, once, the empty first
+# "Comunidade" category; a category with topics, subcategories or a chat channel is never adopted.
 categories:
-  general:
-    site_setting: general_category_id
-    description: "Conversas gerais da comunidade que ainda não se encaixam em um tema específico."
+  acesso_cuidados:
+    slug: acesso-cuidados
+    create: true
+    adopt_slug: comunidade
+    name: "Acesso & Cuidados"
+    position: 11
+    description: "Informação e troca de experiências sobre acesso à cannabis medicinal e jornada de cuidado, sem substituir diagnóstico, prescrição ou aconselhamento profissional."
+    about: |-
+      **Cabe aqui:** caminhos de acesso, experiências, dúvidas práticas e informações gerais sobre o uso medicinal.
+
+      **Não cabe aqui:** pedido de diagnóstico, prescrição ou orientação médica individual. Evite publicar dados pessoais ou informações de saúde desnecessárias.
+    topic_template: |-
+      **O que você quer saber ou compartilhar?**
+
+      **Contexto útil:**
+
+      **O que você já encontrou ou tentou entender?**
+
+      _Evite publicar dados pessoais ou informações de saúde desnecessárias._
+    tag_groups:
+      - content_type
     permissions:
       membros_ativos: full
   comunidade:
+    site_setting: general_category_id
+    name: "Comunidade"
     slug: comunidade
-    create:
-      name: "Comunidade"
-    description: "Espaço para conversas, perguntas e trocas entre membros da CannLabs Community."
+    position: 10
+    description: "Conversas gerais entre membros da CannLabs Community que não se encaixam melhor em um dos temas específicos."
+    about: |-
+      **Cabe aqui:** apresentações, conversas sobre a própria comunidade, eventos e assuntos informais do ecossistema sem um tema mais específico.
+
+      **Não cabe aqui:** perguntas que têm um espaço melhor (acesso, cultivo, ciência, regulação ou mercado). Escolha o tema que melhor descreve o assunto: fica mais fácil de encontrar depois.
+    tag_groups:
+      - content_type
+    permissions:
+      membros_ativos: full
+  cultivo_producao_qualidade:
+    slug: cultivo-producao-qualidade
+    create: true
+    name: "Cultivo, Produção & Qualidade"
+    position: 12
+    description: "Discussões técnicas sobre cultivo, produção, processamento e qualidade, com foco em práticas, evidências e troca de conhecimento."
+    about: |-
+      **Cabe aqui:** cultivo, genética, ambiente, colheita, processamento, extração, pós-colheita, testes, qualidade e boas práticas.
+
+      **Não cabe aqui:** oferta, venda, negociação ou intermediação de cannabis, sementes ou produtos. Perguntas técnicas podem ter uma resposta aceita: marque a que resolveu.
+    topic_template: |-
+      **Qual é a dúvida ou objetivo?**
+
+      **Contexto técnico:**
+
+      **O que você já tentou ou observou?**
+
+      **Dados, referências ou imagens úteis:**
+    tag_groups:
+      - content_type
+    solved: true
+    permissions:
+      membros_ativos: full
+  ciencia_pesquisa:
+    slug: ciencia-pesquisa
+    create: true
+    name: "Ciência & Pesquisa"
+    position: 13
+    description: "Estudos, evidências, métodos e discussões científicas sobre cannabis e temas relacionados."
+    about: |-
+      **Cabe aqui:** artigos, estudos, métodos de pesquisa e interpretação de evidências. Prefira a fonte primária e cite a referência.
+
+      **Não cabe aqui:** tratar um artigo compartilhado como prova de uma alegação médica. Compartilhar ou discutir um estudo não valida a alegação.
+    topic_template: |-
+      **Qual é a pergunta, estudo ou achado?**
+
+      **Fonte / referência:**
+
+      **O que você considera relevante ou quer discutir?**
+    tag_groups:
+      - content_type
+    permissions:
+      membros_ativos: full
+  regulacao_direitos:
+    slug: regulacao-direitos
+    create: true
+    name: "Regulação & Direitos"
+    position: 14
+    description: "Legislação, regulação, decisões, direitos e políticas públicas relacionados à cannabis no Brasil."
+    about: |-
+      **Cabe aqui:** normas, decisões judiciais e regulatórias, políticas públicas e mudanças no ambiente legal brasileiro. Indique a fonte e a jurisdição.
+
+      **Não cabe aqui:** aconselhamento jurídico individual. A conversa na Community não substitui aconselhamento jurídico profissional.
+    topic_template: |-
+      **Qual é a questão?**
+
+      **Contexto / jurisdição:**
+
+      **Norma, decisão ou fonte relacionada, se houver:**
+
+      _Discussões na Community não substituem aconselhamento jurídico profissional._
+    tag_groups:
+      - content_type
+    permissions:
+      membros_ativos: full
+  mercado_ecossistema:
+    slug: mercado-ecossistema
+    create: true
+    name: "Mercado & Ecossistema"
+    position: 15
+    description: "Mercado, organizações, inovação, negócios e movimentos do ecossistema brasileiro de cannabis."
+    about: |-
+      **Cabe aqui:** notícias do setor, organizações e associações em seu contexto público e institucional, empreendedorismo, tecnologia, eventos e modelos de negócio.
+
+      **Não cabe aqui:** oferta, venda, negociação ou intermediação de cannabis, nem distribuição irregular. A Community não é um canal de venda.
+    topic_template: |-
+      **Qual é o assunto?**
+
+      **Contexto:**
+
+      **Fonte ou referência, se houver:**
+
+      _A Community não é um canal de venda ou intermediação de cannabis._
+    tag_groups:
+      - content_type
     permissions:
       membros_ativos: full
   profissionais_verificados:
     slug: profissionais-verificados
-    create:
-      name: "Profissionais Verificados"
+    create: true
+    name: "Profissionais Verificados"
+    position: 16
     description: "Espaço restrito aos profissionais com acesso verificado pela CannLabs."
     permissions:
       acesso_profissionais: full
   liderancas_de_associacoes:
     slug: liderancas-de-associacoes
-    create:
-      name: "Lideranças de Associações"
+    create: true
+    name: "Lideranças de Associações"
+    position: 17
     description: "Espaço restrito às lideranças de associações com acesso aprovado."
     permissions:
       acesso_liderancas: full
@@ -132,6 +268,18 @@ categories:
     description: "Espaço interno da equipe CannLabs para operação e moderação."
     permissions:
       staff: full
+
+# Native tag groups. The content-type tags are never mandatory: no category requires a tag group,
+# and tags are bound only to the categories listed above (restricted spaces and Staff have none).
+tag_groups:
+  content_type:
+    name: "Tipo de conteúdo"
+    tags:
+      - pergunta
+      - relato
+      - guia
+      - estudo
+      - notícia
 
 # The special Uncategorized category is retired by the native upcoming change.
 # What remains of it is an ordinary, empty category that members could otherwise
@@ -153,6 +301,11 @@ text_overrides:
     login_required.welcome_message: "# As conversas que hoje se perdem no WhatsApp, organizadas para serem encontradas depois."
     js.welcome_banner.subheader.logged_in_members: 'Precisa de ajuda? <a href="/new-message?groupname=equipe">Fale com a equipe</a>.'
     js.topics.none.education.generic: "Você ainda não tem conteúdos disponíveis aqui. Se sua conta acabou de ser criada, o acesso aos espaços da comunidade pode ainda não estar ativo. Se precisar de ajuda, fale com a equipe."
+    # The member-facing page is the Rules; the native label for it is "Diretrizes" (sidebar link, its tooltip,
+    # the About page tab, the page title). These keys name only that page.
+    js.guidelines: "Regras"
+    js.sidebar.sections.community.links.guidelines.content: "Regras"
+    js.sidebar.sections.community.links.guidelines.title: "Regras da Comunidade"
 
 # Topics the bootstrap owns. A topic is owned through the `cannlabs_community_content`
 # topic custom field, never by id or title. `adopt_seeded` lets the bootstrap take over an
@@ -163,13 +316,13 @@ content_topics:
   welcome:
     site_setting: welcome_topic_id
     adopt_seeded: true
-    category: general
+    category: comunidade
     title: "Bem-vindo à CannLabs Community"
     body: content/pt_BR/welcome.md
     pinned_globally: true
   rules:
     site_setting: guidelines_topic_id
-    category: general
+    category: comunidade
     title: "Regras da Comunidade"
     body: content/pt_BR/rules.md
     pinned_globally: true
@@ -180,7 +333,11 @@ content_topics:
 navigation:
   default_categories:
     - comunidade
-    - general
+    - acesso_cuidados
+    - cultivo_producao_qualidade
+    - ciencia_pesquisa
+    - regulacao_direitos
+    - mercado_ecossistema
     - profissionais_verificados
     - liderancas_de_associacoes
 
