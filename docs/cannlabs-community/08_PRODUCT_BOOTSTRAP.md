@@ -55,10 +55,11 @@ The `production` profile existing in the manifest does not mean production is au
 
 ## What the bootstrap owns
 
-- **Global settings (every profile):** `login_required=true`, `allow_uncategorized_topics=false`, `chat_enabled=false`, `default_locale=pt_BR`, personal-message eligibility (admins and moderators only), reporting eligibility (admins, moderators, native trust level 1 and `membros_ativos`).
+- **Global settings (every profile):** `login_required=true`, `allow_uncategorized_topics=false`, `chat_enabled=false`, `default_locale=pt_BR`, personal-message eligibility (admins and moderators only), reporting eligibility (admins, moderators, native trust level 1 and `membros_ativos`), and the site descriptions (`site_description`, `short_site_description`).
 - **Search-engine indexing (production profile):** `allow_index_in_robots_txt=false`. The private Community is never indexed. Natively `robots.txt` then disallows every crawler except Googlebot (which may crawl so that it reads the header) and every page the application renders carries `X-Robots-Tag: noindex, nofollow`. The setting defaults to `true`, so an unmanaged site is crawlable at `/login` and `/signup`.
 - **The eight custom group definitions:** `membros_ativos`, `medicos_verif`, `farmaceuticos_verif`, `agronomos_verif`, `advogados_verif`, `liderancas_aprov`, `acesso_profissionais`, `acesso_liderancas` — name, full name, visibility, and staff-controlled membership (no public admission or exit, no membership requests, no automatic trust level, no automatic e-mail-domain membership).
-- **Category ACLs:** General and Comunidade → `membros_ativos`; Profissionais Verificados → `acesso_profissionais` only; Lideranças de Associações → `acesso_liderancas` only; the residual Uncategorized category → `membros_ativos`. The manifest ACL is complete, so an extra row is drift. The three Community categories are created when missing.
+- **Category ACLs:** General and Comunidade → `membros_ativos`; Profissionais Verificados → `acesso_profissionais` only; Lideranças de Associações → `acesso_liderancas` only; the residual Uncategorized category → staff only (an ordinary, empty category that members could otherwise list and post into). The manifest ACL is complete, so an extra row is drift. The three Community categories are created when missing.
+- **Member front door (Task 41B), in Brazilian Portuguese:** the description and native title of every managed category's About topic; three native text overrides; two owned topics, the welcome topic behind `welcome_topic_id` and the Rules topic behind `guidelines_topic_id`; the default sidebar categories; and the built-in links of the public Community sidebar section. See "Member front door" below.
 - **Site Feedback absence** (see below).
 - **Theme pinning:** keeps automatic updates off and makes the installed, correctly pinned theme the default.
 
@@ -67,11 +68,30 @@ The `production` profile existing in the manifest does not mean production is au
 - **Group memberships and owners.** No user is ever added to or removed from any group. Derived groups are populated only by the Qualified Access plugin. A custom group with a non-staff owner is reported `BLOCKED`, not changed.
 - **Users, trust levels, staff roles, credentials.**
 - **Theme and plugin installation or update.** They are deployment prerequisites, only audited.
-- **The Staff category.** Verified only (`staff:full`); never recreated or edited.
+- **The Staff category.** Its ACL is verified only (`staff:full`); it is never recreated, and only its description is owned.
 - **The Uncategorized lifecycle.** Retiring the special category is done by the native upcoming change `remove_and_replace_uncategorized`. If it has not happened, the bootstrap reports `BLOCKED` and does not toggle it.
 - **Categories outside the manifest.** A category the manifest does not know that is readable outside the paid boundary is reported `BLOCKED` and left alone.
-- **Category names, descriptions, colours and order** after creation; logo and other uploads; every other site setting; `meta_category_id`.
+- **Category names, colours and order** after creation; logo and other uploads; every other site setting; `meta_category_id`.
 - **Secrets, SMTP, authentication providers, 2FA, payment, domain, backups.**
+
+## Member front door
+
+Everything the front door says or shows is declared in the manifest and applied through native code paths; there is no plugin and no theme code.
+
+| Manifest section | Native primitive | Audit key |
+| --- | --- | --- |
+| `settings.site_description`, `settings.short_site_description` | site settings (the login-required landing prints the description; the short one is the page-title tagline) | `settings.*` |
+| `text_overrides.pt_BR` | `TranslationOverride`, the admin "Text" path. A key that does not exist upstream is `BLOCKED`, never guessed | `text_overrides.<locale>.<key>` |
+| `categories.*.description` | the first post of the category's native "About" topic; the topic title is the native `category.topic_prefix` in the site language | `category_descriptions.<key>` |
+| `content_topics` | the topic behind `welcome_topic_id` and `guidelines_topic_id`, with Markdown under `config/cannlabs_community/content/pt_BR/` | `content_topics.<key>` |
+| `navigation.default_categories` | `default_navigation_menu_categories`, resolved from category keys to ids, then propagated to existing users like the admin "update existing users" choice | `navigation.default_categories` |
+| `sidebar.community_links` | the public Community `SidebarSection`, edited through `SidebarSectionUpdater` (a removed built-in is restored by the native reset first) | `sidebar.community_links` |
+
+**Topic ownership.** An owned topic carries the `cannlabs_community_content` topic custom field (the manifest key). The bootstrap never owns a topic by id or title. An unedited topic seeded by core (authored by the system user, last edited by the system user, not owned) that the site setting already names may be adopted once (`adopt_seeded`); a topic a person created or edited at that setting is `BLOCKED` and left alone, and so is an owned topic that was deleted. The Rules topic is always created: the stock Staff guidelines topic is left untouched and only the `guidelines_topic_id` pointer moves. The welcome and Rules topics are pinned globally; Rules is also closed (a reference page).
+
+**Edit the source, then apply.** The Markdown and the manifest are the source. A direct edit of an owned topic, text override or description in Discourse is drift and the next apply restores it. A `default_locale` change re-seeds an unedited seeded welcome topic (core's `014-track-setting-changes` initializer); run apply again afterwards.
+
+**Known native limits, left as they are.** Built-in sidebar links cannot be hidden per audience: `Usuários(as)`, `Sobre` and `Diretrizes` remain in "Mais" for everyone (`KNOWN STOCK SIDEBAR REMAINDER — DEFERRED TO DESIGN/NAVIGATION PASS`). The welcome banner is not rendered on mobile, so its help link is desktop-only. The empty-state button label is shared with other screens and stays stock.
 
 ## Safe failures
 
@@ -111,7 +131,8 @@ The manifest contains no password, key, token or credential, and must never cont
 - The theme and the plugin must already be installed by the deployment layer; the logo is a database upload and is not reproduced.
 - On a fresh database the bootstrap is `BLOCKED` until the native Uncategorized upcoming change has been promoted or enabled.
 - Seeded General and Staff categories must exist (the normal upstream seed creates them).
-- Counts by application revision: at the prodlike pin (`73b2484d…`, before `DEC-047`) the production audit is `PASS (pass 36, drift 0, blocked 0, gated 1)`; with `allow_index_in_robots_txt` owned it is `PASS (pass 37, drift 0, blocked 0, gated 1)`.
+- Counts by application revision (the member front door of Task 41B adds 14 invariants: the local and the production profile each report `pass 51, drift 0, blocked 0, gated 1` on a correct site; that is a product-HEAD count, not the production pin's):
+- Counts by application revision, earlier: at the prodlike pin (`73b2484d…`, before `DEC-047`) the production audit is `PASS (pass 36, drift 0, blocked 0, gated 1)`; with `allow_index_in_robots_txt` owned it is `PASS (pass 37, drift 0, blocked 0, gated 1)`.
 - The bootstrap has been run against a clean production-like instance (Task 37B): `BLOCKED` on an empty database before a native restore, `PASS (pass 36, drift 0, blocked 0, gated 1)` after it. That instance was a disposable proof with a synthetic hostname and Mailpit; a production deployment, real secrets and external services remain a later slice, and the bootstrap is still not a production installer.
 
 ## After a Discourse upgrade or a configuration change

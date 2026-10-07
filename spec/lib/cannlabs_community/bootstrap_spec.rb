@@ -3,8 +3,10 @@
 RSpec.describe CannlabsCommunity::Bootstrap do
   subject(:bootstrap) { described_class.new(profile: "production", manifest:) }
 
-  fab!(:general) { Fabricate(:category, name: "General") }
-  fab!(:staff_category) { Fabricate(:private_category, name: "Staff", group: Group[:staff]) }
+  fab!(:general) { Fabricate(:category_with_definition, name: "General") }
+  fab!(:staff_category) do
+    Fabricate(:private_category_with_definition, name: "Staff", group: Group[:staff])
+  end
 
   let(:manifest) { described_class.manifest }
   let!(:uncategorized) { Category.find(SiteSetting.uncategorized_category_id) }
@@ -329,9 +331,7 @@ RSpec.describe CannlabsCommunity::Bootstrap do
       bootstrap.apply
 
       expect(acl_of(general)).to eq([["membros_ativos", CategoryGroup.permission_types[:full]]])
-      expect(acl_of(uncategorized)).to eq(
-        [["membros_ativos", CategoryGroup.permission_types[:full]]],
-      )
+      expect(acl_of(uncategorized)).to eq([["staff", CategoryGroup.permission_types[:full]]])
       expect([general, uncategorized].map(&:read_restricted)).to eq([true, true])
 
       expect(acl_of(Category.find_by(slug: "comunidade"))).to eq(
@@ -460,6 +460,313 @@ RSpec.describe CannlabsCommunity::Bootstrap do
       }
       expect(bootstrap.results.count(&:changed)).to eq(0)
       expect(bootstrap.report).to end_with("NO CHANGE")
+    end
+  end
+
+  describe "the member front door" do
+    fab!(:member, :user)
+    fab!(:outsider, :user)
+
+    let(:text_overrides) { manifest.dig("text_overrides", "pt_BR") }
+
+    before do
+      bootstrap.apply
+      Group.find_by(name: "membros_ativos").add(member)
+    end
+
+    def result_for(key)
+      bootstrap.results.find { |result| result.key == key }
+    end
+
+    def owned(key)
+      TopicCustomField.find_by(name: described_class::CONTENT_FIELD, value: key)&.topic
+    end
+
+    def apply_again
+      bootstrap.apply
+      bootstrap.results.index_by(&:key)
+    end
+
+    def seed_unedited_welcome
+      owned("welcome")&.destroy!
+      TopicCustomField.where(name: described_class::CONTENT_FIELD).delete_all
+      post =
+        PostCreator.create!(
+          Discourse.system_user,
+          title: "Welcome to the stock community",
+          raw: "We are so glad you joined us.",
+          category: general.id,
+          skip_jobs: true,
+          skip_validations: true,
+        )
+      SiteSetting.welcome_topic_id = post.topic_id
+      post.topic
+    end
+
+    it "ships Portuguese copy that never implies a signup approval step" do
+      copy = [*text_overrides.values, *manifest["settings"].values_at("site_description")].join(" ")
+      bodies =
+        manifest["content_topics"].values.map do |definition|
+          Rails.root.join(described_class::CONTENT_ROOT, definition["body"]).read
+        end
+
+      expect(copy + bodies.join(" ")).not_to match(/aprova[çc]|aguardando/i)
+      expect(text_overrides["js.topics.none.education.generic"]).to include("fale com a equipe")
+    end
+
+    it "only overrides translation keys that exist upstream" do
+      text_overrides.each_key do |key|
+        expect(I18n.overrides_disabled { I18n.exists?(key, :en) }).to eq(true), key
+      end
+    end
+
+    it "resolves navigation and sidebar references from the manifest" do
+      expect(manifest["navigation"]["default_categories"] - manifest["categories"].keys).to be_empty
+      expect(manifest["sidebar"]["community_links"] - SidebarUrl::COMMUNITY_SECTION_LINK_PATHS).to(
+        be_empty,
+      )
+      expect(manifest["sidebar"]["community_links"]).not_to include("/new-invite")
+    end
+
+    it "owns the site description and the text overrides" do
+      expect(SiteSetting.site_description).to eq(manifest["settings"]["site_description"])
+      expect(SiteSetting.short_site_description).to eq(
+        manifest["settings"]["short_site_description"],
+      )
+
+      text_overrides.each do |key, value|
+        expect(TranslationOverride.find_by(locale: "pt_BR", translation_key: key)&.value).to eq(
+          value,
+        )
+      end
+    end
+
+    it "owns the category descriptions and the native definition-topic titles" do
+      %w[general comunidade profissionais-verificados liderancas-de-associacoes].each do |slug|
+        category = Category.find_by!(slug:)
+        key =
+          manifest["categories"]
+            .find do |_, definition|
+              definition["slug"] == slug ||
+                (slug == "general" && definition["site_setting"] == "general_category_id")
+            end
+            .first
+
+        expect(category.topic.first_post.raw).to eq(manifest["categories"][key]["description"])
+        expect(category.topic.title).to eq(
+          I18n
+            .with_locale(:pt_BR) { I18n.t("category.topic_prefix", category: category.name) }
+            .strip,
+        )
+      end
+      expect(staff_category.topic.first_post.raw).to eq(
+        manifest["categories"]["staff"]["description"],
+      )
+    end
+
+    it "creates the welcome and Rules topics in General, pinned, owned and pointed to" do
+      welcome = owned("welcome")
+      rules = owned("rules")
+
+      expect([welcome, rules].map(&:category_id)).to eq([general.id, general.id])
+      expect(SiteSetting.welcome_topic_id).to eq(welcome.id)
+      expect(SiteSetting.guidelines_topic_id).to eq(rules.id)
+      expect([welcome, rules].map(&:pinned_globally)).to eq([true, true])
+      expect(rules.closed).to eq(true)
+      expect(welcome.closed).to eq(false)
+      expect(rules.first_post.raw).to start_with("> **Versão de desenvolvimento")
+      expect(Guardian.new(member).can_see?(rules)).to eq(true)
+      expect(Guardian.new(outsider).can_see?(rules)).to eq(false)
+    end
+
+    it "takes over an unedited seeded welcome topic once, keeping its id" do
+      seeded = seed_unedited_welcome
+
+      statuses = apply_again
+
+      expect(statuses["content_topics.welcome"].changed).to eq(true)
+      expect(SiteSetting.welcome_topic_id).to eq(seeded.id)
+      expect(owned("welcome").id).to eq(seeded.id)
+      expect(seeded.reload.title).to eq(manifest["content_topics"]["welcome"]["title"])
+      expect(apply_again["content_topics.welcome"].changed).to eq(false)
+    end
+
+    it "never takes over a welcome topic that a person wrote" do
+      human =
+        Fabricate(:post, topic: Fabricate(:topic, category: general), raw: "Our own welcome text")
+      TopicCustomField.where(name: described_class::CONTENT_FIELD, value: "welcome").delete_all
+      SiteSetting.welcome_topic_id = human.topic_id
+
+      statuses = apply_again
+
+      expect(statuses["content_topics.welcome"].status).to eq(:blocked)
+      expect(human.reload.raw).to eq("Our own welcome text")
+      expect(SiteSetting.welcome_topic_id).to eq(human.topic_id)
+      expect(TopicCustomField.where(topic_id: human.topic_id).pluck(:name)).not_to include(
+        described_class::CONTENT_FIELD,
+      )
+    end
+
+    it "never takes over a seeded welcome topic after a person edited it" do
+      seeded = seed_unedited_welcome
+      seeded.first_post.revise(Fabricate(:admin), { raw: "Edited by a person after seeding" })
+
+      statuses = apply_again
+
+      expect(statuses["content_topics.welcome"].status).to eq(:blocked)
+      expect(seeded.first_post.reload.raw).to eq("Edited by a person after seeding")
+      expect(owned("welcome")).to be_nil
+    end
+
+    it "never takes over a topic a person created, even if the system edited it last" do
+      human =
+        Fabricate(:post, topic: Fabricate(:topic, category: general), raw: "Written by a person")
+      human.update_columns(last_editor_id: Discourse::SYSTEM_USER_ID)
+      TopicCustomField.where(name: described_class::CONTENT_FIELD, value: "welcome").delete_all
+      SiteSetting.welcome_topic_id = human.topic_id
+
+      expect(apply_again["content_topics.welcome"].status).to eq(:blocked)
+      expect(human.reload.raw).to eq("Written by a person")
+    end
+
+    it "never takes over a topic that already belongs to another manifest entry" do
+      rules = owned("rules")
+      TopicCustomField.where(name: described_class::CONTENT_FIELD, value: "welcome").delete_all
+      SiteSetting.welcome_topic_id = rules.id
+
+      expect(apply_again["content_topics.welcome"].status).to eq(:blocked)
+      expect(owned("rules").id).to eq(rules.id)
+      expect(rules.reload.title).to eq(manifest["content_topics"]["rules"]["title"])
+    end
+
+    it "restores an owned topic that was edited, without touching anyone else's topic" do
+      mine =
+        Fabricate(
+          :post,
+          topic: Fabricate(:topic, category: general, title: "Qual é a melhor Strain?"),
+        )
+      before = [mine.raw, mine.topic.reload.title, mine.topic.updated_at]
+      welcome = owned("welcome")
+      welcome.first_post.revise(Fabricate(:admin), { raw: "Edited by hand in the UI" })
+
+      statuses = apply_again
+
+      expect(statuses["content_topics.welcome"].changed).to eq(true)
+      expect(welcome.first_post.reload.raw).to eq(
+        Rails.root.join(described_class::CONTENT_ROOT, "content/pt_BR/welcome.md").read.strip,
+      )
+      expect([mine.reload.raw, mine.topic.reload.title, mine.topic.updated_at]).to eq(before)
+    end
+
+    it "is blocked, not recreated, when an owned topic was deleted" do
+      PostDestroyer.new(Discourse.system_user, owned("rules").first_post, context: "spec").destroy
+
+      expect(apply_again["content_topics.rules"].status).to eq(:blocked)
+    end
+
+    it "leaves the staff-only seeded guidelines topic alone and repoints the setting" do
+      stock =
+        Fabricate(
+          :post,
+          topic: Fabricate(:topic, category: staff_category),
+          raw: "Stock guidelines",
+        )
+      TopicCustomField.where(name: described_class::CONTENT_FIELD, value: "rules").delete_all
+      SiteSetting.guidelines_topic_id = stock.topic_id
+
+      apply_again
+
+      expect(stock.reload.raw).to eq("Stock guidelines")
+      expect(SiteSetting.guidelines_topic_id).to eq(owned("rules").id)
+      expect(owned("rules").id).not_to eq(stock.topic_id)
+    end
+
+    it "sets the default sidebar categories by slug and updates existing users" do
+      SiteSetting.default_navigation_menu_categories = "999999|#{staff_category.id}"
+
+      bootstrap.audit
+      expect(result_for("navigation.default_categories").status).to eq(:drift)
+
+      expect { bootstrap.apply }.to change { Jobs::BackfillSidebarSiteSettings.jobs.size }.by(1)
+
+      expected =
+        manifest["navigation"]["default_categories"].map do |key|
+          definition = manifest["categories"][key]
+          (definition["slug"] ? Category.find_by(slug: definition["slug"]) : general).id
+        end
+      expect(SiteSetting.default_navigation_menu_categories).to eq(expected.join("|"))
+      expect(SiteSetting.default_navigation_menu_categories.split("|")).not_to include(
+        staff_category.id.to_s,
+      )
+    end
+
+    it "keeps only the intended built-in links in the community sidebar section" do
+      section = SidebarSection.find_by(section_type: :community)
+
+      expect(section.sidebar_urls.reload.map(&:value)).to match_array(
+        manifest["sidebar"]["community_links"],
+      )
+
+      section.reset_community!
+      bootstrap.audit
+      expect(result_for("sidebar.community_links").status).to eq(:drift)
+
+      bootstrap.apply
+      expect(section.sidebar_urls.reload.map(&:value)).to match_array(
+        manifest["sidebar"]["community_links"],
+      )
+    end
+
+    it "restores a built-in link that was removed from the community section" do
+      section = SidebarSection.find_by(section_type: :community)
+      about = section.sidebar_urls.find_by(value: "/about")
+      section.sidebar_section_links.where(linkable: about).destroy_all
+
+      bootstrap.apply
+
+      expect(section.reload.sidebar_urls.map(&:value)).to include("/about")
+      expect(result_for("sidebar.community_links").status).to eq(:pass)
+    end
+
+    it "keeps the residual Uncategorized category away from ordinary members" do
+      expect(acl_of(uncategorized)).to eq([["staff", CategoryGroup.permission_types[:full]]])
+      expect(Guardian.new(member).can_see?(uncategorized)).to eq(false)
+      expect(Guardian.new(member).can_create_topic_on_category?(uncategorized)).to eq(false)
+      expect(Guardian.new(Fabricate(:admin)).can_see?(uncategorized)).to eq(true)
+    end
+
+    it "does not weaken the paid boundary for anonymous, unpaid and active people" do
+      topics = Topic.where(category_id: Category.where(read_restricted: true).select(:id))
+
+      expect(topics.exists?).to eq(true)
+      [Guardian.new, Guardian.new(outsider)].each do |guardian|
+        expect(topics.reject { |topic| guardian.can_see?(topic) }.size).to eq(topics.size)
+        expect(Category.secured(guardian).pluck(:id)).to be_empty
+      end
+
+      member_guardian = Guardian.new(member)
+      expect(Category.secured(member_guardian).pluck(:id)).to contain_exactly(
+        general.id,
+        Category.find_by(slug: "comunidade").id,
+      )
+      expect(member_guardian.can_see?(owned("welcome"))).to eq(true)
+      expect(member_guardian.can_see?(owned("rules"))).to eq(true)
+    end
+
+    it "changes nothing on a second run" do
+      expect { bootstrap.apply }.not_to change {
+        [
+          Topic.maximum(:updated_at),
+          Post.maximum(:updated_at),
+          PostRevision.count,
+          TranslationOverride.maximum(:updated_at),
+          UserHistory.count,
+          SidebarSection.maximum(:updated_at),
+          Jobs::BackfillSidebarSiteSettings.jobs.size,
+        ]
+      }
+
+      expect(bootstrap.results.count(&:changed)).to eq(0)
     end
   end
 

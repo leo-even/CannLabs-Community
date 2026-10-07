@@ -11,6 +11,8 @@ module CannlabsCommunity
     USAGE_EXIT_CODE = 3
     PREREQUISITE = "deployment prerequisite missing"
     UNCATEGORIZED_CHANGE = "remove_and_replace_uncategorized"
+    CONTENT_ROOT = "config/cannlabs_community"
+    CONTENT_FIELD = "cannlabs_community_content"
 
     Result = Struct.new(:key, :status, :detail, :changed, keyword_init: true)
 
@@ -102,6 +104,11 @@ module CannlabsCommunity
       check_uncategorized
       check_retired_categories
       check_unmanaged_categories
+      check_category_descriptions
+      check_content_topics
+      check_navigation
+      check_sidebar
+      check_text_overrides
       check_theme
       check_plugin
 
@@ -368,7 +375,7 @@ module CannlabsCommunity
         Category.new(
           name: definition.dig("create", "name"),
           slug: definition["slug"],
-          description: definition.dig("create", "description"),
+          description: definition["description"],
           user: Discourse.system_user,
         )
       category.set_permissions(expected.to_h)
@@ -543,6 +550,309 @@ module CannlabsCommunity
           ]
         end
       end
+    end
+
+    def waiting_for_category(key)
+      if @manifest["categories"].fetch(key)["create"]
+        [:drift, "waits for category: #{key}"]
+      else
+        [:blocked, "native seeded category not found: #{key}; #{PREREQUISITE}"]
+      end
+    end
+
+    # The description is the first paragraph of the category's native definition
+    # ("About") topic: revising that post is how the admin UI changes it.
+    def check_category_descriptions
+      @manifest["categories"].each do |key, definition|
+        desired = definition["description"]
+        next if desired.nil?
+
+        invariant("category_descriptions.#{key}") do
+          category = find_category(definition)
+          post = category&.topic&.first_post
+
+          if category.nil?
+            waiting_for_category(key)
+          elsif post.nil?
+            [:blocked, "#{category.slug} has no definition topic; operator review required"]
+          else
+            title = about_title(category)
+            differences = []
+            differences << "description" if normalized(post.raw) != desired
+            differences << "title" if post.topic.title != title
+
+            if differences.empty?
+              [:pass, desired]
+            else
+              [
+                :drift,
+                "differs: #{differences.join(", ")}",
+                -> { revise_post(post, title:, raw: desired) },
+              ]
+            end
+          end
+        end
+      end
+    end
+
+    def normalized(text)
+      text.to_s.gsub("\r\n", "\n").strip
+    end
+
+    # The title core itself gives a category's definition topic, in the site language.
+    def about_title(category)
+      I18n
+        .with_locale(SiteSetting.default_locale) do
+          I18n.t("category.topic_prefix", category: category.name)
+        end
+        .strip
+    end
+
+    def content_body(definition)
+      path = Rails.root.join(CONTENT_ROOT, definition["body"])
+      raise Blocked, "content file not found: #{definition["body"]}" if !path.file?
+
+      normalized(path.read)
+    end
+
+    def revise_post(post, attributes)
+      if !post.revise(Discourse.system_user, attributes, skip_validations: true)
+        raise Blocked,
+              "post #{post.id} could not be revised: #{post.errors.full_messages.join("; ")}"
+      end
+    end
+
+    def owned_topic(key)
+      id = TopicCustomField.where(name: CONTENT_FIELD, value: key).pick(:topic_id)
+      Topic.with_deleted.find_by(id:) if id
+    end
+
+    # An unedited topic seeded by core and still named by the site setting may be
+    # taken over once. Anything a person touched, or already owned, is never adopted.
+    def adoptable_topic(definition)
+      return if !definition["adopt_seeded"]
+
+      id = SiteSetting.get(definition["site_setting"]).to_i
+      topic = Topic.find_by(id:) if id > 0
+      post = topic&.first_post
+      return if post.nil?
+      return if topic.user_id != Discourse::SYSTEM_USER_ID
+      return if post.last_editor_id != Discourse::SYSTEM_USER_ID
+      return if TopicCustomField.where(topic_id: topic.id, name: CONTENT_FIELD).exists?
+
+      topic
+    end
+
+    def content_differences(key, definition, category, topic, body)
+      pointed = SiteSetting.get(definition["site_setting"]).to_i
+      post = topic.first_post
+      differences = []
+
+      differences << "marker" if topic.custom_fields[CONTENT_FIELD] != key
+      differences << "title" if topic.title != definition["title"]
+      differences << "body" if post.nil? || normalized(post.raw) != body
+      differences << "category" if topic.category_id != category.id
+      differences << "pin" if definition["pinned_globally"] && !topic.pinned_globally?
+      differences << "closed" if definition["closed"] && !topic.closed?
+      differences << definition["site_setting"] if pointed != topic.id
+
+      differences
+    end
+
+    def check_content_topics
+      (@manifest["content_topics"] || {}).each do |key, definition|
+        invariant("content_topics.#{key}") do
+          category = find_category(@manifest["categories"].fetch(definition["category"]))
+          next waiting_for_category(definition["category"]) if category.nil?
+
+          body =
+            begin
+              content_body(definition)
+            rescue Blocked => e
+              next :blocked, e.message
+            end
+
+          owned = owned_topic(key)
+          next :blocked, "the owned topic was deleted; operator review required" if owned&.trashed?
+
+          topic = owned || adoptable_topic(definition)
+          pointed = SiteSetting.get(definition["site_setting"]).to_i
+
+          if topic.nil? && definition["adopt_seeded"] && Topic.exists?(id: pointed)
+            next [
+              :blocked,
+              "#{definition["site_setting"]} names a topic that is not an unedited seeded " \
+                "topic; operator review required"
+            ]
+          end
+
+          converge = -> { converge_content_topic(key, definition, category) }
+
+          if topic.nil?
+            [:drift, "missing; apply creates it in #{category.slug}", converge]
+          else
+            differences = content_differences(key, definition, category, topic, body)
+
+            if differences.empty?
+              [:pass, "#{definition["title"]} in #{category.slug}"]
+            else
+              [:drift, "differs: #{differences.join(", ")}", converge]
+            end
+          end
+        end
+      end
+    end
+
+    def converge_content_topic(key, definition, category)
+      body = content_body(definition)
+      topic = owned_topic(key) || adoptable_topic(definition)
+
+      if topic
+        post = topic.first_post
+        changes = {}
+        changes[:title] = definition["title"] if topic.title != definition["title"]
+        changes[:raw] = body if normalized(post.raw) != body
+        changes[:category_id] = category.id if topic.category_id != category.id
+        revise_post(post, changes) if changes.any?
+      else
+        post =
+          PostCreator.create!(
+            Discourse.system_user,
+            title: definition["title"],
+            raw: body,
+            category: category.id,
+            skip_jobs: true,
+            skip_validations: true,
+          )
+        topic = post.topic
+      end
+
+      topic = Topic.find(topic.id)
+      if topic.custom_fields[CONTENT_FIELD] != key
+        topic.custom_fields[CONTENT_FIELD] = key
+        topic.save_custom_fields
+      end
+      topic.update_pinned(true, true) if definition["pinned_globally"] && !topic.pinned_globally?
+      if definition["closed"] && !topic.closed?
+        topic.update_status("closed", true, Discourse.system_user, silent: true)
+      end
+
+      if SiteSetting.get(definition["site_setting"]).to_i != topic.id
+        SiteSetting.set_and_log(definition["site_setting"], topic.id)
+      end
+    end
+
+    def check_navigation
+      keys = @manifest.dig("navigation", "default_categories")
+      return if keys.nil?
+
+      invariant("navigation.default_categories") do
+        categories = keys.map { |key| find_category(@manifest["categories"].fetch(key)) }
+        missing = keys.zip(categories).filter_map { |key, category| key if category.nil? }
+        next waiting_for_category(missing.first) if missing.any?
+
+        expected = categories.map(&:id)
+        current = SiteSetting.default_navigation_menu_categories.to_s.split("|").map(&:to_i)
+
+        if current == expected
+          [:pass, keys.join(", ")]
+        else
+          known = Category.where(id: current).pluck(:id, :slug).to_h
+          shown = current.map { |id| known[id] || "##{id} (missing)" }.join(", ")
+          [
+            :drift,
+            "is [#{shown}], expected [#{keys.join(", ")}]",
+            -> { set_default_navigation_categories(expected) },
+          ]
+        end
+      end
+    end
+
+    # Like the admin UI's "update existing users": people who already have an account
+    # receive the new default categories and lose the removed ones.
+    def set_default_navigation_categories(category_ids)
+      name = "default_navigation_menu_categories"
+      previous = SiteSetting.get(name).to_s
+      value = category_ids.join("|")
+
+      SiteSetting.set_and_log(name, value)
+      SiteSettingUpdateExistingUsers.call(name, value, previous)
+    end
+
+    def community_section
+      SidebarSection.find_by(section_type: :community)
+    end
+
+    # The community section is edited through the same updater as the admin UI. A
+    # built-in link that is missing is restored first by the native reset.
+    def check_sidebar
+      expected = @manifest.dig("sidebar", "community_links")
+      return if expected.nil?
+
+      invariant("sidebar.community_links") do
+        section = community_section
+        next :blocked, "the community sidebar section is missing; #{PREREQUISITE}" if !section
+
+        current = section.sidebar_urls.map(&:value)
+        extra = current - expected
+        missing = expected - current
+
+        if extra.empty? && missing.empty?
+          [:pass, expected.join(", ")]
+        else
+          detail = []
+          detail << "extra: #{extra.join(", ")}" if extra.any?
+          detail << "missing: #{missing.join(", ")}" if missing.any?
+          [:drift, detail.join("; "), -> { trim_community_section(section, expected) }]
+        end
+      end
+    end
+
+    def trim_community_section(section, expected)
+      section.reset_community! if (expected - section.sidebar_urls.map(&:value)).any?
+      section = community_section
+      extra = section.sidebar_urls.reject { |url| expected.include?(url.value) }
+      return if extra.empty?
+
+      SidebarSectionUpdater.update!(
+        sidebar_section: section,
+        user: Discourse.system_user,
+        section_params: {
+        },
+        links_params: extra.map { |url| { id: url.id, _destroy: true } },
+      )
+    end
+
+    def check_text_overrides
+      (@manifest["text_overrides"] || {}).each do |locale, overrides|
+        overrides.each do |key, desired|
+          invariant("text_overrides.#{locale}.#{key}") do
+            current = TranslationOverride.find_by(locale:, translation_key: key)
+
+            if !I18n.overrides_disabled { I18n.exists?(key, :en) }
+              [:blocked, "translation key not found upstream; operator review required"]
+            elsif current&.value == desired
+              [:pass, "customized"]
+            else
+              [
+                :drift,
+                current ? "customized differently" : "not customized",
+                -> { set_text_override(locale, key, desired, current&.value) },
+              ]
+            end
+          end
+        end
+      end
+    end
+
+    def set_text_override(locale, key, desired, previous)
+      override = TranslationOverride.upsert!(locale, key, desired)
+
+      if override.errors.any?
+        raise Blocked, "#{key} was rejected: #{override.errors.full_messages.join("; ")}"
+      end
+
+      staff_action_logger.log_site_text_change(key, desired, previous)
     end
 
     def same_repository?(url, expected)

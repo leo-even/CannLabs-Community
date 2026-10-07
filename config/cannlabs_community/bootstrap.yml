@@ -22,6 +22,8 @@ settings:
   allow_uncategorized_topics: false
   chat_enabled: false
   default_locale: pt_BR
+  site_description: "Comunidade privada do ecossistema de cannabis no Brasil."
+  short_site_description: "Conhecimento que não se perde no WhatsApp."
   personal_message_enabled_groups:
     - admins
     - moderators
@@ -95,49 +97,106 @@ groups:
     members_visibility_level: staff
 
 # Each category is found by a native site setting or by its top-level slug.
-# `permissions` is the complete ACL: any other row is drift.
+# `permissions` is the complete ACL: any other row is drift. `description` is owned
+# text: it is the first paragraph of the category's native definition ("About") topic.
 categories:
   general:
     site_setting: general_category_id
+    description: "Conversas gerais da comunidade que ainda não se encaixam em um tema específico."
     permissions:
       membros_ativos: full
   comunidade:
     slug: comunidade
     create:
       name: "Comunidade"
-      description: "Espaço geral para membros da CannLabs Community."
+    description: "Espaço para conversas, perguntas e trocas entre membros da CannLabs Community."
     permissions:
       membros_ativos: full
   profissionais_verificados:
     slug: profissionais-verificados
     create:
       name: "Profissionais Verificados"
-      description: "Espaço reservado para membros com identidade profissional verificada pela CannLabs."
+    description: "Espaço restrito aos profissionais com acesso verificado pela CannLabs."
     permissions:
       acesso_profissionais: full
   liderancas_de_associacoes:
     slug: liderancas-de-associacoes
     create:
       name: "Lideranças de Associações"
-      description: "Espaço reservado para lideranças de associações aprovadas pela CannLabs."
+    description: "Espaço restrito às lideranças de associações com acesso aprovado."
     permissions:
       acesso_liderancas: full
   staff:
     site_setting: staff_category_id
-    verify_only: true
+    verify_only: true # the ACL is only verified; the description is still owned
+    description: "Espaço interno da equipe CannLabs para operação e moderação."
     permissions:
       staff: full
 
 # The special Uncategorized category is retired by the native upcoming change.
-# What remains of it must not be an unpaid surface.
+# What remains of it is an ordinary, empty category that members could otherwise
+# list and post into: it is staff-only, so it is neither an unpaid nor a member surface.
 uncategorized:
   residual_permissions:
-    membros_ativos: full
+    staff: full
 
 # Seeded surfaces that must be absent (DEC-033).
 retired_categories:
   site_feedback:
     site_setting: meta_category_id
+
+# Member front door: copy and navigation, in Brazilian Portuguese. Native text overrides
+# (TranslationOverride), native topics and native navigation settings only.
+# Keys are never guessed: an override whose key does not exist upstream is BLOCKED.
+text_overrides:
+  pt_BR:
+    login_required.welcome_message: "# As conversas que hoje se perdem no WhatsApp, organizadas para serem encontradas depois."
+    js.welcome_banner.subheader.logged_in_members: 'Precisa de ajuda? <a href="/new-message?groupname=equipe">Fale com a equipe</a>.'
+    js.topics.none.education.generic: "Você ainda não tem conteúdos disponíveis aqui. Se sua conta acabou de ser criada, o acesso aos espaços da comunidade pode ainda não estar ativo. Se precisar de ajuda, fale com a equipe."
+
+# Topics the bootstrap owns. A topic is owned through the `cannlabs_community_content`
+# topic custom field, never by id or title. `adopt_seeded` lets the bootstrap take over an
+# unedited, system-seeded topic that the native site setting already points to; any other
+# topic found there is left alone and reported BLOCKED. The `body` Markdown is the source of
+# truth: edit it here, then apply. A direct edit in Discourse is drift.
+content_topics:
+  welcome:
+    site_setting: welcome_topic_id
+    adopt_seeded: true
+    category: general
+    title: "Bem-vindo à CannLabs Community"
+    body: content/pt_BR/welcome.md
+    pinned_globally: true
+  rules:
+    site_setting: guidelines_topic_id
+    category: general
+    title: "Regras da Comunidade"
+    body: content/pt_BR/rules.md
+    pinned_globally: true
+    closed: true # a reference page, not a discussion
+
+# Default sidebar categories, by manifest category key, in this order. Native
+# category visibility still hides every category a person cannot read.
+navigation:
+  default_categories:
+    - comunidade
+    - general
+    - profissionais_verificados
+    - liderancas_de_associacoes
+
+# The built-in links the public "Community" sidebar section keeps (by path). Each
+# link is shown only to the people it applies to. The omitted built-ins are Invite
+# (a closed Community does not invite), Groups, Badges and Filter.
+sidebar:
+  community_links:
+    - /latest
+    - /my/activity
+    - /my/messages
+    - /review
+    - /admin
+    - /u
+    - /about
+    - /faq
 
 # Deployment prerequisites: audited here, installed by the deployment layer.
 theme:
